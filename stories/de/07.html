@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RecordWeb – Wenn eine Anwendung endet</title>
+  <style>
+    :root {
+      --blue: #005a9c;
+      --blue-dark: #003d6b;
+      --blue-soft: #e8f2f8;
+      --ink: #1d2b36;
+      --muted: #536471;
+      --line: #c9d7df;
+      --paper: #fff;
+      --surface: #f5f8fa;
+      --warm: #fff5dc;
+      --warm-line: #d89c23;
+      --red: #ae2626;
+      --red-soft: #fff1f1;
+      --green: #16784b;
+      --shadow: 0 10px 30px rgba(21,47,66,.13);
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--surface); }
+    body { margin: 0; color: var(--ink); background: var(--surface); font: 18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+    button { font: inherit; }
+    .topbar { position: fixed; z-index: 10; inset: 0 0 auto; height: 64px; display:flex; align-items:center; justify-content:space-between; padding:0 5vw; color:#fff; background:var(--blue-dark); box-shadow:0 2px 10px rgba(0,0,0,.18); }
+    .brand { display:flex; align-items:baseline; gap:.75rem; font-weight:700; letter-spacing:-.02em; }
+    .brand strong { font-size:1.2rem; }
+    .brand span { font-size:.82rem; font-weight:500; opacity:.86; }
+    .counter { font-size:.9rem; font-variant-numeric:tabular-nums; }
+    main { min-height:100vh; display:grid; place-items:center; padding:94px 5vw 106px; }
+    .deck { width:min(1120px,100%); }
+    .slide { display:none; min-height:min(670px,calc(100vh - 190px)); padding:clamp(2rem,5vw,5rem); background:var(--paper); border-top:9px solid var(--blue); box-shadow:var(--shadow); }
+    .slide.active { display:flex; flex-direction:column; justify-content:center; }
+    .eyebrow { margin:0 0 1rem; color:var(--blue); font-size:.86rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+    h1,h2,h3 { margin:0; line-height:1.12; letter-spacing:-.035em; }
+    h1 { max-width:920px; font-size:clamp(2.6rem,6.2vw,5.5rem); }
+    h2 { max-width:900px; font-size:clamp(2rem,4.4vw,3.8rem); }
+    h3 { font-size:1.12rem; }
+    .lead { max-width:810px; margin:1.5rem 0 0; color:var(--muted); font-size:clamp(1.15rem,2vw,1.42rem); }
+    .quote { max-width:870px; margin:2rem 0 0; padding:1.1rem 1.35rem; border-left:6px solid var(--blue); background:var(--blue-soft); font-size:1.2rem; font-weight:650; }
+    .stage { display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(1.5rem,4vw,4.4rem); align-items:center; margin-top:2rem; }
+    .card,.screen,.warning,.did-card,.route-card { border:1px solid var(--line); border-radius:5px; background:#fff; }
+    .card { padding:1.3rem; box-shadow:0 4px 18px rgba(20,44,60,.08); }
+    .person { display:flex; align-items:center; gap:.85rem; margin-bottom:1rem; }
+    .avatar { display:grid; width:44px; height:44px; place-items:center; border-radius:50%; color:#fff; background:var(--blue); font-size:.9rem; font-weight:800; }
+    .person p { margin:0; line-height:1.25; }
+    .person small { display:block; color:var(--muted); }
+    .record { padding:1rem; border:1px solid #d9e1e5; background:#fcfcfc; }
+    .record-title { color:var(--blue-dark); font-size:.9rem; font-weight:800; }
+    .line { height:10px; margin:.65rem 0; border-radius:9px; background:#dce5e9; }
+    .line.blue { width:74%; background:#91bad0; }
+    .line.short { width:52%; }
+    .status { display:inline-block; margin-top:.6rem; padding:.3rem .55rem; border-radius:3px; color:#075c38; background:#e8f6ee; font-size:.82rem; font-weight:800; }
+    .resolve { margin-top:1rem; padding:.75rem; border-left:4px solid var(--green); background:#ecf8f1; color:#175d3b; font-size:.9rem; }
+    .browser { overflow:hidden; border:1px solid var(--line); border-radius:5px; background:#fff; box-shadow:0 4px 18px rgba(20,44,60,.08); }
+    .browser-bar { display:flex; align-items:center; gap:.5rem; padding:.65rem .85rem; border-bottom:1px solid var(--line); background:#eef3f5; }
+    .dot { width:10px; height:10px; border-radius:50%; background:#bdcbd2; }
+    .address { flex:1; overflow:hidden; padding:.25rem .45rem; border:1px solid #d1dde2; border-radius:3px; color:#51616a; background:#fff; font: .72rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; text-overflow:ellipsis; white-space:nowrap; }
+    .browser-body { min-height:240px; padding:1.2rem; }
+    .ok { color:var(--green); font-size:1.05rem; font-weight:800; }
+    .error-browser { border-color:#e2aaaa; }
+    .error-browser .browser-bar { background:#fff2f2; }
+    .error { min-height:270px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:2rem; text-align:center; color:var(--red); background:var(--red-soft); }
+    .error strong { font-size:clamp(3.2rem,8vw,6rem); line-height:1; letter-spacing:-.08em; }
+    .error span { margin-top:.8rem; font-size:1.25rem; font-weight:750; }
+    .error small { max-width:430px; margin-top:.9rem; color:#865050; }
+    .danger { margin-top:1.6rem; padding:1rem 1.2rem; border-left:6px solid var(--red); background:var(--red-soft); color:#7b2929; }
+    .danger p { margin:.2rem 0; }
+    .rule { display:grid; grid-template-columns:auto 1fr; gap:1rem; align-items:start; max-width:900px; margin-top:2rem; padding:1.25rem; border:1px solid var(--line); background:var(--blue-soft); }
+    .rule-number { display:grid; width:52px; height:52px; place-items:center; color:#fff; background:var(--blue); font-size:1.45rem; font-weight:850; }
+    .rule p { margin:.35rem 0 0; font-size:1.12rem; }
+    .timeline { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:.65rem; align-items:stretch; margin-top:2rem; }
+    .node { display:flex; flex-direction:column; justify-content:center; min-height:150px; padding:1rem; border:1px solid var(--line); background:#fff; }
+    .node strong { color:var(--blue-dark); }
+    .node small { margin-top:.4rem; color:var(--muted); }
+    .arrow { align-self:center; color:var(--blue); font-size:2rem; font-weight:850; }
+    .route { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:2rem; }
+    .route-card { position:relative; padding:1.35rem; border-top:6px solid var(--blue); }
+    .route-card h3 { color:var(--blue-dark); }
+    .route-card p { margin:.7rem 0 0; color:var(--muted); }
+    .route-card .tag { display:inline-block; margin-bottom:.75rem; padding:.22rem .5rem; border-radius:3px; color:#fff; background:var(--blue); font-size:.76rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+    .sip { display:grid; grid-template-columns:1.1fr .9fr; gap:1.4rem; align-items:center; margin-top:1.9rem; }
+    .package { position:relative; padding:1.4rem; border:3px solid var(--warm-line); background:var(--warm); }
+    .package::before { content:"SIP"; position:absolute; top:-.85rem; left:1rem; padding:.2rem .5rem; color:#6b4b0b; background:var(--warm); font-size:.85rem; font-weight:850; }
+    .package .inner { padding:1.1rem; border:1px solid var(--line); background:#fff; }
+    .package p { margin:.6rem 0 0; color:var(--muted); font-size:.92rem; }
+    .unchanged { padding:1rem; border-left:5px solid var(--green); background:#ecf8f1; color:#195f3c; }
+    .unchanged p { margin:0; }
+    .did-card { overflow:hidden; margin-top:1.5rem; }
+    .did-head { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; color:#fff; background:var(--blue-dark); font-size:.88rem; font-weight:800; }
+    pre { max-height:335px; overflow:auto; margin:0; padding:1.15rem; color:#22333d; background:#f7fafb; font: .78rem/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; white-space:pre-wrap; word-break:break-word; }
+    .highlight { color:#7c2f00; background:#fff1bf; font-weight:800; }
+    .highlightgreen { color:#195f3c; background:#fff1bf; font-weight:800; }
+    .annotation { max-width:940px; margin-top:1rem; padding:.85rem 1rem; border-left:5px solid var(--warm-line); background:var(--warm); color:#60450c; font-size:.93rem; }
+    .verify { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:2rem; }
+    .verify > div { min-height:160px; padding:1.15rem; border:1px solid var(--line); background:#fff; }
+    .verify strong { display:block; color:var(--blue-dark); font-size:1.1rem; }
+    .verify p { margin:.65rem 0 0; color:var(--muted); font-size:.9rem; }
+    .check { color:var(--green); font-size:1.3rem; font-weight:900; }
+    .conformance { display:grid; grid-template-columns:1fr auto 1fr; gap:1rem; align-items:center; margin-top:2rem; }
+    .schema { padding:1.25rem; border:1px solid var(--line); background:#fff; }
+    .schema strong { color:var(--blue-dark); }
+    .schema p { margin:.55rem 0 0; color:var(--muted); font-size:.92rem; }
+    .seal { display:grid; width:82px; height:82px; place-items:center; border:4px solid var(--blue); border-radius:50%; color:var(--blue-dark); background:var(--blue-soft); text-align:center; font-size:.74rem; font-weight:850; line-height:1.1; }
+    .future { max-width:900px; margin-top:2rem; padding:1.4rem; border-left:7px solid var(--blue); background:var(--blue-soft); }
+    .future p { margin:.35rem 0; }
+    .future small { display:block; margin-top:.8rem; color:var(--muted); }
+    .closing { text-align:center; }
+    .closing h2 { margin-inline:auto; }
+    .closing .quote { margin:2rem auto 0; text-align:left; }
+    .nav { position:fixed; z-index:10; inset:auto 0 0; display:flex; align-items:center; justify-content:center; gap:1rem; padding:19px 5vw; border-top:1px solid #c7d3da; background:rgba(255,255,255,.97); backdrop-filter:blur(5px); }
+    .nav button { min-width:120px; padding:.66rem 1rem; border:1px solid var(--blue); border-radius:3px; color:var(--blue); background:#fff; font-weight:750; cursor:pointer; }
+    .nav button.primary { color:#fff; background:var(--blue); }
+    .nav button:disabled { border-color:#b5c1c8; color:#8a989f; background:#edf1f3; cursor:default; }
+    .progress { width:min(280px,28vw); height:6px; overflow:hidden; border-radius:4px; background:#d7e2e8; }
+    .progress span { display:block; height:100%; background:var(--blue); transition:width .2s ease; }
+    .speaker-toggle { position:fixed; z-index:9; right:1.2rem; top:78px; padding:.5rem .8rem; border:1px solid var(--line); border-radius:4px; color:var(--blue-dark); background:#fff; box-shadow:0 2px 7px rgba(0,0,0,.08); font-size:.84rem; font-weight:700; cursor:pointer; }
+    .speaker-notes { display:none; max-width:920px; margin-top:2rem; padding:1rem 1.2rem; border-left:5px solid var(--warm-line); background:var(--warm); color:#57420d; font-size:.93rem; }
+    body.show-notes .speaker-notes { display:block; }
+    .help { position:fixed; z-index:9; left:1.2rem; bottom:89px; color:var(--muted); font-size:.77rem; }
+    @media (max-width:740px) {
+      body { font-size:16px; }
+      .topbar { padding:0 1rem; }
+      .brand span { display:none; }
+      main { padding:82px 1rem 94px; }
+      .slide { min-height:calc(100vh - 168px); padding:2rem 1.4rem; }
+      .stage,.sip,.route { grid-template-columns:1fr; }
+      .timeline,.bridge,.conformance { grid-template-columns:1fr; }
+      .arrow { transform:rotate(90deg); }
+      .verify { grid-template-columns:1fr; }
+      .nav { gap:.5rem; padding:14px .7rem; }
+      .nav button { min-width:82px; font-size:.83rem; }
+      .progress { width:90px; }
+      .help { display:none; }
+    }
+    @media print {
+      .topbar,.nav,.speaker-toggle,.help { display:none !important; }
+      main { display:block; padding:0; }
+      .slide { display:flex !important; min-height:100vh; page-break-after:always; box-shadow:none; }
+      .speaker-notes { display:block; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><strong>RecordWeb</strong><span>Proof of Concept · Archivische Perspektive</span></div>
+    <div class="counter" id="counter" aria-live="polite">1 / 11</div>
+  </header>
+  <button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Sprechertext anzeigen</button>
+
+  <main>
+    <div class="deck">
+      <section class="slide active" data-title="Titel">
+        <p class="eyebrow">RecordWeb · Eine Geschichte für Archive</p>
+        <h1>Wenn eine Anwendung endet.</h1>
+        <p class="lead">Wie RecordWeb Records und ihren Zusammenhang über Systemwechsel hinweg begleitet.</p>
+        <div class="quote">Nicht erst retten, wenn das System verschwindet.<br>Den Übergang von Anfang an begleiten.</div>
+        <aside class="speaker-notes">Diese Präsentation zeigt kein Modell, nach dem jede abgeschlossene Antwort sofort archiviert wird. Sie zeigt einen anderen Moment: Eine RWP-konforme Anwendung erreicht ihr End of Life. Dann muss der Record kontrolliert überführt werden – ohne seinen Inhalt oder seine Identität neu zu erfinden.</aside>
+      </section>
+
+      <section class="slide" data-title="Laufende Anwendung">
+        <p class="eyebrow">Szene 1 · Solange die Anwendung lebt</p>
+        <h2>Ein finalisierter Record ist bereit.</h2>
+        <div class="stage">
+          <div>
+            <p class="lead">Frau Roth und ihr Team haben ihre Arbeit abgeschlossen. Der MiniChat ist finalisiert. Der Record bleibt unverändert in einer RWP-konformen Anwendung.</p>
+            <div class="quote">Finalisierung ist nicht der Beginn eines Wartens auf die spätere Aussonderung. Der Record ist jetzt bereits eindeutig, vollständig referenzierbar und bereit für seinen weiteren Lebensweg.</div>
+          </div>
+          <div class="card">
+            <div class="person"><div class="avatar">MC</div><p><b>MiniChat</b><small>RWP-konforme Anwendung</small></p></div>
+            <div class="record"><div class="record-title">MiniChat zu Fragestunde-Case</div><div class="line blue"></div><div class="line"></div><div class="line short"></div><span class="status">finalized · Version 1</span></div>
+            <div class="resolve">✓ Über den Namespace-Endpoint auflösbar</div>
+          </div>
+        </div>
+        <aside class="speaker-notes">Die zentrale Umkehrung gegenüber etablierten Ablieferungslogiken: Mit der Finalisierung ist der Record nicht bloss ein künftiger Kandidat für eine spätere Aufbereitung. Er ist als Record fertig. Solange seine RWP-konforme Anwendung in Betrieb bleibt, muss er nicht archiviert oder transferiert werden.</aside>
+      </section>
+
+      <section class="slide" data-title="Auflösung">
+        <p class="eyebrow">Szene 2 · Der Record bleibt erreichbar</p>
+        <h2>Der Namespace zeigt, wo der Record aufgelöst wird.</h2>
+        <div class="stage">
+          <div class="browser">
+            <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="address">did:rwp:s73f42a3:records:787475d4-5572-44a2-a62e-b4aaf7d590e3</div></div>
+            <div class="browser-body"><div class="ok">✓ Record erfolgreich aufgelöst</div><p><b>MiniChat zu Fragestunde-Case</b></p><p>Status: finalized<br>Aktuelle Version: sha256:…</p><div class="resolve">recordEndpoint → Anwendung stellt den Record bereit</div></div>
+          </div>
+          <div>
+            <p class="lead">Die DID ist der dauerhafte Bezugspunkt. Der Namespace verweist auf einen Resolver, und der RecordEndpoint liefert den Record aus der zuständigen Anwendung.</p>
+            <p>Das Archiv muss nicht zuerst ein eigenes, nachträglich rekonstruiertes Abbild herstellen, damit der Record grundsätzlich erreichbar und verständlich ist.</p>
+          </div>
+        </div>
+        <aside class="speaker-notes">Diese Folie erklärt nur die Wirkung, nicht das Protokoll im Detail: Die DID bleibt der stabile Name. Über den Namespace kann der Record zu seinem aktuellen Endpoint aufgelöst werden. Solange die Anwendung läuft, ist dies der normale Zustand.</aside>
+      </section>
+
+      <section class="slide" data-title="404">
+        <p class="eyebrow">Szene 3 · Die reale Gefahr</p>
+        <h2>Und wenn die Anwendung verschwindet?</h2>
+        <div class="browser error-browser" style="margin-top:1.8rem;">
+          <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="address">https://minichat.example.gov/api/records/787475d4-…</div></div>
+          <div class="error"><strong>404</strong><span>Record not found</span><small>Die Anwendung wurde abgelöst. Der alte Endpoint ist nicht mehr verfügbar.</small></div>
+        </div>
+        <div class="danger"><p><b>Wenn Anwendungen enden, genügt es nicht, nur Dateien zu retten.</b> Ohne vorbereiteten Übergang drohen verlorene Auflösung, unklare Herkunft, fehlende Beziehungen und aufwendige Rekonstruktion.</p></div>
+        <aside class="speaker-notes">Diese Folie darf bewusst provokativ sein. Nicht, weil jede Systemablösung zwangsläufig zu einer 404-Seite führt. Sondern weil genau diese Erfahrung das Risiko sichtbar macht: Anwendung weg, Link tot, Daten nur noch als schwer lesbarer Export, Kontext unklar. Eine nachträgliche Rettungsaktion beginnt dann oft erst unter Zeitdruck.</aside>
+      </section>
+
+      <section class="slide" data-title="Gamechanger">
+        <p class="eyebrow">Szene 4 · Der Gamechanger</p>
+        <h2>Der Record wird nicht erst nach zehn Jahren vorbereitet.</h2>
+        <div class="rule"><div class="rule-number">1</div><div><h3>Mit der Finalisierung ist der Record bereit.</h3><p>Er erhält seinen stabilen Bezugspunkt, seine finale Fassung und seinen nachvollziehbaren Kontext. Eine spätere Überführung muss ihn nicht erst aus verstreuten Daten, Dateien und Metadaten zusammensuchen.</p></div></div>
+        <div class="timeline">
+          <div class="node"><strong>Arbeit</strong><small>Chat, Daten, Entwürfe, Abstimmung</small></div><div class="arrow">→</div>
+          <div class="node"><strong>Finalisierung</strong><small>Record ist fertig und auflösbar</small></div><div class="arrow">→</div>
+          <div class="node"><strong>EoL bei Bedarf</strong><small>Kontrollierte Überführung statt nachträglicher Rettungsaktion</small></div>
+        </div>
+        <div class="quote">Nicht zuerst zehn Jahre sammeln – und dann aufräumen, konvertieren und vorbereiten. Der relevante Aufwand wird an den richtigen Zeitpunkt verlagert: an die Entstehung und Finalisierung des Records.</div>
+        <aside class="speaker-notes">Hier ist die zentrale Botschaft für ein Archiv: Heute entstehen rund um Aussonderung und Ablieferung oft eigene Projekte, die lange zurückliegende Daten bereinigen, konvertieren, anreichern und wieder in Zusammenhang bringen müssen. Das ähnelt dem Aufwand der Papierzeit. RecordWeb ersetzt nicht jede Prüfung, aber es verringert die strukturelle Last der nachträglichen Rekonstruktion.</aside>
+      </section>
+
+      <section class="slide" data-title="EoL">
+        <p class="eyebrow">Szene 5 · End of Life ist der Auslöser</p>
+        <h2>Erst wenn die Anwendung endet, braucht es eine Überführung.</h2>
+        <p class="lead">Nicht die Finalisierung der Antwort löst eine Archivierung aus. Der Anlass ist das End of Life der Anwendung, die den Record bisher bereitgestellt hat.</p>
+        <div class="timeline">
+          <div class="node"><strong>RWP-konforme Anwendung</strong><small>Der Record bleibt unverändert und über den Namespace auflösbar.</small></div><div class="arrow">→</div>
+          <div class="node"><strong>End of Life</strong><small>Die Anwendung wird abgelöst oder ausser Betrieb genommen.</small></div><div class="arrow">→</div>
+          <div class="node"><strong>custodyTransfer</strong><small>Der Record wechselt kontrolliert in einen neuen Aufbewahrungskontext.</small></div>
+        </div>
+        <aside class="speaker-notes">Den Begriff custodyTransfer können Sie hier gezielt verwenden. Es geht um eine geregelte Übergabe des Aufbewahrungs- und Bereitstellungskontexts, nicht um das Umschreiben oder Ersetzen des Records selbst.</aside>
+      </section>
+
+      <section class="slide" data-title="Zwei Wege">
+        <p class="eyebrow">Szene 6 · Zwei kontrollierte Wege</p>
+        <h2>Wohin geht ein Record, wenn seine Anwendung endet?</h2>
+        <div class="route">
+          <div class="route-card"><span class="tag">Weg 1</span><h3>Nachfolge-Fachanwendung</h3><p>Die neue Anwendung übernimmt die Verantwortung für den Record und stellt ihn über einen neuen, zuständigen Endpoint weiter bereit.</p></div>
+          <div class="route-card"><span class="tag">Weg 2</span><h3>AIS</h3><p>Der Record wird in das Archivinformationssystem überführt und dort im archivischen Kontext weiter bereitgestellt.</p></div>
+        </div>
+        <div class="quote">In beiden Fällen bleibt der Record der Record. Was sich verändert, ist sein Aufbewahrungs- und Bereitstellungskontext.</div>
+        <aside class="speaker-notes">Wichtig: Nicht als allgemeine Archivierungsentscheidung nach Prozessabschluss darstellen. Das sind zwei Optionen beim End of Life. Der PoC demonstriert den zweiten Weg, weil MiniChat für die Story als End of Life angenommen wird.</aside>
+      </section>
+
+      <section class="slide" data-title="SIP">
+        <p class="eyebrow">Szene 7 · Der PoC-Fall MiniChat → AIS</p>
+        <h2>Das SIP ist ein Rahmen um den unveränderten Record.</h2>
+        <div class="sip">
+          <div class="package"><div class="inner"><h3>Unveränderter MiniChat-Record</h3><p>DID, finale Fassung, Metadaten, Beziehungen und Integritätsbezug bleiben Bestandteil desselben Records.</p><div class="record" style="margin-top:1rem;"><div class="record-title">MiniChat zu Fragestunde-Case</div><div class="line blue"></div><div class="line"></div><span class="status">finalized · Version 1</span></div></div></div>
+          <div><div class="unchanged"><p><b>Wichtig:</b> Das SIP erzeugt keinen Ersatzrecord. Es stellt einen Übergaberahmen bereit, damit das AIS den bestehenden Record kontrolliert übernehmen kann.</p></div><p class="lead">Im PoC wird MiniChat als End-of-Life-Anwendung angenommen. Deshalb wird der Record für die Übergabe an AIS in einen SIP-Rahmen eingebettet.</p></div>
+        </div>
+        <aside class="speaker-notes">Hier kann die bekannte OAIS-Sprache anschlussfähig sein: SIP als Submission Information Package. Aber die Geschichte bleibt präzise: Der SIP ist der Rahmen der Übergabe. Der Record wird nicht umgewandelt, nicht neu erschaffen und nicht als blosses Datenpaket ohne Identität behandelt.</aside>
+      </section>
+
+      <section class="slide" data-title="DID Dokument">
+        <p class="eyebrow">Szene 8 · Sichtbarer Nachweis im PoC</p>
+        <h2>Der Endpoint zeigt den neuen Bereitstellungskontext.</h2>
+        <p class="lead">Nach der Überführung enthält das DID-Dokument denselben Record-Bezug. Im <code>recordEndpoint</code> wird sichtbar, dass der Record nun durch AIS bereitgestellt wird.</p>
+        <div class="did-card"><div class="did-head"><span>DID-Dokument · Auszug</span><span>MiniChat-Record</span></div><pre>{
+  "@context": ["https://www.w3.org/ns/did/v1"],
+  <span class="highlightgreen">"id": "did:rwp:s73f42a3:records:787475d4-5572-44a2-a62e-b4aaf7d590e3",</span>
+  <span class="highlight">"recordEndpoint": "https://vps.recordweb.dev/ais/api/records/787475d4-5572-44a2-a62e-b4aaf7d590e3",</span>
+  "created": "2026-08-25T14:12:02.574Z",
+  "updated": "2026-08-25T14:31:10.420Z",
+  <span class="highlightgreen">"currentVersion": "sha256:8a68bf1e26aa786b6a1f64edc027b02987ca9cadc5835c81c502f333dbd90d8a",</span>
+  "controller": "did:rwp:s73f42a3",
+  "record": {
+    "recordType": "MiniChat",
+    "status": "finalized",
+    "version": 1,
+    "title": "MiniChat zu Fragestunde-Case zu Frage did:rwp:a3f9e21c:records:afe21014-94e2-4a4a-b87b-9b680b4676e3"
+  }
+}</pre></div>
+        <div class="annotation"><b>Lesart:</b> Vor der Überführung verwies der Endpoint auf MiniChat. Im demonstrierten EoL-Fall verweist er auf <code>ais</code>. Die DID bleibt der stabile Bezugspunkt; der auflösende Kontext wechselt.</div>
+        <aside class="speaker-notes">Diese Folie darf technisch sein, weil sie den Nachweis im PoC direkt zeigt. Nicht jedes Detail erklären. Entscheidend sind drei Punkte: gleiche DID, finalisierter MiniChat-Record, Endpoint mit ais. Der Endpoint dokumentiert den Wechsel des Bereitstellungsorts.</aside>
+      </section>
+
+      <section class="slide" data-title="Prüfbarkeit">
+        <p class="eyebrow">Szene 9 · Vertrauen entsteht durch Prüfung</p>
+        <h2>Eine Überführung muss nicht nur behauptet, sondern prüfbar sein.</h2>
+        <div class="verify">
+          <div><span class="check">✓</span><strong>Unabhängig finden</strong><p>Ein RecordFinder kann den Record unabhängig von seiner ursprünglichen Anwendung suchen und abrufen.</p></div>
+          <div><span class="check">✓</span><strong>Über Resolver prüfen</strong><p>Die Auflösung der DID zeigt, welcher Endpoint den Record aktuell bereitstellt.</p></div>
+          <div><span class="check">✓</span><strong>Fassung erkennen</strong><p>Der aktuelle Versionsbezug erlaubt, die bereitgestellte Fassung eindeutig zu prüfen.</p></div>
+        </div>
+        <div class="quote">Im PoC wurde die Übernahme nach AIS mit einem unabhängigen RecordFinder und über die Resolver-Auflösung überprüft.</div>
+        <aside class="speaker-notes">Hier zeigen wir nicht bloss ein Architekturversprechen: Der PoC hat genau diesen Ablauf demonstriert. Ein unabhängiger Finder kann den Record abrufen; die Resolver-Prüfung zeigt AIS als bereitstellenden Kontext. Das ist die Art von überprüfbarem Verhalten, die später weiter präzisiert werden kann.</aside>
+      </section>
+
+      <section class="slide" data-title="Konformität">
+        <p class="eyebrow">Szene 10 · Früher steuern statt später retten</p>
+        <h2>Archive können Anforderungen an die Erzeugungsumgebung prüfbar machen.</h2>
+        <p class="lead">Nicht jede einzelne Information muss nach Jahren manuell rekonstruiert werden. Ebenso entscheidend ist, ob nachvollziehbar ist, wie und womit sie erzeugt wurde.</p>
+        <div class="conformance"><div class="schema"><strong>SchemaRecord</strong><p>Beschreibt die Struktur und Regeln eines Record-Typs. Er ist selbst ein versionierter, revisionsfähiger Record.</p></div><div class="seal">Konformität<br>prüfbar</div><div class="schema"><strong>Conformance Record</strong><p>Hält fest, was gegen welche Vorgaben geprüft wurde – etwa Anwendung, Produktversion und durchgeführte Kontrollen.</p></div></div>
+        <div class="future"><p><b>Steuerungsinstrument:</b> Das Archiv kann Anforderungen und Prüfungen früher ansetzen – bei Anwendungen und ihren Erzeugungsregeln, nicht erst im Ablieferungsprojekt.</p><small>Klammerbemerkung: Diese Richtung berührt auch die noch in Diskussion befindliche Idee eines „Self-Custodian“. RecordWeb nimmt diese Diskussion nicht vorweg, schafft aber eine Grundlage für nachweisbare Verantwortung und Prüfbarkeit.</small></div>
+        <aside class="speaker-notes">Diese Folie ist ein Ausblick, keine Behauptung, dass jede Anwendung automatisch archivische Verantwortung übernimmt. Sie zeigt eine mögliche Steuerungslogik: SchemaRecords definieren Regeln; Conformance Records dokumentieren Prüfungen. Beide sind selbst Records, versioniert und revisionsfähig. Das schafft eine Grundlage, Anforderungen verbindlich und prüfbar zu machen.</aside>
+      </section>
+
+      <section class="slide" data-title="Schluss">
+        <div class="closing">
+          <p class="eyebrow">RecordWeb · Archivische Perspektive</p>
+          <h2>Ein Record muss nicht gerettet werden,<br>wenn sein Übergang begleitet wird.</h2>
+          <p class="lead">Finalisierung macht ihn bereit. Solange die Anwendung läuft, bleibt er auflösbar. Beim End of Life wird er kontrolliert überführt – in eine Nachfolgeanwendung oder ins AIS.</p>
+          <div class="quote">Nicht erst retten, wenn das System verschwindet.<br>Den Übergang von Anfang an begleiten.</div>
+        </div>
+        <aside class="speaker-notes">Mögliche Anschlussfragen für das Gespräch: Welche Anforderungen müsste das Archiv an einen kontrollierten custodyTransfer stellen? Welche Record-Typen oder Anwendungen wären geeignete erste Fälle? Welche Konformitätsprofile wären für eine gemeinsame Weiterentwicklung sinnvoll?</aside>
+      </section>
+    </div>
+  </main>
+
+  <div class="help">Tastatur: ← → · Pos1/Ende · N: Sprechertext</div>
+  <nav class="nav" aria-label="Präsentationsnavigation">
+    <button id="prev" type="button">← Zurück</button>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <button class="primary" id="next" type="button">Weiter →</button>
+  </nav>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const counter = document.getElementById('counter');
+      const progress = document.getElementById('progressBar');
+      const notesButton = document.getElementById('notesButton');
+      let index = 0;
+      function render() {
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+        prev.disabled = index === 0;
+        next.disabled = index === slides.length - 1;
+        next.textContent = index === slides.length - 1 ? 'Ende' : 'Weiter →';
+        counter.textContent = `${index + 1} / ${slides.length}`;
+        progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+        document.title = `RecordWeb – ${slides[index].dataset.title}`;
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+      function move(delta) { const target = Math.max(0, Math.min(slides.length - 1, index + delta)); if (target !== index) { index = target; render(); } }
+      prev.addEventListener('click', () => move(-1));
+      next.addEventListener('click', () => move(1));
+      notesButton.addEventListener('click', () => { const visible = document.body.classList.toggle('show-notes'); notesButton.textContent = visible ? 'Sprechertext ausblenden' : 'Sprechertext anzeigen'; notesButton.setAttribute('aria-pressed', String(visible)); });
+      window.addEventListener('keydown', (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); move(1); }
+        if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); move(-1); }
+        if (event.key === 'Home') { event.preventDefault(); index = 0; render(); }
+        if (event.key === 'End') { event.preventDefault(); index = slides.length - 1; render(); }
+        if (event.key.toLowerCase() === 'n') notesButton.click();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

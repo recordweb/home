@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RecordWeb – Eine Frage. Eine Antwort. Ein Zusammenhang.</title>
+  <style>
+    :root {
+      --w3c-blue: #005a9c;
+      --w3c-blue-dark: #003d6b;
+      --w3c-blue-soft: #e8f2f8;
+      --ink: #1d2b36;
+      --muted: #536471;
+      --line: #c9d7df;
+      --paper: #ffffff;
+      --surface: #f5f8fa;
+      --warm: #fff5dc;
+      --warm-line: #e4b450;
+      --green: #16784b;
+      --red: #a52828;
+      --shadow: 0 10px 30px rgba(21, 47, 66, .13);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--surface); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--surface);
+      font: 18px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    button { font: inherit; }
+    .topbar {
+      position: fixed;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      color: #fff;
+      background: var(--w3c-blue-dark);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+    }
+    .brand { display: flex; align-items: baseline; gap: .75rem; font-weight: 700; letter-spacing: -.02em; }
+    .brand strong { font-size: 1.2rem; }
+    .brand span { font-size: .82rem; font-weight: 500; opacity: .86; }
+    .counter { font-size: .9rem; font-variant-numeric: tabular-nums; }
+    main { min-height: 100vh; display: grid; place-items: center; padding: 94px 5vw 106px; }
+    .deck { width: min(1120px, 100%); }
+    .slide {
+      display: none;
+      min-height: min(670px, calc(100vh - 190px));
+      padding: clamp(2rem, 5vw, 5rem);
+      background: var(--paper);
+      border-top: 9px solid var(--w3c-blue);
+      box-shadow: var(--shadow);
+    }
+    .slide.active { display: flex; flex-direction: column; justify-content: center; }
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--w3c-blue);
+      font-size: .86rem;
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.12; letter-spacing: -.035em; }
+    h1 { max-width: 920px; font-size: clamp(2.6rem, 6.2vw, 5.5rem); }
+    h2 { max-width: 850px; font-size: clamp(2rem, 4.4vw, 3.8rem); }
+    h3 { font-size: 1.15rem; }
+    .lead { max-width: 760px; margin: 1.5rem 0 0; font-size: clamp(1.16rem, 2vw, 1.45rem); color: var(--muted); }
+    .quote {
+      max-width: 860px;
+      margin: 2rem 0 0;
+      padding: 1.1rem 1.35rem;
+      border-left: 6px solid var(--w3c-blue);
+      background: var(--w3c-blue-soft);
+      font-size: 1.22rem;
+      font-weight: 650;
+    }
+    .stage {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: clamp(1.5rem, 4vw, 4.4rem);
+      align-items: center;
+      margin-top: 2rem;
+    }
+    .scene-card, .screen, .note, .role-card {
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #fff;
+    }
+    .scene-card { padding: 1.3rem; box-shadow: 0 4px 18px rgba(20, 44, 60, .08); }
+    .person { display: flex; align-items: center; gap: .85rem; margin-bottom: 1rem; }
+    .avatar {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--w3c-blue);
+      font-size: .9rem;
+      font-weight: 800;
+    }
+    .person p { margin: 0; line-height: 1.25; }
+    .person small { display: block; color: var(--muted); }
+    .deadline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem .85rem; border-radius: 4px; background: #fff1f1; color: var(--red); font-weight: 750; }
+    .document { margin-top: 1rem; padding: 1rem; border: 1px solid #d9e1e5; background: #fcfcfc; }
+    .document .line { height: 10px; margin: .65rem 0; border-radius: 9px; background: #dce5e9; }
+    .document .line.short { width: 55%; }
+    .document .line.accent { width: 76%; background: #91bad0; }
+    .chat { margin-top: 1rem; padding: 1rem; border: 1px solid #d4e1e8; background: #f4f9fb; }
+    .chat-label { margin-bottom: .65rem; color: var(--muted); font-size: .78rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .bubble { width: fit-content; max-width: 90%; margin: .55rem 0; padding: .58rem .75rem; border-radius: 9px 9px 9px 2px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); font-size: .88rem; }
+    .bubble.me { margin-left: auto; border-radius: 9px 9px 2px 9px; color: #fff; background: var(--w3c-blue); }
+    .phone { position: relative; min-height: 310px; padding: 2rem 1.25rem; border: 8px solid #263a47; border-radius: 30px; background: #f7fafb; box-shadow: 0 8px 20px rgba(17, 35, 45, .18); }
+    .phone::before { content: ""; position: absolute; top: 10px; left: 50%; width: 70px; height: 6px; border-radius: 8px; background: #263a47; transform: translateX(-50%); }
+    .caller { margin-top: 1.4rem; text-align: center; font-size: 1.4rem; font-weight: 800; }
+    .caller small { display: block; margin-top: .2rem; color: var(--muted); font-size: .85rem; font-weight: 500; }
+    .call-actions { display: flex; justify-content: center; gap: 1rem; margin-top: 3rem; }
+    .circle { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 800; }
+    .circle.red { background: var(--red); }
+    .dialogue { max-width: 730px; margin-top: 1.6rem; }
+    .dialogue p { margin: .7rem 0; padding: .9rem 1.05rem; border-radius: 3px; background: var(--surface); }
+    .dialogue b { color: var(--w3c-blue-dark); }
+    .system-flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+    .flow-box { position: relative; min-height: 140px; padding: 1rem; border: 1px solid var(--line); background: #fff; }
+    .flow-box:not(:last-child)::after { content: "→"; position: absolute; top: 50%; right: -1.4rem; z-index: 1; color: var(--w3c-blue); font-size: 1.7rem; font-weight: 800; transform: translateY(-50%); }
+    .flow-box h3 { color: var(--w3c-blue-dark); }
+    .flow-box p { margin: .55rem 0 0; color: var(--muted); font-size: .92rem; }
+    .multi-screen { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.7rem; }
+    .screen { padding: 1rem; }
+    .screen-head { display: flex; justify-content: space-between; padding-bottom: .6rem; border-bottom: 1px solid var(--line); color: var(--w3c-blue-dark); font-size: .88rem; font-weight: 800; }
+    .task { margin-top: .8rem; padding: .75rem; border-left: 4px solid var(--w3c-blue); background: var(--w3c-blue-soft); font-size: .9rem; }
+    .task small { display: block; margin-top: .25rem; color: var(--muted); }
+    .pressure { margin-top: 1.2rem; padding: 1rem 1.15rem; border: 1px solid var(--warm-line); background: var(--warm); }
+    .pressure p { margin: 0; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 2rem; }
+    .comparison > div { padding: 1.25rem; border: 1px solid var(--line); }
+    .comparison h3 { margin-bottom: .75rem; }
+    .comparison ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
+    .comparison li { margin: .45rem 0; }
+    .comparison .old { border-top: 6px solid var(--warm-line); }
+    .comparison .new { border-top: 6px solid var(--w3c-blue); background: var(--w3c-blue-soft); }
+    .recordweb-map { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: .6rem; align-items: stretch; margin-top: 2rem; }
+    .node { display: flex; flex-direction: column; justify-content: center; min-height: 135px; padding: 1rem; border: 1px solid var(--line); background: #fff; }
+    .node strong { color: var(--w3c-blue-dark); }
+    .node small { margin-top: .35rem; color: var(--muted); }
+    .arrow { align-self: center; color: var(--w3c-blue); font-size: 2rem; font-weight: 800; }
+    .bridge { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: .8rem; align-items: center; margin-top: 2rem; }
+    .bridge .node { min-height: 160px; }
+    .bridge .sox { border: 3px solid var(--w3c-blue); background: var(--w3c-blue-soft); text-align: center; }
+    .bridge .sox strong { font-size: 1.35rem; }
+    .teaser { max-width: 850px; margin-top: 2rem; padding: 1.5rem; border-left: 7px solid var(--w3c-blue); background: var(--w3c-blue-soft); }
+    .teaser p { margin: .4rem 0; }
+    .closing { text-align: center; }
+    .closing h2 { margin-inline: auto; }
+    .closing .quote { margin: 2rem auto 0; text-align: left; }
+    .nav {
+      position: fixed;
+      z-index: 10;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 19px 5vw;
+      border-top: 1px solid #c7d3da;
+      background: rgba(255, 255, 255, .97);
+      backdrop-filter: blur(5px);
+    }
+    .nav button { min-width: 120px; padding: .66rem 1rem; border: 1px solid var(--w3c-blue); border-radius: 3px; color: var(--w3c-blue); background: #fff; font-weight: 750; cursor: pointer; }
+    .nav button.primary { color: #fff; background: var(--w3c-blue); }
+    .nav button:disabled { border-color: #b5c1c8; color: #8a989f; background: #edf1f3; cursor: default; }
+    .progress { width: min(280px, 28vw); height: 6px; overflow: hidden; border-radius: 4px; background: #d7e2e8; }
+    .progress > span { display: block; height: 100%; background: var(--w3c-blue); transition: width .2s ease; }
+    .speaker-toggle { position: fixed; z-index: 9; right: 1.2rem; top: 78px; padding: .5rem .8rem; border: 1px solid var(--line); border-radius: 4px; color: var(--w3c-blue-dark); background: #fff; box-shadow: 0 2px 7px rgba(0,0,0,.08); font-size: .84rem; font-weight: 700; cursor: pointer; }
+    .speaker-notes { display: none; max-width: 920px; margin-top: 2rem; padding: 1rem 1.2rem; border-left: 5px solid var(--warm-line); background: var(--warm); color: #57420d; font-size: .93rem; }
+    body.show-notes .speaker-notes { display: block; }
+    .help { position: fixed; z-index: 9; left: 1.2rem; bottom: 89px; color: var(--muted); font-size: .77rem; }
+    @media (max-width: 740px) {
+      body { font-size: 16px; }
+      .topbar { padding: 0 1rem; }
+      .brand span { display: none; }
+      main { padding: 82px 1rem 94px; }
+      .slide { min-height: calc(100vh - 168px); padding: 2rem 1.4rem; }
+      .stage, .comparison, .multi-screen { grid-template-columns: 1fr; }
+      .system-flow { grid-template-columns: 1fr; }
+      .flow-box:not(:last-child)::after { top: auto; right: 50%; bottom: -1.6rem; transform: translateX(50%) rotate(90deg); }
+      .recordweb-map, .bridge { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+      .nav { gap: .5rem; padding: 14px .7rem; }
+      .nav button { min-width: 82px; font-size: .83rem; }
+      .progress { width: 90px; }
+      .help { display: none; }
+    }
+    @media print {
+      .topbar, .nav, .speaker-toggle, .help { display: none !important; }
+      main { display: block; padding: 0; }
+      .slide { display: flex !important; min-height: 100vh; page-break-after: always; box-shadow: none; }
+      .speaker-notes { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><strong>RecordWeb</strong><span>Proof of Concept · Fragestunde</span></div>
+    <div class="counter" id="counter" aria-live="polite">1 / 11</div>
+  </header>
+
+  <button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Sprechertext anzeigen</button>
+
+  <main>
+    <div class="deck" id="deck">
+      <section class="slide active" data-title="Titel">
+        <p class="eyebrow">Eine Geschichte aus dem Verwaltungsalltag</p>
+        <h1>Eine Frage.<br>Eine Antwort.<br>Ein nachvollziehbarer Zusammenhang.</h1>
+        <p class="lead">Wie RecordWeb die tatsächliche digitale Arbeit mit langfristiger Nachvollziehbarkeit verbindet.</p>
+        <div class="quote">Nicht mehr Nacharbeit. Mehr Zusammenhang.</div>
+        <aside class="speaker-notes">Willkommen. Diese Geschichte erklärt RecordWeb nicht zuerst über ein Protokoll, sondern über eine Situation, die viele Menschen aus der Verwaltungsarbeit kennen: Eine Antwort muss zuverlässig und rechtzeitig geliefert werden – während die nächste Aufgabe bereits beginnt.</aside>
+      </section>
+
+      <section class="slide" data-title="Zeitdruck">
+        <p class="eyebrow">Szene 1 · Kurz vor zehn</p>
+        <h2>Frau Roth hat noch wenige Minuten.</h2>
+        <div class="stage">
+          <div>
+            <p class="lead">Sie arbeitet in einem Bundesamt an der Antwort auf eine parlamentarische Frage. Die Zahlen sind fast geprüft. Die Antwort muss zur Freigabe.</p>
+            <div class="deadline"><span>Antwort zur Freigabe</span><span>10:00 Uhr</span></div>
+          </div>
+          <div class="scene-card">
+            <div class="person"><div class="avatar">FR</div><p><b>Frau Roth</b><small>Fachmitarbeiterin</small></p></div>
+            <div class="document">
+              <strong>Antwortentwurf</strong>
+              <div class="line accent"></div><div class="line"></div><div class="line short"></div>
+            </div>
+            <div class="chat">
+              <div class="chat-label">Amtsinterner Chat</div>
+              <div class="bubble">Die aktualisierte Emissionszahl ist geprüft. Diese Version kann verwendet werden.</div>
+              <div class="bubble me">Danke, ich übernehme sie in den Entwurf.</div>
+            </div>
+          </div>
+        </div>
+        <aside class="speaker-notes">Frau Roth ist nicht nachlässig. Sie arbeitet konzentriert und professionell. Gerade jetzt zeigt sich aber: Die Antwort entsteht nicht nur im Dokument. Sie entsteht im Zusammenspiel von Entwurf, Daten, Rückfragen und fachlicher Zusammenarbeit.</aside>
+      </section>
+
+      <section class="slide" data-title="Anruf">
+        <p class="eyebrow">Szene 2 · Eine neue Frage</p>
+        <h2>Da klingelt das Telefon.</h2>
+        <div class="stage">
+          <div class="dialogue">
+            <p><b>Herr Keller:</b> Guten Morgen, Frau Roth. Ich habe eine Frage: Wie hat sich der CO₂-Ausstoss in den vergangenen Jahren entwickelt?</p>
+            <p><b>Frau Roth:</b> Ich kann Ihnen eine erste Einordnung geben. Für eine verbindliche Antwort reichen Sie die Frage bitte formell ein.</p>
+            <p class="lead">Ein Gespräch kann eine Auskunft auslösen. Es ersetzt aber keinen verbindlichen parlamentarischen Vorgang.</p>
+          </div>
+          <div class="phone">
+            <div class="caller">Herr Keller<small>Parlamentarier</small></div>
+            <div class="call-actions"><div class="circle red">×</div><div class="circle">☎</div></div>
+          </div>
+        </div>
+        <aside class="speaker-notes">Die Geschichte bleibt international verständlich: Ein Parlamentarier stellt eine Frage an die Regierung. Im Schweizer Demonstrator ist Herr Keller Mitglied des Nationalrats; die formelle Behandlung erfolgt im Rahmen der Fragestunde.</aside>
+      </section>
+
+      <section class="slide" data-title="Formelle Frage">
+        <p class="eyebrow">Szene 3 · Aus der Frage wird ein Auftrag</p>
+        <h2>Herr Keller reicht die Frage formell ein.</h2>
+        <p class="lead">Jetzt erhält das Anliegen einen eindeutigen Bezug: Wer stellt welche Frage, zu welchem Zeitpunkt – und wer ist für die Antwort verantwortlich?</p>
+        <div class="system-flow">
+          <div class="flow-box"><h3>Herr Keller</h3><p>Reicht seine parlamentarische Frage ein.</p></div>
+          <div class="flow-box"><h3>Fragenmanagement</h3><p>Erfasst die Frage und macht ihren Status sichtbar.</p></div>
+          <div class="flow-box"><h3>Zuständige Stelle</h3><p>Übernimmt den verbindlichen Auftrag zur Bearbeitung.</p></div>
+        </div>
+        <div class="quote">Eine formelle Frage soll nicht nur beantwortet werden. Sie soll zuständig, fristgerecht und nachvollziehbar behandelt werden.</div>
+        <aside class="speaker-notes">Hier kann im PoC das Fragenmanagement gezeigt werden: die Einreichung, die Erfassung und – wenn sichtbar – die Zuweisung. Wir erklären noch nicht die gesamte Architektur; wir machen nur die institutionelle Verbindlichkeit der Frage erlebbar.</aside>
+      </section>
+
+      <section class="slide" data-title="Neue Aufgabe">
+        <p class="eyebrow">Szene 4 · Noch ein Auftrag</p>
+        <h2>Die nächste Frage trifft ein, bevor die vorige ganz abgeschlossen ist.</h2>
+        <div class="multi-screen">
+          <div class="screen">
+            <div class="screen-head"><span>Antwortmanagement</span><span>Frist: heute</span></div>
+            <div class="task"><b>Frage zum CO₂-Ausstoss</b><small>Neu zugewiesen · in Bearbeitung</small></div>
+            <div class="task"><b>Antwort zur Energieversorgung</b><small>Bereit zur Freigabe</small></div>
+          </div>
+          <div class="screen">
+            <div class="screen-head"><span>Arbeitsalltag</span><span>laufend</span></div>
+            <div class="task"><b>Chat-Nachrichten</b><small>Rückfragen und fachliche Hinweise</small></div>
+            <div class="task"><b>E-Mails und Dateien</b><small>Daten, Entwürfe, Abstimmungen</small></div>
+          </div>
+        </div>
+        <div class="pressure"><p><b>Die Realität:</b> Frau Roth muss die Antwort fachlich richtig und rechtzeitig liefern – während sie parallel bereits die nächste Aufgabe aufnimmt.</p></div>
+        <aside class="speaker-notes">Das ist der Kern der Identifikation. Das Problem ist nicht, dass Frau Roth keine Ordnung will. Sie muss mehrere Verpflichtungen gleichzeitig erfüllen. Ihre unmittelbare Verantwortung ist die korrekte und fristgerechte Antwort.</aside>
+      </section>
+
+      <section class="slide" data-title="Konsens">
+        <p class="eyebrow">Szene 5 · Fachliche Zusammenarbeit</p>
+        <h2>Frau Roth bringt ihr Team zusammen.</h2>
+        <div class="stage">
+          <div class="scene-card">
+            <div class="person"><div class="avatar">FR</div><p><b>Frau Roth</b><small>Eröffnet einen Chat zur neuen Frage</small></p></div>
+            <div class="chat">
+              <div class="chat-label">CO₂-Ausstoss · Frage von Herrn Keller</div>
+              <div class="bubble me">Könnt ihr die aktuelle Zeitreihe und die Einordnung bis heute Mittag prüfen?</div>
+              <div class="bubble">Ich prüfe die Zahlen und den methodischen Hinweis.</div>
+              <div class="bubble">Ich liefere einen Vorschlag für die politische Einordnung.</div>
+              <div class="bubble me">Gut. Wir stimmen die Formulierung vor der Freigabe gemeinsam ab.</div>
+            </div>
+          </div>
+          <div>
+            <p class="lead">Die verbindliche Antwort entsteht nicht durch eine einzelne Person und nicht an einem einzelnen Ort.</p>
+            <p>Sie entsteht aus fachlicher Expertise, Quellen, Rückfragen, Entwürfen und einem gemeinsamen Konsens.</p>
+            <div class="quote">Der Chat ist kein störender Nebenkanal. Er ist ein tatsächlicher Ort der Arbeit.</div>
+          </div>
+        </div>
+        <aside class="speaker-notes">Jetzt kann der MiniChat live gezeigt werden. Entscheidend ist nicht die einzelne Nachricht, sondern die Verbindung: Dieser Arbeitsraum gehört zu dieser Frage; die Beteiligten arbeiten an dieser Antwort; am Ende steht ein abgestimmtes Ergebnis.</aside>
+      </section>
+
+      <section class="slide" data-title="GEVER-Spannung">
+        <p class="eyebrow">Szene 6 · Der Zielkonflikt</p>
+        <h2>Die Antwort ist das Ziel. Die Nachdokumentation kommt danach.</h2>
+        <div class="comparison">
+          <div class="old">
+            <h3>Die zusätzliche Arbeit</h3>
+            <ul>
+              <li>Chat-Verlauf auswählen und exportieren</li>
+              <li>E-Mails und Anhänge sichern</li>
+              <li>Dateien ablegen und klassieren</li>
+              <li>Informationen dem richtigen Geschäft zuordnen</li>
+              <li>Relevanz und Vollständigkeit nachträglich beurteilen</li>
+            </ul>
+          </div>
+          <div class="new">
+            <h3>Die eigentliche Arbeit</h3>
+            <ul>
+              <li>Zahlen prüfen</li>
+              <li>Fachwissen zusammenbringen</li>
+              <li>Eine tragfähige Formulierung finden</li>
+              <li>Verantwortung übernehmen</li>
+              <li>Die Antwort rechtzeitig liefern</li>
+            </ul>
+          </div>
+        </div>
+        <div class="quote">Nicht weil die Nachdokumentation unwichtig ist. Sondern weil die nächste Frage bereits wartet.</div>
+        <aside class="speaker-notes">Diese Folie soll GEVER nicht abwerten. Die geordnete, vollständige Aktenführung ist ein legitimes und wichtiges Ziel. Die Spannung entsteht dort, wo die manuelle Übertragung der tatsächlichen Arbeit in ein System mit Fristen, Unterbrechungen und parallelen Aufgaben konkurriert.</aside>
+      </section>
+
+      <section class="slide" data-title="RecordWeb">
+        <p class="eyebrow">Szene 7 · Ein anderer Weg</p>
+        <h2>RecordWeb beginnt bei der Arbeit, wie sie tatsächlich geschieht.</h2>
+        <p class="lead">Es verlangt nicht, dass Frau Roth ihre Arbeit zweimal erledigt: einmal für die Antwort und einmal für deren nachträgliche Dokumentation.</p>
+        <div class="recordweb-map">
+          <div class="node"><strong>Frage</strong><small>Herr Keller stellt eine formelle Frage.</small></div>
+          <div class="arrow">→</div>
+          <div class="node"><strong>Zusammenarbeit</strong><small>Das Fachteam prüft, diskutiert und stimmt sich ab.</small></div>
+          <div class="arrow">→</div>
+          <div class="node"><strong>Antwort</strong><small>Eine verantwortete, freigegebene Antwort wird geliefert.</small></div>
+        </div>
+        <div class="teaser"><p><b>RecordWeb:</b> Die relevanten Ergebnisse, Verantwortlichkeiten und Beziehungen können während der Arbeit verbunden bleiben.</p></div>
+        <aside class="speaker-notes">Hier darf die RecordWeb-Ansicht oder der Resolver als Auflösung erscheinen. Die Botschaft ist einfach: Nicht ein Enddokument ohne Herkunft, sondern ein nachvollziehbarer Zusammenhang zwischen Frage, Arbeit und Antwort.</aside>
+      </section>
+
+      <section class="slide" data-title="SoX">
+        <p class="eyebrow">Szene 8 · Die Brücke</p>
+        <h2>Der Chat muss nicht ersetzt werden.</h2>
+        <p class="lead">Bestehende Chat- und Fachanwendungen sprechen heute in der Regel noch nicht RWP. RecordWeb verlangt deshalb keinen sofortigen Systemwechsel.</p>
+        <div class="bridge">
+          <div class="node"><strong>Bestehender Chat</strong><small>Frau Roth und ihr Team arbeiten in ihrem vertrauten Werkzeug.</small></div>
+          <div class="arrow">→</div>
+          <div class="node sox"><strong>SoX</strong><small>Integrationsschicht</small><small>stellt den Bezug zum Geschäft und zu RecordWeb her</small></div>
+          <div class="arrow">→</div>
+          <div class="node"><strong>RecordWeb</strong><small>Verknüpfte, referenzierbare und nachvollziehbare Information.</small></div>
+        </div>
+        <div class="quote">SoX ersetzt die Arbeitsanwendung nicht. SoX schafft die Verbindung.</div>
+        <aside class="speaker-notes">Jetzt SoX im PoC vorführen. Wichtig: SoX ist keine zusätzliche Ablagemaschine, in die Frau Roth alles kopiert. Es ist die Brücke, welche die bestehende Anwendung schrittweise mit dem RecordWeb-Umfeld verbindet.</aside>
+      </section>
+
+      <section class="slide" data-title="Nutzen">
+        <p class="eyebrow">Szene 9 · Später nachvollziehen</p>
+        <h2>Die Antwort erklärt sich nicht nur durch ihren Text.</h2>
+        <div class="stage">
+          <div>
+            <p class="lead">Später möchte vielleicht eine Journalistin, ein anderer Parlamentarier oder eine Kontrolle wissen:</p>
+            <div class="dialogue">
+              <p>Auf welche Frage bezog sich diese Antwort?</p>
+              <p>Welche Stelle war verantwortlich?</p>
+              <p>Welche Fassung wurde freigegeben?</p>
+              <p>In welchem Zusammenhang ist sie entstanden?</p>
+            </div>
+          </div>
+          <div class="scene-card">
+            <div class="person"><div class="avatar">?</div><p><b>Spätere Nutzung</b><small>Recherche, Rechenschaft, Kontrolle</small></p></div>
+            <div class="document"><strong>Verbindliche Antwort</strong><div class="line accent"></div><div class="line"></div></div>
+            <div class="chat"><div class="chat-label">Verknüpfter Kontext</div><div class="bubble">Frage von Herrn Keller</div><div class="bubble">Bearbeitung durch Fachteam</div><div class="bubble">Freigabe und verbindliche Antwort</div></div>
+          </div>
+        </div>
+        <aside class="speaker-notes">Dies ist der Nutzen für Vertrauen, Rechenschaft und spätere Nutzung. Wir zeigen nicht die volle technische Tiefe, sondern die Wirkung: Eine Antwort bleibt mit ihrem relevanten Zusammenhang verbunden und kann deshalb verständlicher eingeordnet werden.</aside>
+      </section>
+
+      <section class="slide" data-title="Teaser">
+        <p class="eyebrow">Ausblick</p>
+        <h2>RecordWeb beginnt nicht mit einem Systemwechsel.</h2>
+        <div class="teaser">
+          <p>Bestehende Anwendungen können weiterarbeiten.</p>
+          <p>Neue oder abzulösende Anwendungen können schrittweise anschlussfähig werden.</p>
+          <p>So entsteht über Zeit eine Informationsarchitektur, in der relevante Zusammenhänge erhalten bleiben.</p>
+        </div>
+        <p class="lead">Das ist kein Big Bang. Es ist eine langfristige Architekturentscheidung.</p>
+        <aside class="speaker-notes">Dieser Ausblick bleibt bewusst kurz. Themen wie Beschaffung, Konformität, End of Life von Anwendungen, Überführung in Nachfolgesysteme oder AIS und Archivierung erhalten eigene spätere Geschichten und Präsentationen.</aside>
+      </section>
+
+      <section class="slide" data-title="Schluss">
+        <div class="closing">
+          <p class="eyebrow">RecordWeb · Proof of Concept Fragestunde</p>
+          <h2>Die Arbeit geschieht bereits.</h2>
+          <p class="lead">Der relevante Nachweis darüber sollte nicht erst danach mühsam hergestellt werden müssen.</p>
+          <div class="quote">Nicht mehr Nacharbeit.<br>Mehr Zusammenhang.</div>
+        </div>
+        <aside class="speaker-notes">Schluss ohne neue technische Behauptung. Falls eine Diskussion folgt, sind mögliche Anschlussfragen: Wo entstehen bei uns heute relevante Informationen ausserhalb des GEVER? Welche Anwendung wäre ein geeigneter erster Integrationsfall? Welche Zusammenhänge müssen langfristig nachweisbar bleiben?</aside>
+      </section>
+    </div>
+  </main>
+
+  <div class="help">Tastatur: ← → · Pos1/Ende · N: Sprechertext</div>
+  <nav class="nav" aria-label="Präsentationsnavigation">
+    <button id="prev" type="button">← Zurück</button>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <button class="primary" id="next" type="button">Weiter →</button>
+  </nav>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const counter = document.getElementById('counter');
+      const progress = document.getElementById('progressBar');
+      const notesButton = document.getElementById('notesButton');
+      let index = 0;
+
+      function render() {
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+        prev.disabled = index === 0;
+        next.disabled = index === slides.length - 1;
+        next.textContent = index === slides.length - 1 ? 'Ende' : 'Weiter →';
+        counter.textContent = `${index + 1} / ${slides.length}`;
+        progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+        document.title = `RecordWeb – ${slides[index].dataset.title}`;
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+
+      function move(delta) {
+        const target = Math.max(0, Math.min(slides.length - 1, index + delta));
+        if (target !== index) { index = target; render(); }
+      }
+
+      prev.addEventListener('click', () => move(-1));
+      next.addEventListener('click', () => move(1));
+      notesButton.addEventListener('click', () => {
+        const visible = document.body.classList.toggle('show-notes');
+        notesButton.textContent = visible ? 'Sprechertext ausblenden' : 'Sprechertext anzeigen';
+        notesButton.setAttribute('aria-pressed', String(visible));
+      });
+      window.addEventListener('keydown', (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); move(1); }
+        if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); move(-1); }
+        if (event.key === 'Home') { event.preventDefault(); index = 0; render(); }
+        if (event.key === 'End') { event.preventDefault(); index = slides.length - 1; render(); }
+        if (event.key.toLowerCase() === 'n') notesButton.click();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

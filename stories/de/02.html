@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RecordWeb – Netz statt Inseln</title>
+  <style>
+    :root {
+      --blue: #005a9c;
+      --blue-dark: #003d6b;
+      --blue-soft: #e8f2f8;
+      --ink: #1d2b36;
+      --muted: #536471;
+      --line: #c9d7df;
+      --paper: #fff;
+      --surface: #f5f8fa;
+      --warm: #fff5dc;
+      --warm-line: #d89c23;
+      --red: #ae2626;
+      --red-soft: #fff1f1;
+      --green: #16784b;
+      --green-soft: #eaf7ef;
+      --purple: #68499b;
+      --purple-soft: #f2edf9;
+      --shadow: 0 10px 30px rgba(21,47,66,.13);
+    }
+    * { box-sizing: border-box; }
+    html { background:var(--surface); }
+    body { margin:0; color:var(--ink); background:var(--surface); font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+    button { font:inherit; }
+    .topbar { position:fixed; z-index:10; inset:0 0 auto; height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 5vw; color:#fff; background:var(--blue-dark); box-shadow:0 2px 10px rgba(0,0,0,.18); }
+    .brand { display:flex; align-items:baseline; gap:.75rem; font-weight:700; letter-spacing:-.02em; }
+    .brand strong { font-size:1.2rem; }
+    .brand span { font-size:.82rem; font-weight:500; opacity:.86; }
+    .counter { font-size:.9rem; font-variant-numeric:tabular-nums; }
+    main { min-height:100vh; display:grid; place-items:center; padding:94px 5vw 106px; }
+    .deck { width:min(1160px,100%); }
+    .slide { display:none; min-height:min(670px,calc(100vh - 190px)); padding:clamp(2rem,5vw,5rem); background:var(--paper); border-top:9px solid var(--blue); box-shadow:var(--shadow); }
+    .slide.active { display:flex; flex-direction:column; justify-content:center; }
+    .eyebrow { margin:0 0 1rem; color:var(--blue); font-size:.86rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+    h1,h2,h3,h4 { margin:0; line-height:1.12; letter-spacing:-.035em; }
+    h1 { max-width:950px; font-size:clamp(2.6rem,6.2vw,5.5rem); }
+    h2 { max-width:920px; font-size:clamp(2rem,4.4vw,3.8rem); }
+    h3 { font-size:1.12rem; }
+    .lead { max-width:840px; margin:1.5rem 0 0; color:var(--muted); font-size:clamp(1.15rem,2vw,1.42rem); }
+    .quote { max-width:900px; margin:2rem 0 0; padding:1.1rem 1.35rem; border-left:6px solid var(--blue); background:var(--blue-soft); font-size:1.2rem; font-weight:650; }
+    .stage { display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.5rem,4vw,4.4rem); align-items:center; margin-top:2rem; }
+    .card,.problem-card,.step,.system,.case,.record,.legend-item { border:1px solid var(--line); background:#fff; }
+    .card { padding:1.3rem; box-shadow:0 4px 18px rgba(20,44,60,.08); }
+    .architecture { position:relative; margin-top:2rem; padding:1.25rem; border:1px solid var(--line); background:#fbfdfe; }
+    .architecture-title { margin-bottom:.8rem; color:var(--muted); font-size:.8rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .two-orgs { display:grid; grid-template-columns:1fr 1fr; gap:clamp(1rem,3vw,2.7rem); }
+    .org { position:relative; padding:1rem; border:2px solid #abc8d9; background:#fff; }
+    .org h3 { color:var(--blue-dark); }
+    .org-sub { margin:.25rem 0 1rem; color:var(--muted); font-size:.82rem; }
+    .case { padding:.75rem; border-left:5px solid var(--blue); background:var(--blue-soft); font-size:.88rem; font-weight:750; }
+    .record-row { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.75rem; }
+    .record { min-width:72px; padding:.48rem .55rem; border-radius:3px; font-size:.76rem; font-weight:750; text-align:center; }
+    .record.question { border-color:#9fc4d8; background:#edf7fc; }
+    .record.chat { border-color:#c0addf; background:var(--purple-soft); }
+    .record.answer { border-color:#8ec6a9; background:var(--green-soft); }
+    .record.plan { border-color:#edca84; background:var(--warm); }
+    .native { color:#13633e; font-size:.72rem; font-weight:800; }
+    .link-band { position:absolute; z-index:2; top:52%; left:43%; width:14%; border-top:3px solid var(--blue); transform:rotate(-7deg); }
+    .link-band::before,.link-band::after { content:""; position:absolute; top:-6px; width:10px; height:10px; border:3px solid var(--blue); border-radius:50%; background:#fff; }
+    .link-band::before { left:-1px; }
+    .link-band::after { right:-1px; }
+    .link-label { position:absolute; z-index:3; top:calc(52% - 28px); left:45%; padding:.2rem .45rem; color:var(--blue-dark); background:#fff; font-size:.7rem; font-weight:800; white-space:nowrap; }
+    .legend { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1rem; }
+    .legend-item { display:flex; align-items:center; gap:.35rem; padding:.35rem .55rem; border-radius:3px; color:var(--muted); font-size:.74rem; }
+    .mark { width:12px; height:12px; border-radius:2px; }
+    .mark.q { background:#d9effa; border:1px solid #9fc4d8; }
+    .mark.c { background:#e8dff5; border:1px solid #c0addf; }
+    .mark.a { background:#daf0e3; border:1px solid #8ec6a9; }
+    .mark.p { background:#ffefc7; border:1px solid #edca84; }
+    .spider { position:relative; min-height:360px; margin-top:1.7rem; border:1px solid var(--line); background:linear-gradient(180deg,#fbfdfe,#f4f8fa); overflow:hidden; }
+    .spider-center { position:absolute; z-index:3; top:50%; left:50%; display:grid; width:146px; height:86px; place-items:center; border:3px solid var(--blue-dark); color:var(--blue-dark); background:var(--blue-soft); text-align:center; font-weight:850; transform:translate(-50%,-50%); }
+    .spider-node { position:absolute; z-index:2; width:154px; padding:.75rem; border:1px solid var(--line); background:#fff; box-shadow:0 3px 8px rgba(18,51,70,.08); font-size:.8rem; }
+    .spider-node strong { display:block; color:var(--blue-dark); }
+    .spider-node small { display:block; margin-top:.2rem; color:var(--muted); }
+    .n1 { top:8%; left:8%; } .n2 { top:8%; right:8%; } .n3 { top:43%; left:4%; } .n4 { top:43%; right:4%; } .n5 { bottom:7%; left:18%; } .n6 { bottom:7%; right:18%; }
+    .wire { position:absolute; z-index:1; top:50%; left:50%; width:42%; border-top:2px dashed #b6c6ce; transform-origin:left center; }
+    .w1 { transform:rotate(-147deg); } .w2 { transform:rotate(-33deg); } .w3 { transform:rotate(180deg); } .w4 { transform:rotate(0deg); } .w5 { transform:rotate(128deg); } .w6 { transform:rotate(52deg); }
+    .danger { margin-top:1.5rem; padding:1rem 1.15rem; border-left:6px solid var(--warm-line); background:var(--warm); color:#60450c; }
+    .danger p { margin:.2rem 0; }
+    .comparison { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:2rem; }
+    .comparison > div { padding:1.25rem; border:1px solid var(--line); }
+    .comparison h3 { margin-bottom:.75rem; }
+    .comparison ul { margin:0; padding-left:1.15rem; color:var(--muted); }
+    .comparison li { margin:.45rem 0; }
+    .comparison .left { border-top:6px solid var(--warm-line); }
+    .comparison .right { border-top:6px solid var(--blue); background:var(--blue-soft); }
+    .view-diagram { display:grid; grid-template-columns:1fr auto 1fr; gap:1rem; align-items:center; margin-top:2rem; }
+    .stack { display:grid; gap:.65rem; }
+    .stack .record { min-width:0; padding:.8rem; text-align:left; }
+    .lens { display:grid; width:104px; height:104px; place-items:center; border:4px solid var(--blue); border-radius:50%; color:var(--blue-dark); background:var(--blue-soft); text-align:center; font-size:.82rem; font-weight:850; }
+    .lens::before { content:""; position:absolute; }
+    .principles { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:2rem; }
+    .principle { min-height:170px; padding:1.15rem; border:1px solid var(--line); background:#fff; }
+    .principle b { display:block; margin-bottom:.55rem; color:var(--blue-dark); font-size:1.1rem; }
+    .principle p { margin:0; color:var(--muted); font-size:.91rem; }
+    .bridge { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:.8rem; align-items:center; margin-top:2rem; }
+    .bridge .system { min-height:165px; padding:1rem; }
+    .system strong { color:var(--blue-dark); }
+    .system small { display:block; margin-top:.4rem; color:var(--muted); }
+    .system.sox { border:3px solid var(--blue); background:var(--blue-soft); text-align:center; }
+    .system.sox strong { font-size:1.35rem; }
+    .arrow { align-self:center; color:var(--blue); font-size:2rem; font-weight:850; }
+    .phase { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:.75rem; align-items:stretch; margin-top:2rem; }
+    .phase .system { display:flex; flex-direction:column; justify-content:center; min-height:150px; padding:1rem; }
+    .phase .system.future { border:3px solid var(--green); background:var(--green-soft); }
+    .callout { margin-top:1.4rem; padding:1rem 1.2rem; border-left:6px solid var(--green); background:var(--green-soft); color:#175d3b; }
+    .roadmap { display:grid; grid-template-columns:repeat(4,1fr); gap:.85rem; margin-top:2rem; }
+    .step { position:relative; min-height:205px; padding:1.15rem; border-top:6px solid var(--blue); }
+    .step .num { display:inline-grid; width:30px; height:30px; place-items:center; border-radius:50%; color:#fff; background:var(--blue); font-size:.8rem; font-weight:850; }
+    .step h3 { margin-top:.7rem; color:var(--blue-dark); }
+    .step p { margin:.55rem 0 0; color:var(--muted); font-size:.88rem; }
+    .procurement { max-width:900px; margin-top:1.6rem; padding:1.25rem; border-left:6px solid var(--warm-line); background:var(--warm); }
+    .procurement p { margin:.25rem 0; }
+    .architecture-question { max-width:900px; margin-top:2rem; padding:1.25rem; border:1px solid var(--line); background:#fff; }
+    .architecture-question p { margin:.45rem 0 0; color:var(--muted); font-size:1.1rem; }
+    .closing { text-align:center; }
+    .closing h2 { margin-inline:auto; }
+    .closing .quote { margin:2rem auto 0; text-align:left; }
+    .speaker-toggle { position:fixed; z-index:9; right:1.2rem; top:78px; padding:.5rem .8rem; border:1px solid var(--line); border-radius:4px; color:var(--blue-dark); background:#fff; box-shadow:0 2px 7px rgba(0,0,0,.08); font-size:.84rem; font-weight:700; cursor:pointer; }
+    .speaker-notes { display:none; max-width:940px; margin-top:2rem; padding:1rem 1.2rem; border-left:5px solid var(--warm-line); background:var(--warm); color:#57420d; font-size:.93rem; }
+    body.show-notes .speaker-notes { display:block; }
+    .nav { position:fixed; z-index:10; inset:auto 0 0; display:flex; align-items:center; justify-content:center; gap:1rem; padding:19px 5vw; border-top:1px solid #c7d3da; background:rgba(255,255,255,.97); backdrop-filter:blur(5px); }
+    .nav button { min-width:120px; padding:.66rem 1rem; border:1px solid var(--blue); border-radius:3px; color:var(--blue); background:#fff; font-weight:750; cursor:pointer; }
+    .nav button.primary { color:#fff; background:var(--blue); }
+    .nav button:disabled { border-color:#b5c1c8; color:#8a989f; background:#edf1f3; cursor:default; }
+    .progress { width:min(280px,28vw); height:6px; overflow:hidden; border-radius:4px; background:#d7e2e8; }
+    .progress span { display:block; height:100%; background:var(--blue); transition:width .2s ease; }
+    .help { position:fixed; z-index:9; left:1.2rem; bottom:89px; color:var(--muted); font-size:.77rem; }
+    @media (max-width:780px) {
+      body { font-size:16px; }
+      .topbar { padding:0 1rem; }.brand span{display:none;} main{padding:82px 1rem 94px;}.slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem;}
+      .stage,.comparison,.two-orgs,.roadmap,.principles { grid-template-columns:1fr; }
+      .architecture { padding:1rem; }.link-band,.link-label { display:none; }
+      .spider { min-height:590px; }.spider-center { top:49%; }.spider-node{width:128px;font-size:.7rem;}.n1{top:4%;left:3%;}.n2{top:4%;right:3%;}.n3{top:31%;left:3%;}.n4{top:31%;right:3%;}.n5{bottom:5%;left:3%;}.n6{bottom:5%;right:3%;}.wire{display:none;}
+      .view-diagram,.bridge,.phase { grid-template-columns:1fr; }.arrow{transform:rotate(90deg);}.lens{margin:auto;}
+      .nav{gap:.5rem;padding:14px .7rem;}.nav button{min-width:82px;font-size:.83rem;}.progress{width:90px;}.help{display:none;}
+    }
+    @media print { .topbar,.nav,.speaker-toggle,.help{display:none!important;} main{display:block;padding:0;}.slide{display:flex!important;min-height:100vh;page-break-after:always;box-shadow:none;}.speaker-notes{display:block;} }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><strong>RecordWeb</strong><span>Architekturführung · Zielbild und Übergang</span></div><div class="counter" id="counter" aria-live="polite">1 / 12</div></header>
+  <button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Sprechertext anzeigen</button>
+
+  <main><div class="deck">
+    <section class="slide active" data-title="Titel">
+      <p class="eyebrow">RecordWeb · Architekturperspektive</p>
+      <h1>Netz statt Inseln.</h1>
+      <p class="lead">Vom anwendungsgebundenen Records Management zu einer vernetzten Informationsarchitektur.</p>
+      <div class="quote">Keine Big-Bang-Migration. Eine langfristige Architekturentscheidung.</div>
+      <aside class="speaker-notes">Diese Präsentation richtet sich an Architekturführung und Enterprise Architecture. Sie erklärt weder die vollständige RWP-Spezifikation noch einzelne Datenmodelle. Sie beantwortet eine strategische Frage: Wie kann eine Verwaltungsorganisation ihre heterogene Anwendungslandschaft schrittweise zu einer vernetzten, langfristig nachvollziehbaren Informationsarchitektur weiterentwickeln?</aside>
+    </section>
+
+    <section class="slide" data-title="Heile Welt">
+      <p class="eyebrow">Szene 1 · Das Zielbild im PoC</p>
+      <h2>Records können über Organisations- und Anwendungsgrenzen hinweg verbunden sein.</h2>
+      <p class="lead">Im Fragestunde-PoC führen Parlament und Regierungsseite je ihren eigenen Case. Einzelne Records sind jedoch miteinander verknüpft – ohne sie zu replizieren oder in ein gemeinsames Dossier zu kopieren.</p>
+      <div class="architecture">
+        <div class="architecture-title">RWP-natives Zielbild · Jede Anwendung führt ihre eigenen Records</div>
+        <div class="two-orgs">
+          <div class="org"><h3>Parlament</h3><p class="org-sub">Fragenmanagement · eigener Case</p><div class="case">Case: Parlamentarische Frage</div><div class="record-row"><div class="record plan">Planung<br><span class="native">RWP nativ</span></div><div class="record chat">Chat<br><span class="native">RWP nativ</span></div><div class="record question">Frage<br><span class="native">RWP nativ</span></div></div></div>
+          <div class="org"><h3>Regierung / Bundeskanzlei</h3><p class="org-sub">Antwortmanagement · eigener Case</p><div class="case">Case: Beantwortung der Frage</div><div class="record-row"><div class="record answer">Antwort<br><span class="native">RWP nativ</span></div><div class="record chat">Chat<br><span class="native">RWP nativ</span></div><div class="record plan">Planung<br><span class="native">RWP nativ</span></div></div></div>
+        </div>
+        <div class="link-band"></div><div class="link-label">Beziehung, nicht Kopie</div>
+        <div class="legend"><div class="legend-item"><span class="mark p"></span>Planung</div><div class="legend-item"><span class="mark c"></span>Chat</div><div class="legend-item"><span class="mark q"></span>Frage</div><div class="legend-item"><span class="mark a"></span>Antwort</div></div>
+      </div>
+      <aside class="speaker-notes">Diese Folie greift die eingereichte Skizze auf und bereinigt sie für die Architekturführung: Zwei Organisationen, zwei Cases, mehrere Anwendungen, aber kein zentraler Dateicontainer. Entscheidend ist: Der Frage-Record und die Antwort-Records können sich explizit beziehen. Jede Seite behält ihre Verantwortung und führt ihre Records selbst. Vernetzung ersetzt Replikation nicht durch Zentralisierung, sondern durch verlässliche Beziehungen.</aside>
+    </section>
+
+    <section class="slide" data-title="Problem">
+      <p class="eyebrow">Szene 2 · Die heutige Integrationsspinne</p>
+      <h2>Heute wächst mit jeder Anwendung eine neue Informationsinsel.</h2>
+      <p class="lead">Fachanwendungen, Kollaborationswerkzeuge, Office-Dateien, E-Mail und Records-Management-Systeme bilden jeweils eigene Daten- und Kontextgrenzen.</p>
+      <div class="spider">
+        <div class="wire w1"></div><div class="wire w2"></div><div class="wire w3"></div><div class="wire w4"></div><div class="wire w5"></div><div class="wire w6"></div>
+        <div class="spider-center">Records<br>Management<br>System</div>
+        <div class="spider-node n1"><strong>Fachanwendung A</strong><small>eigene Objekte, eigene Metadaten</small></div>
+        <div class="spider-node n2"><strong>Fachanwendung B</strong><small>eigene Schnittstellen, eigene Logik</small></div>
+        <div class="spider-node n3"><strong>Teams / Chat</strong><small>Kommunikation ausserhalb des SoR</small></div>
+        <div class="spider-node n4"><strong>Office / Dateien</strong><small>Entwürfe und Arbeitsstände</small></div>
+        <div class="spider-node n5"><strong>E-Mail</strong><small>Verläufe, Anhänge, Entscheide</small></div>
+        <div class="spider-node n6"><strong>Externe Partner</strong><small>organisationsübergreifende Vorgänge</small></div>
+      </div>
+      <div class="danger"><p><b>Das Kernproblem ist nicht ein fehlendes System.</b> Es fehlt eine gemeinsame, anwendungsübergreifende Ebene für Identität, Beziehungen, Zuständigkeit und langfristige Auflösung von Records.</p></div>
+      <aside class="speaker-notes">Hier nicht über einzelne technische Schwächen von Produkten sprechen. Die Architekturkritik ist strukturell: Jede Anwendung modelliert ihre Objekte und Kontexte für ihren Zweck. Das zentrale Records-Management-System soll später die relevanten Spuren aufnehmen. Dadurch entstehen Schnittstellen, Übergabepunkte, Replikate und manuelle Nachdokumentation – und mit jeder neuen Anwendung wächst die Spinne weiter.</aside>
+    </section>
+
+    <section class="slide" data-title="Realität">
+      <p class="eyebrow">Szene 3 · Wo Kontext heute verloren geht</p>
+      <h2>Das System of Record sieht oft nur einen Teil der tatsächlichen Arbeit.</h2>
+      <div class="comparison">
+        <div class="left"><h3>Vorgesehenes Modell</h3><ul><li>Der Case wird im System of Record geführt</li><li>Relevante Unterlagen werden sauber übertragen</li><li>Metadaten und Zuordnung sind vollständig</li><li>Das Dossier bildet den Geschäftskontext ab</li></ul></div>
+        <div class="right"><h3>Tatsächliche Arbeitslandschaft</h3><ul><li>Antwortentwürfe entstehen in Office-Werkzeugen</li><li>Abstimmungen erfolgen im Chat und per E-Mail</li><li>Fachwissen liegt in spezialisierten Anwendungen</li><li>Übertragungen und Zuordnungen erfolgen nachträglich – oft manuell</li></ul></div>
+      </div>
+      <div class="quote">Nicht weil Mitarbeitende die Nachvollziehbarkeit nicht wichtig finden. Sondern weil die eigentliche Aufgabe bereits erfüllt ist, wenn die Information nachträglich noch übertragen werden müsste.</div>
+      <aside class="speaker-notes">Ein kurzer Verweis auf die erste Präsentation über Frau Roth genügt. Für Architekturführung ist wichtig: Manuelle Capture-Prozesse sind ein Risiko in der Zielarchitektur, weil sie vom Verhalten unter Zeitdruck abhängen. Die Architekturfrage lautet daher: Wie kann der relevante Zusammenhang dort entstehen, wo die Arbeit stattfindet?</aside>
+    </section>
+
+    <section class="slide" data-title="Architekturwechsel">
+      <p class="eyebrow">Szene 4 · Der Architekturwechsel</p>
+      <h2>Vom Container als Zentrum zum Record als Primärobjekt.</h2>
+      <div class="view-diagram">
+        <div><h3 style="color:var(--blue-dark); margin-bottom:.8rem;">Heute: Kontext durch Container</h3><div class="stack"><div class="record plan">Datei im Dossier</div><div class="record chat">Exportierter Chat im Dossier</div><div class="record question">Frage im Dossier</div><div class="record answer">Antwort im Dossier</div></div></div>
+        <div class="arrow">→</div>
+        <div><h3 style="color:var(--blue-dark); margin-bottom:.8rem;">RecordWeb: Kontext durch Beziehungen</h3><div class="stack"><div class="record question">Frage · eigenständiger Record</div><div class="record chat">Chat · eigenständiger Record</div><div class="record answer">Antwort · eigenständiger Record</div><div class="record plan">Planung · eigenständiger Record</div></div></div>
+      </div>
+      <div class="quote">Ein Case oder Dossier bleibt als Sicht wichtig. Aber es muss nicht mehr der einzige Ort sein, an dem Beziehungen und Bedeutung hergestellt werden.</div>
+      <aside class="speaker-notes">Die Aussage ist nicht: Dossiers abschaffen. Sie bleiben für Geschäftssteuerung, Orientierung und Benutzerführung zentral. Der Wechsel ist: Ein Dossier beziehungsweise Case wird zu einer aus Records und Beziehungen gebildeten Sicht. Damit kann ein Record in mehreren legitimen Kontexten erscheinen, ohne kopiert oder mehrfach abgelegt zu werden.</aside>
+    </section>
+
+    <section class="slide" data-title="Gemeinsame Ebene">
+      <p class="eyebrow">Szene 5 · Die gemeinsame Architektur-Ebene</p>
+      <h2>RecordWeb gibt verteilten Anwendungen eine gemeinsame Sprache.</h2>
+      <div class="principles">
+        <div class="principle"><b>Identität</b><p>Ein Record erhält einen dauerhaften, anwendungsübergreifend referenzierbaren Identifikator.</p></div>
+        <div class="principle"><b>Beziehungen</b><p>Frage, Bearbeitung, Antwort und weitere Records werden explizit miteinander verknüpft.</p></div>
+        <div class="principle"><b>Auflösung</b><p>Ein Resolver vermittelt, wo ein Record im aktuellen Verantwortungs- und Bereitstellungskontext erreichbar ist.</p></div>
+      </div>
+      <div class="quote">RWP schafft keinen zusätzlichen monolithischen Datencontainer. Es schafft ein Protokoll für ein Netz aus Records.</div>
+      <aside class="speaker-notes">Auf dieser Ebene genügen die Begriffe DID beziehungsweise Identifikator, Beziehungen und Resolver. Für Architekturführung ist der zentrale Gedanke: Die Interoperabilität liegt nicht nur in Punkt-zu-Punkt-Schnittstellen, sondern in einer gemeinsamen Ebene für verteilte Records und ihren Kontext.</aside>
+    </section>
+
+    <section class="slide" data-title="Integration">
+      <p class="eyebrow">Szene 6 · Integration statt Ersatz</p>
+      <h2>Die heutige Anwendungslandschaft muss nicht verschwinden.</h2>
+      <p class="lead">Wo eine Anwendung RWP noch nicht nativ unterstützt, kann eine Integrationsschicht die Verbindung zum RecordWeb-Netz herstellen.</p>
+      <div class="bridge">
+        <div class="system"><strong>Bestehende Anwendung</strong><small>Chat, Fachanwendung oder Kollaborationswerkzeug bleibt der Arbeitsort.</small></div><div class="arrow">→</div>
+        <div class="system sox"><strong>SoX</strong><small>Integrations- und Connector-Schicht</small><small>ordnet relevante Arbeit dem RecordWeb-Kontext zu</small></div><div class="arrow">→</div>
+        <div class="system"><strong>RecordWeb-Netz</strong><small>Records, Beziehungen, Identitäten und auflösbare Endpoints.</small></div>
+      </div>
+      <div class="quote">Integration ist kein Behelf neben der Zielarchitektur. Sie ist der Weg in die Zielarchitektur.</div>
+      <aside class="speaker-notes">SoX steht im PoC für diese Brückenfunktion. Es ersetzt die Quellanwendung nicht. Es ist auch kein weiteres Dossier, in das Menschen Inhalte kopieren. Es vermittelt zwischen bestehenden Anwendungen und dem RWP-Umfeld. Das macht eine schrittweise Modernisierung möglich, ohne auf eine vollständige Ablösung warten zu müssen.</aside>
+    </section>
+
+    <section class="slide" data-title="Übergang">
+      <p class="eyebrow">Szene 7 · Drei Zustände derselben Landschaft</p>
+      <h2>Die Architektur kann Anwendung für Anwendung wachsen.</h2>
+      <p class="lead">Der PoC zeigt die Zielarchitektur. Die Übergangsarchitektur akzeptiert, dass Anwendungen unterschiedliche Reifegrade haben.</p>
+      <div class="phase">
+        <div class="system"><strong>Heute</strong><small>Antwortmanagement, Teams und weitere Werkzeuge erzeugen Informationen. Die Übernahme ins Records Management erfolgt teilweise nachträglich und manuell.</small></div><div class="arrow">→</div>
+        <div class="system sox"><strong>Übergang</strong><small>Antwortmanagement ist RWP-fähig. MiniChat und Teams werden über SoX-Connectoren angebunden. Teams-Records werden im SoX geführt.</small></div><div class="arrow">→</div>
+        <div class="system future"><strong>Zielbild wächst</strong><small>Ein neu beschaffter MiniChat ist RWP-nativ. Teams bleibt zunächst über SoX integriert – bis auch dort ein natürlicher Erneuerungszeitpunkt erreicht ist.</small></div>
+      </div>
+      <div class="callout"><b>Wichtig:</b> Nicht alle Systeme müssen gleichzeitig denselben Reifegrad erreichen. Die Architektur trägt die Koexistenz von nativer RWP-Fähigkeit und Integration.</div>
+      <aside class="speaker-notes">Diese Folie ist die direkte Antwort auf die Big-Bang-Sorge. Variante 3a aus der Diskussion wird hier sichtbar: Ein neuer MiniChat kann nativ RWP-fähig beschafft werden, während Teams noch Jahre über einen SoX-Connector verbunden bleibt. Wichtig ist die saubere Verantwortungsgrenze: Beim integrierten Teams-Fall werden die Records im SoX geführt. Die Landschaft darf heterogen sein, solange die Architektur diese Heterogenität bewusst und kontrolliert behandelt.</aside>
+    </section>
+
+    <section class="slide" data-title="Roadmap">
+      <p class="eyebrow">Szene 8 · Der normale Entwicklungsrahmen</p>
+      <h2>RecordWeb wird nicht ausgerollt. Es wird bei jeder Veränderung mitgebaut.</h2>
+      <div class="roadmap">
+        <div class="step"><span class="num">1</span><h3>Orientieren</h3><p>Relevante Informationsflüsse und die Anwendungen identifizieren, in denen Kontext heute verloren gehen kann.</p></div>
+        <div class="step"><span class="num">2</span><h3>Integrieren</h3><p>Geeignete erste Fälle über eine Schicht wie SoX mit dem RecordWeb-Umfeld verbinden.</p></div>
+        <div class="step"><span class="num">3</span><h3>Erneuern</h3><p>Bei Weiterentwicklung, Ablösung und Neubeschaffung RWP-Fähigkeit architektonisch berücksichtigen.</p></div>
+        <div class="step"><span class="num">4</span><h3>Ausbauen</h3><p>Das Netz erweitert sich schrittweise über weitere Anwendungen, Organisationen und Geschäftsprozesse.</p></div>
+      </div>
+      <div class="procurement"><p><b>Beschaffung als Hebel:</b> Behörden erneuern Anwendungen ohnehin in geregelten Verfahren. RecordWeb-Fähigkeit kann zunächst als Qualitätsaspekt berücksichtigt und später – wo angemessen – verbindlicher Teil der Anforderungen werden.</p></div>
+      <aside class="speaker-notes">Die Kriterienlogik nicht im Hauptbild vertiefen. Bei Rückfragen kann erläutert werden: Einstieg als Bewertungskriterium, später stärker gewichtetes Zuschlagskriterium und bei geeigneten Anwendungskategorien allenfalls Mussanforderung. Keine Termine versprechen. Der entscheidende Punkt ist: Der normale Lebenszyklus von Anwendungen – Weiterentwicklung, EoL, Beschaffung – wird zum Transformationsmechanismus.</aside>
+    </section>
+
+    <section class="slide" data-title="Entscheidung">
+      <p class="eyebrow">Szene 9 · Die Architekturentscheidung</p>
+      <h2>Die Frage ist nicht: „Welches System ersetzt welches?“</h2>
+      <div class="architecture-question"><h3>Die strategische Frage lautet:</h3><p>Welche gemeinsame Architektur-Ebene brauchen wir, damit Records aus unterschiedlichen Anwendungen über ihre gesamte Lebensdauer hinweg identifizierbar, verknüpfbar und erreichbar bleiben?</p></div>
+      <div class="comparison">
+        <div class="left"><h3>Ohne gemeinsame Ebene</h3><ul><li>Neue Anwendungen erzeugen neue Informationsgrenzen</li><li>Kontext wird kopiert, exportiert oder manuell übertragen</li><li>Integration bleibt punktuell und projekthaft</li><li>Langfristige Nachvollziehbarkeit wird nachträglich hergestellt</li></ul></div>
+        <div class="right"><h3>Mit RecordWeb als Zielrahmen</h3><ul><li>Neue Anwendungen werden schrittweise anschlussfähig</li><li>Records bleiben über Beziehungen vernetzt</li><li>Integration und native Fähigkeiten können koexistieren</li><li>Nachvollziehbarkeit wird Teil der Entstehungsarchitektur</li></ul></div>
+      </div>
+      <aside class="speaker-notes">Diese Folie lädt zur Entscheidung ein, ohne eine sofortige Produktentscheidung zu verlangen. RecordWeb ist zunächst eine Architekturentscheidung: Welche Eigenschaften sollen neue und weiterentwickelte Anwendungen künftig mitbringen, und welche gemeinsamen Dienste oder Profile müssen wir dafür bereitstellen?</aside>
+    </section>
+
+    <section class="slide" data-title="Nächster Schritt">
+      <p class="eyebrow">Szene 10 · Was auf die Roadmap gehört</p>
+      <h2>Ein erster Architekturschritt ist klein – aber richtungsweisend.</h2>
+      <div class="principles">
+        <div class="principle"><b>1. Zielbild bestätigen</b><p>RecordWeb als langfristigen Referenzrahmen für vernetzte, anwendungsübergreifende Records anerkennen.</p></div>
+        <div class="principle"><b>2. Pilotarchitektur nutzen</b><p>Den Fragestunde-PoC mit Fragenmanagement, Antwortmanagement, MiniChat, Teams-Integration und SoX als Lernumgebung verwenden.</p></div>
+        <div class="principle"><b>3. Erneuerungen ausrichten</b><p>Bei passenden Weiterentwicklungen, Ablösungen und Beschaffungen die Anschlussfähigkeit gezielt prüfen.</p></div>
+      </div>
+      <div class="quote">Die erste Entscheidung ist nicht, alles umzubauen. Sie ist, künftig keine neuen Informationsinseln ohne Anschlussfähigkeit zu planen.</div>
+      <aside class="speaker-notes">Je nach Gespräch kann daraus ein konkreter Auftrag entstehen: Architekturprinzipien formulieren, ein Referenzprofil ausarbeiten, einen weiteren Integrationsfall auswählen oder RWP-Fähigkeit in eine anstehende Anforderungsklärung aufnehmen. Der PoC ist dafür nicht der Endbeweis, aber ein anschaulicher Gesprächs- und Lerngegenstand.</aside>
+    </section>
+
+    <section class="slide" data-title="Schluss">
+      <div class="closing">
+        <p class="eyebrow">RecordWeb · Architekturperspektive</p>
+        <h2>Das Web im Namen ist Programm.</h2>
+        <p class="lead">Nicht ein weiteres zentrales System. Ein Netz aus eigenständigen Records, verantworteten Anwendungen und nachvollziehbaren Beziehungen.</p>
+        <div class="quote">Keine Big-Bang-Migration.<br>Eine Architektur, die mit jeder Erneuerung wächst.</div>
+      </div>
+      <aside class="speaker-notes">Schluss. Mögliche Diskussion: Welche Anwendungen stehen ohnehin vor einer Ablösung oder Neubeschaffung? Wo entstehen geschäftsrelevante Informationen heute ausserhalb des Records Management? Welche gemeinsamen Grunddienste – Resolver, Profile, Konformität, Integrationsschicht – wären als nächstes architektonisch zu konkretisieren?</aside>
+    </section>
+  </div></main>
+
+  <div class="help">Tastatur: ← → · Pos1/Ende · N: Sprechertext</div>
+  <nav class="nav" aria-label="Präsentationsnavigation"><button id="prev" type="button">← Zurück</button><div class="progress" aria-hidden="true"><span id="progressBar"></span></div><button class="primary" id="next" type="button">Weiter →</button></nav>
+  <script>
+    (() => {
+      const slides=[...document.querySelectorAll('.slide')], prev=document.getElementById('prev'), next=document.getElementById('next'), counter=document.getElementById('counter'), bar=document.getElementById('progressBar'), notes=document.getElementById('notesButton'); let index=0;
+      function render(){slides.forEach((s,i)=>s.classList.toggle('active',i===index));prev.disabled=index===0;next.disabled=index===slides.length-1;next.textContent=index===slides.length-1?'Ende':'Weiter →';counter.textContent=`${index+1} / ${slides.length}`;bar.style.width=`${(index+1)/slides.length*100}%`;document.title=`RecordWeb – ${slides[index].dataset.title}`;window.scrollTo({top:0,behavior:'instant'});}
+      function move(d){const t=Math.max(0,Math.min(slides.length-1,index+d));if(t!==index){index=t;render();}}
+      prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));notes.addEventListener('click',()=>{const v=document.body.classList.toggle('show-notes');notes.textContent=v?'Sprechertext ausblenden':'Sprechertext anzeigen';notes.setAttribute('aria-pressed',String(v));});
+      window.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();move(1);}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();move(-1);}if(e.key==='Home'){e.preventDefault();index=0;render();}if(e.key==='End'){e.preventDefault();index=slides.length-1;render();}if(e.key.toLowerCase()==='n')notes.click();});render();
+    })();
+  </script>
+</body>
+</html>
