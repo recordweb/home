@@ -2,6 +2,8 @@
 
 Public entry point for RecordWeb.
 
+[RecordWeb](https://recordweb.github.io/home/)
+
 This repository contains accessible, non-normative materials about RecordWeb:  
 stories, presentations, demonstrations, explanatory material and future community resources.
 

@@ -154,23 +154,22 @@
       <h1>Netz statt Inseln.</h1>
       <p class="lead">Vom anwendungsgebundenen Records Management zu einer vernetzten Informationsarchitektur.</p>
       <div class="quote">Keine Big-Bang-Migration. Eine langfristige Architekturentscheidung.</div>
-      <aside class="speaker-notes">Diese Präsentation richtet sich an Architekturführung und Enterprise Architecture. Sie erklärt weder die vollständige RWP-Spezifikation noch einzelne Datenmodelle. Sie beantwortet eine strategische Frage: Wie kann eine Verwaltungsorganisation ihre heterogene Anwendungslandschaft schrittweise zu einer vernetzten, langfristig nachvollziehbaren Informationsarchitektur weiterentwickeln?</aside>
+      <aside class="speaker-notes">Diese Präsentation richtet sich an Architekten. Sie beantwortet eine strategische Frage: Wie kann eine Organisation ihre heterogene Anwendungslandschaft schrittweise zu einer vernetzten, langfristig nachvollziehbaren Informationsarchitektur weiterentwickeln?</aside>
     </section>
 
     <section class="slide" data-title="Heile Welt">
-      <p class="eyebrow">Szene 1 · Das Zielbild im PoC</p>
+      <p class="eyebrow">Szene 1 · Das Zielbild</p>
       <h2>Records können über Organisations- und Anwendungsgrenzen hinweg verbunden sein.</h2>
-      <p class="lead">Im Fragestunde-PoC führen Parlament und Regierungsseite je ihren eigenen Case. Einzelne Records sind jedoch miteinander verknüpft – ohne sie zu replizieren oder in ein gemeinsames Dossier zu kopieren.</p>
+      <p class="lead">Im Fragestunde-PoC führen Parlament und Regierung je ihr eigenes Geschäft. Einzelne Records sind jedoch miteinander verknüpft, ohne sie zu replizieren oder in ein gemeinsames Dossier zu kopieren.</p>
       <div class="architecture">
         <div class="architecture-title">RWP-natives Zielbild · Jede Anwendung führt ihre eigenen Records</div>
         <div class="two-orgs">
           <div class="org"><h3>Parlament</h3><p class="org-sub">Fragenmanagement · eigener Case</p><div class="case">Case: Parlamentarische Frage</div><div class="record-row"><div class="record plan">Planung<br><span class="native">RWP nativ</span></div><div class="record chat">Chat<br><span class="native">RWP nativ</span></div><div class="record question">Frage<br><span class="native">RWP nativ</span></div></div></div>
           <div class="org"><h3>Regierung / Bundeskanzlei</h3><p class="org-sub">Antwortmanagement · eigener Case</p><div class="case">Case: Beantwortung der Frage</div><div class="record-row"><div class="record answer">Antwort<br><span class="native">RWP nativ</span></div><div class="record chat">Chat<br><span class="native">RWP nativ</span></div><div class="record plan">Planung<br><span class="native">RWP nativ</span></div></div></div>
         </div>
-        <div class="link-band"></div><div class="link-label">Beziehung, nicht Kopie</div>
         <div class="legend"><div class="legend-item"><span class="mark p"></span>Planung</div><div class="legend-item"><span class="mark c"></span>Chat</div><div class="legend-item"><span class="mark q"></span>Frage</div><div class="legend-item"><span class="mark a"></span>Antwort</div></div>
       </div>
-      <aside class="speaker-notes">Diese Folie greift die eingereichte Skizze auf und bereinigt sie für die Architekturführung: Zwei Organisationen, zwei Cases, mehrere Anwendungen, aber kein zentraler Dateicontainer. Entscheidend ist: Der Frage-Record und die Antwort-Records können sich explizit beziehen. Jede Seite behält ihre Verantwortung und führt ihre Records selbst. Vernetzung ersetzt Replikation nicht durch Zentralisierung, sondern durch verlässliche Beziehungen.</aside>
+      <aside class="speaker-notes">Zwei Organisationen, zwei Geschäfte, jeweils mehrere Anwendungen, aber kein zentraler Dateicontainer. Entscheidend ist: Der Frage-Record und die Antwort-Records können sich explizit beziehen und im Geschäft der Gegenpartei verknüpft sein. Jede Seite behält ihre Verantwortung und führt ihre Records selbst. Vernetzung ersetzt Replikation nicht durch Zentralisierung, sondern durch verlässliche Beziehungen.</aside>
     </section>
 
     <section class="slide" data-title="Problem">
@@ -195,8 +194,8 @@
       <p class="eyebrow">Szene 3 · Wo Kontext heute verloren geht</p>
       <h2>Das System of Record sieht oft nur einen Teil der tatsächlichen Arbeit.</h2>
       <div class="comparison">
-        <div class="left"><h3>Vorgesehenes Modell</h3><ul><li>Der Case wird im System of Record geführt</li><li>Relevante Unterlagen werden sauber übertragen</li><li>Metadaten und Zuordnung sind vollständig</li><li>Das Dossier bildet den Geschäftskontext ab</li></ul></div>
-        <div class="right"><h3>Tatsächliche Arbeitslandschaft</h3><ul><li>Antwortentwürfe entstehen in Office-Werkzeugen</li><li>Abstimmungen erfolgen im Chat und per E-Mail</li><li>Fachwissen liegt in spezialisierten Anwendungen</li><li>Übertragungen und Zuordnungen erfolgen nachträglich – oft manuell</li></ul></div>
+        <div class="left"><h3>Governance Modell</h3><ul><li>Das Geschäft wird im System of Record geführt</li><li>Relevante Unterlagen werden sauber übertragen</li><li>Metadaten und Zuordnung sind vollständig</li><li>Das Dossier bildet den Geschäftskontext ab</li></ul></div>
+        <div class="right"><h3>Tatsächliche Arbeitslandschaft</h3><ul><li>Antwortentwürfe entstehen in Office-Werkzeugen</li><li>Abstimmungen erfolgen im Chat und per E-Mail</li><li>Fachwissen liegt in spezialisierten Anwendungen</li><li>Übertragungen und Zuordnungen erfolgen nachträglich, wenn überhaupt</li></ul></div>
       </div>
       <div class="quote">Nicht weil Mitarbeitende die Nachvollziehbarkeit nicht wichtig finden. Sondern weil die eigentliche Aufgabe bereits erfüllt ist, wenn die Information nachträglich noch übertragen werden müsste.</div>
       <aside class="speaker-notes">Ein kurzer Verweis auf die erste Präsentation über Frau Roth genügt. Für Architekturführung ist wichtig: Manuelle Capture-Prozesse sind ein Risiko in der Zielarchitektur, weil sie vom Verhalten unter Zeitdruck abhängen. Die Architekturfrage lautet daher: Wie kann der relevante Zusammenhang dort entstehen, wo die Arbeit stattfindet?</aside>
@@ -210,7 +209,7 @@
         <div class="arrow">→</div>
         <div><h3 style="color:var(--blue-dark); margin-bottom:.8rem;">RecordWeb: Kontext durch Beziehungen</h3><div class="stack"><div class="record question">Frage · eigenständiger Record</div><div class="record chat">Chat · eigenständiger Record</div><div class="record answer">Antwort · eigenständiger Record</div><div class="record plan">Planung · eigenständiger Record</div></div></div>
       </div>
-      <div class="quote">Ein Case oder Dossier bleibt als Sicht wichtig. Aber es muss nicht mehr der einzige Ort sein, an dem Beziehungen und Bedeutung hergestellt werden.</div>
+      <div class="quote">Ein Geschäft oder Dossier bleibt als Sicht wichtig. Aber es muss nicht mehr der einzige Ort sein, an dem Beziehungen und Bedeutung hergestellt werden. Es wird zur Sicht auf einen zusammenhängenden Kontext bestehend aus Records.</div>
       <aside class="speaker-notes">Die Aussage ist nicht: Dossiers abschaffen. Sie bleiben für Geschäftssteuerung, Orientierung und Benutzerführung zentral. Der Wechsel ist: Ein Dossier beziehungsweise Case wird zu einer aus Records und Beziehungen gebildeten Sicht. Damit kann ein Record in mehreren legitimen Kontexten erscheinen, ohne kopiert oder mehrfach abgelegt zu werden.</aside>
     </section>
 
@@ -222,34 +221,34 @@
         <div class="principle"><b>Beziehungen</b><p>Frage, Bearbeitung, Antwort und weitere Records werden explizit miteinander verknüpft.</p></div>
         <div class="principle"><b>Auflösung</b><p>Ein Resolver vermittelt, wo ein Record im aktuellen Verantwortungs- und Bereitstellungskontext erreichbar ist.</p></div>
       </div>
-      <div class="quote">RWP schafft keinen zusätzlichen monolithischen Datencontainer. Es schafft ein Protokoll für ein Netz aus Records.</div>
-      <aside class="speaker-notes">Auf dieser Ebene genügen die Begriffe DID beziehungsweise Identifikator, Beziehungen und Resolver. Für Architekturführung ist der zentrale Gedanke: Die Interoperabilität liegt nicht nur in Punkt-zu-Punkt-Schnittstellen, sondern in einer gemeinsamen Ebene für verteilte Records und ihren Kontext.</aside>
+      <div class="quote">RWP schafft keinen zusätzlichen monolithischen Datencontainer, sondern ein Protokoll für ein Netz aus Records.</div>
+      <aside class="speaker-notes">Für Architekturführung ist der zentrale Gedanke: Die Interoperabilität liegt nicht nur in Punkt-zu-Punkt-Schnittstellen, sondern in einer gemeinsamen Ebene für verteilte Records und ihren Kontext.</aside>
     </section>
 
     <section class="slide" data-title="Integration">
       <p class="eyebrow">Szene 6 · Integration statt Ersatz</p>
       <h2>Die heutige Anwendungslandschaft muss nicht verschwinden.</h2>
-      <p class="lead">Wo eine Anwendung RWP noch nicht nativ unterstützt, kann eine Integrationsschicht die Verbindung zum RecordWeb-Netz herstellen.</p>
+      <p class="lead">Wo eine Anwendung RWP noch nicht nativ unterstützt, kann eine Integrationsschicht die Verbindung zum RecordWeb herstellen.</p>
       <div class="bridge">
         <div class="system"><strong>Bestehende Anwendung</strong><small>Chat, Fachanwendung oder Kollaborationswerkzeug bleibt der Arbeitsort.</small></div><div class="arrow">→</div>
         <div class="system sox"><strong>SoX</strong><small>Integrations- und Connector-Schicht</small><small>ordnet relevante Arbeit dem RecordWeb-Kontext zu</small></div><div class="arrow">→</div>
-        <div class="system"><strong>RecordWeb-Netz</strong><small>Records, Beziehungen, Identitäten und auflösbare Endpoints.</small></div>
+        <div class="system"><strong>RecordWeb</strong><small>Records, Beziehungen, Identitäten und auflösbare Endpoints.</small></div>
       </div>
       <div class="quote">Integration ist kein Behelf neben der Zielarchitektur. Sie ist der Weg in die Zielarchitektur.</div>
-      <aside class="speaker-notes">SoX steht im PoC für diese Brückenfunktion. Es ersetzt die Quellanwendung nicht. Es ist auch kein weiteres Dossier, in das Menschen Inhalte kopieren. Es vermittelt zwischen bestehenden Anwendungen und dem RWP-Umfeld. Das macht eine schrittweise Modernisierung möglich, ohne auf eine vollständige Ablösung warten zu müssen.</aside>
+      <aside class="speaker-notes">SoX steht im PoC für diese Brückenfunktion. Es ersetzt die Quellanwendung nicht. Es ist auch kein weiteres Dossier, in das Menschen Inhalte kopieren. Es vermittelt zwischen bestehenden Anwendungen und dem RWP-Umfeld im Sinne einer System Integration. Das macht eine schrittweise Modernisierung möglich, ohne auf eine vollständige Ablösung warten zu müssen.</aside>
     </section>
 
     <section class="slide" data-title="Übergang">
       <p class="eyebrow">Szene 7 · Drei Zustände derselben Landschaft</p>
       <h2>Die Architektur kann Anwendung für Anwendung wachsen.</h2>
-      <p class="lead">Der PoC zeigt die Zielarchitektur. Die Übergangsarchitektur akzeptiert, dass Anwendungen unterschiedliche Reifegrade haben.</p>
+      <p class="lead">Die Übergangsarchitektur akzeptiert, dass Anwendungen unterschiedliche Reifegrade haben.</p>
       <div class="phase">
-        <div class="system"><strong>Heute</strong><small>Antwortmanagement, Teams und weitere Werkzeuge erzeugen Informationen. Die Übernahme ins Records Management erfolgt teilweise nachträglich und manuell.</small></div><div class="arrow">→</div>
-        <div class="system sox"><strong>Übergang</strong><small>Antwortmanagement ist RWP-fähig. MiniChat und Teams werden über SoX-Connectoren angebunden. Teams-Records werden im SoX geführt.</small></div><div class="arrow">→</div>
-        <div class="system future"><strong>Zielbild wächst</strong><small>Ein neu beschaffter MiniChat ist RWP-nativ. Teams bleibt zunächst über SoX integriert – bis auch dort ein natürlicher Erneuerungszeitpunkt erreicht ist.</small></div>
+        <div class="system"><strong>Heute</strong><small>Fachanwendungen, Teams und weitere Werkzeuge erzeugen Informationen. Die Übernahme ins Records Management erfolgt teilweise nachträglich und manuell.</small></div><div class="arrow">→</div>
+        <div class="system sox"><strong>Übergang</strong><small>Fachanwendung ist RWP-fähig. MiniChat und Teams werden über SoX-Connectoren angebunden.</small></div><div class="arrow">→</div>
+        <div class="system future"><strong>Zielbild wächst</strong><small>Ein neu beschaffter MiniChat ist RWP-nativ. Teams bleibt zunächst über SoX integriert, bis auch dort ein natürlicher Erneuerungszeitpunkt erreicht ist.</small></div>
       </div>
       <div class="callout"><b>Wichtig:</b> Nicht alle Systeme müssen gleichzeitig denselben Reifegrad erreichen. Die Architektur trägt die Koexistenz von nativer RWP-Fähigkeit und Integration.</div>
-      <aside class="speaker-notes">Diese Folie ist die direkte Antwort auf die Big-Bang-Sorge. Variante 3a aus der Diskussion wird hier sichtbar: Ein neuer MiniChat kann nativ RWP-fähig beschafft werden, während Teams noch Jahre über einen SoX-Connector verbunden bleibt. Wichtig ist die saubere Verantwortungsgrenze: Beim integrierten Teams-Fall werden die Records im SoX geführt. Die Landschaft darf heterogen sein, solange die Architektur diese Heterogenität bewusst und kontrolliert behandelt.</aside>
+      <aside class="speaker-notes">Diese Folie ist die direkte Antwort auf die Big-Bang-Sorge. Eine neue Fachanwendung kann RWP-fähig beschafft werden, während Andere noch Jahre über einen SoX-Connector verbunden bleiben. Wichtig ist die saubere Verantwortungsgrenze: Beim integrierten Teams-Fall werden die Records im SoX geführt. Die Landschaft darf heterogen sein, solange die Architektur diese Heterogenität bewusst und kontrolliert behandelt.</aside>
     </section>
 
     <section class="slide" data-title="Roadmap">
@@ -257,12 +256,12 @@
       <h2>RecordWeb wird nicht ausgerollt. Es wird bei jeder Veränderung mitgebaut.</h2>
       <div class="roadmap">
         <div class="step"><span class="num">1</span><h3>Orientieren</h3><p>Relevante Informationsflüsse und die Anwendungen identifizieren, in denen Kontext heute verloren gehen kann.</p></div>
-        <div class="step"><span class="num">2</span><h3>Integrieren</h3><p>Geeignete erste Fälle über eine Schicht wie SoX mit dem RecordWeb-Umfeld verbinden.</p></div>
+        <div class="step"><span class="num">2</span><h3>Integrieren</h3><p>Geeignete erste Fälle über eine Schicht wie SoX mit dem RecordWeb verbinden.</p></div>
         <div class="step"><span class="num">3</span><h3>Erneuern</h3><p>Bei Weiterentwicklung, Ablösung und Neubeschaffung RWP-Fähigkeit architektonisch berücksichtigen.</p></div>
         <div class="step"><span class="num">4</span><h3>Ausbauen</h3><p>Das Netz erweitert sich schrittweise über weitere Anwendungen, Organisationen und Geschäftsprozesse.</p></div>
       </div>
-      <div class="procurement"><p><b>Beschaffung als Hebel:</b> Behörden erneuern Anwendungen ohnehin in geregelten Verfahren. RecordWeb-Fähigkeit kann zunächst als Qualitätsaspekt berücksichtigt und später – wo angemessen – verbindlicher Teil der Anforderungen werden.</p></div>
-      <aside class="speaker-notes">Die Kriterienlogik nicht im Hauptbild vertiefen. Bei Rückfragen kann erläutert werden: Einstieg als Bewertungskriterium, später stärker gewichtetes Zuschlagskriterium und bei geeigneten Anwendungskategorien allenfalls Mussanforderung. Keine Termine versprechen. Der entscheidende Punkt ist: Der normale Lebenszyklus von Anwendungen – Weiterentwicklung, EoL, Beschaffung – wird zum Transformationsmechanismus.</aside>
+      <div class="procurement"><p><b>Beschaffung als Hebel:</b> Behörden erneuern Anwendungen ohnehin in geregelten Verfahren. RecordWeb-Fähigkeit kann zunächst als Qualitätsaspekt berücksichtigt und später verbindlicher Teil der ausgeschriebenen Anforderungen werden.</p></div>
+      <aside class="speaker-notes">Beschaffung in Raten: Einstieg als Bewertungskriterium, später stärker gewichtetes Zuschlagskriterium. Der entscheidende Punkt ist: Der normale Lebenszyklus von Anwendungen (Weiterentwicklung, EoL, Beschaffung) wird zum Transformationsmechanismus.</aside>
     </section>
 
     <section class="slide" data-title="Entscheidung">
@@ -273,19 +272,19 @@
         <div class="left"><h3>Ohne gemeinsame Ebene</h3><ul><li>Neue Anwendungen erzeugen neue Informationsgrenzen</li><li>Kontext wird kopiert, exportiert oder manuell übertragen</li><li>Integration bleibt punktuell und projekthaft</li><li>Langfristige Nachvollziehbarkeit wird nachträglich hergestellt</li></ul></div>
         <div class="right"><h3>Mit RecordWeb als Zielrahmen</h3><ul><li>Neue Anwendungen werden schrittweise anschlussfähig</li><li>Records bleiben über Beziehungen vernetzt</li><li>Integration und native Fähigkeiten können koexistieren</li><li>Nachvollziehbarkeit wird Teil der Entstehungsarchitektur</li></ul></div>
       </div>
-      <aside class="speaker-notes">Diese Folie lädt zur Entscheidung ein, ohne eine sofortige Produktentscheidung zu verlangen. RecordWeb ist zunächst eine Architekturentscheidung: Welche Eigenschaften sollen neue und weiterentwickelte Anwendungen künftig mitbringen, und welche gemeinsamen Dienste oder Profile müssen wir dafür bereitstellen?</aside>
+      <aside class="speaker-notes">RecordWeb ist zunächst eine Architekturentscheidung: Welche Eigenschaften sollen neue und weiterentwickelte Anwendungen künftig mitbringen, und welche gemeinsamen Dienste oder Profile müssen wir dafür bereitstellen?</aside>
     </section>
 
     <section class="slide" data-title="Nächster Schritt">
       <p class="eyebrow">Szene 10 · Was auf die Roadmap gehört</p>
-      <h2>Ein erster Architekturschritt ist klein – aber richtungsweisend.</h2>
+      <h2>Ein erster Architekturschritt ist klein, aber richtungsweisend.</h2>
       <div class="principles">
         <div class="principle"><b>1. Zielbild bestätigen</b><p>RecordWeb als langfristigen Referenzrahmen für vernetzte, anwendungsübergreifende Records anerkennen.</p></div>
-        <div class="principle"><b>2. Pilotarchitektur nutzen</b><p>Den Fragestunde-PoC mit Fragenmanagement, Antwortmanagement, MiniChat, Teams-Integration und SoX als Lernumgebung verwenden.</p></div>
+        <div class="principle"><b>2. Pilotarchitektur nutzen</b><p>Den PoC-Fragestunde mit Fragenmanagement, Antwortmanagement, MiniChat, Teams-Integration, SoX, Konformitätsprüfung, MiniChat-Migration bis Archivierung als Lernumgebung verwenden.</p></div>
         <div class="principle"><b>3. Erneuerungen ausrichten</b><p>Bei passenden Weiterentwicklungen, Ablösungen und Beschaffungen die Anschlussfähigkeit gezielt prüfen.</p></div>
       </div>
       <div class="quote">Die erste Entscheidung ist nicht, alles umzubauen. Sie ist, künftig keine neuen Informationsinseln ohne Anschlussfähigkeit zu planen.</div>
-      <aside class="speaker-notes">Je nach Gespräch kann daraus ein konkreter Auftrag entstehen: Architekturprinzipien formulieren, ein Referenzprofil ausarbeiten, einen weiteren Integrationsfall auswählen oder RWP-Fähigkeit in eine anstehende Anforderungsklärung aufnehmen. Der PoC ist dafür nicht der Endbeweis, aber ein anschaulicher Gesprächs- und Lerngegenstand.</aside>
+      <aside class="speaker-notes">Daraus entsteht ein konkreter Auftrag: Architekturprinzipien formulieren, ein Referenzprofil ausarbeiten, einen weiteren Integrationsfall auswählen oder RWP-Fähigkeit in eine anstehende Beschaffung aufnehmen. Der PoC-Fragestunde ist dafür nicht der Endbeweis, aber ein anschaulicher Gesprächs- und Lerngegenstand.</aside>
     </section>
 
     <section class="slide" data-title="Schluss">
@@ -295,7 +294,7 @@
         <p class="lead">Nicht ein weiteres zentrales System. Ein Netz aus eigenständigen Records, verantworteten Anwendungen und nachvollziehbaren Beziehungen.</p>
         <div class="quote">Keine Big-Bang-Migration.<br>Eine Architektur, die mit jeder Erneuerung wächst.</div>
       </div>
-      <aside class="speaker-notes">Schluss. Mögliche Diskussion: Welche Anwendungen stehen ohnehin vor einer Ablösung oder Neubeschaffung? Wo entstehen geschäftsrelevante Informationen heute ausserhalb des Records Management? Welche gemeinsamen Grunddienste – Resolver, Profile, Konformität, Integrationsschicht – wären als nächstes architektonisch zu konkretisieren?</aside>
+      <aside class="speaker-notes">Fragestellungen als Hausaufgabe: Welche Anwendungen stehen ohnehin vor einer Ablösung oder Neubeschaffung? Wo entstehen geschäftsrelevante Informationen heute ausserhalb des Records Management? Welche gemeinsamen Grunddienste (Resolver, Profile, Konformität, Integrationsschicht) wären als nächstes architektonisch zu konkretisieren?</aside>
     </section>
   </div></main>
 
