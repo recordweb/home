@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb: One record. Multiple contexts.</title>
+<style>
+:root{
+  --blue:#005a9c; --blue-dark:#003d6b; --blue-soft:#e8f2f8;
+  --ink:#1d2b36; --muted:#536471; --line:#c9d7df; --paper:#fff; --surface:#f5f8fa;
+  --warm:#fff5dc; --warm-line:#d89c23; --red:#ae2626; --red-soft:#fff1f1;
+  --green:#16784b; --green-soft:#eaf7ef; --purple:#68499b; --purple-soft:#f2edf9;
+  --shadow:0 10px 30px rgba(21,47,66,.13);
+}
+*{box-sizing:border-box}
+html{background:var(--surface)}
+body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button{font:inherit}
+.topbar{position:fixed;z-index:10;inset:0 0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}
+.brand strong{font-size:1.2rem}
+.brand span{font-size:.82rem;font-weight:500;opacity:.86}
+.counter{font-size:.9rem;font-variant-numeric:tabular-nums}
+main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}
+.deck{width:min(1140px,100%)}
+.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--blue);box-shadow:var(--shadow)}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.eyebrow{margin:0 0 1rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}
+h1{max-width:920px;font-size:clamp(2.6rem,6.2vw,5.5rem)}
+h2{max-width:900px;font-size:clamp(2rem,4.4vw,3.8rem)}
+h3{font-size:1.12rem}
+.lead{max-width:830px;margin:1.5rem 0 0;color:var(--muted);font-size:clamp(1.15rem,2vw,1.42rem)}
+.quote{max-width:890px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--blue);background:var(--blue-soft);font-size:1.2rem;font-weight:650}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;margin-top:2rem}
+.card{padding:1.3rem;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(20,44,60,.08)}
+.person{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}
+.avatar{display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.9rem;font-weight:850}
+.avatar.green{background:var(--green)}
+.person p{margin:0;line-height:1.25}
+.person small{display:block;color:var(--muted)}
+.data-card{padding:1rem;border:1px solid #c1d7e2;background:#f6fbfe}
+.data-card h3{color:var(--blue-dark);font-size:1rem}
+.line{height:10px;margin:.65rem 0;border-radius:9px;background:#dce5e9}
+.line.blue{width:78%;background:#91bad0}
+.line.short{width:48%}
+.badge{display:inline-block;margin-top:.5rem;padding:.25rem .5rem;border-radius:3px;color:#155a39;background:var(--green-soft);font-size:.76rem;font-weight:800}
+.copies{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.copy{min-height:205px;padding:1.1rem;border:1px solid var(--line);border-top:6px solid var(--warm-line);background:#fff}
+.copy h3{color:#66450a}
+.copy p{margin:.6rem 0 0;color:var(--muted);font-size:.88rem}
+.copy .mini-doc{margin-top:.85rem;padding:.55rem;border:1px solid #e7d5aa;background:#fffdf8;font-size:.77rem}
+.warning{margin-top:1.4rem;padding:1rem 1.15rem;border-left:6px solid var(--red);background:var(--red-soft);color:#762d2d}
+.warning p{margin:.2rem 0}
+.hub{position:relative;min-height:390px;margin-top:1.8rem;border:1px solid var(--line);background:linear-gradient(180deg,#fbfdfe,#f4f8fa);overflow:hidden}
+.hub-center{position:absolute;z-index:3;top:50%;left:50%;display:grid;width:205px;height:126px;place-items:center;border:4px solid var(--blue-dark);color:var(--blue-dark);background:var(--blue-soft);text-align:center;font-weight:850;transform:translate(-50%,-50%)}
+.hub-center small{display:block;margin-top:.25rem;color:var(--muted);font-size:.74rem;font-weight:600}
+.hub-node{position:absolute;z-index:2;width:187px;padding:.85rem;border:1px solid var(--line);background:#fff;box-shadow:0 3px 8px rgba(18,51,70,.08);font-size:.8rem}
+.hub-node strong{display:block;color:var(--blue-dark)}
+.hub-node small{display:block;margin-top:.22rem;color:var(--muted)}
+.h1{top:8%;left:7%} .h2{top:8%;right:7%} .h3{bottom:8%;left:7%} .h4{bottom:8%;right:7%}
+.wire{position:absolute;z-index:1;top:50%;left:50%;width:39%;border-top:3px solid var(--blue);transform-origin:left center}
+.w1{transform:rotate(-147deg)} .w2{transform:rotate(-33deg)} .w3{transform:rotate(147deg)} .w4{transform:rotate(33deg)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
+.compare div{padding:1.25rem;border:1px solid var(--line)}
+.compare h3{margin-bottom:.75rem}
+.compare ul{margin:0;padding-left:1.15rem;color:var(--muted)}
+.compare li{margin:.45rem 0}
+.compare .old{border-top:6px solid var(--warm-line)}
+.compare .new{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.case-view{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:2rem}
+.case{padding:1.15rem;border:1px solid var(--line);background:#fff}
+.case h3{color:var(--blue-dark)}
+.case p{margin:.5rem 0 0;color:var(--muted);font-size:.87rem}
+.record-chip{display:block;margin-top:.7rem;padding:.55rem .65rem;border-left:5px solid var(--blue);background:var(--blue-soft);font-size:.82rem;font-weight:700}
+.record-chip.main{border-left-color:var(--green);background:var(--green-soft)}
+.record-chip small{display:block;margin-top:.15rem;color:var(--muted);font-weight:500}
+.relationship{max-width:930px;margin-top:1.6rem;padding:1.1rem 1.25rem;border-left:6px solid var(--purple);background:var(--purple-soft);color:#45306d}
+.relationship p{margin:.2rem 0}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.three div{min-height:190px;padding:1.15rem;border:1px solid var(--line);background:#fff}
+.three b{display:block;margin-bottom:.55rem;color:var(--blue-dark);font-size:1.08rem}
+.three p{margin:0;color:var(--muted);font-size:.9rem}
+.check{color:var(--green);font-size:1.35rem;font-weight:900}
+.story{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:stretch;margin-top:2rem}
+.node{display:flex;flex-direction:column;justify-content:center;min-height:165px;padding:1rem;border:1px solid var(--line);background:#fff}
+.node strong{color:var(--blue-dark)}
+.node small{margin-top:.4rem;color:var(--muted)}
+.node.source{border-top:6px solid var(--green);background:var(--green-soft)}
+.node.case-a{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.node.case-b{border-top:6px solid var(--purple);background:var(--purple-soft)}
+.arrow{align-self:center;color:var(--blue);font-size:2rem;font-weight:850}
+.public-note{max-width:900px;margin-top:2rem;padding:1.4rem;border-left:7px solid var(--blue);background:var(--blue-soft)}
+.public-note p{margin:.35rem 0}
+.public-note small{display:block;margin-top:.75rem;color:var(--muted)}
+.closing{text-align:center}
+.closing h2{margin-inline:auto}
+.closing .quote{margin:2rem auto 0;text-align:left}
+.nav{position:fixed;z-index:10;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}
+.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--blue);border-radius:3px;color:var(--blue);background:#fff;font-weight:750;cursor:pointer}
+.nav button.primary{color:#fff;background:var(--blue)}
+.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}
+.progress span{display:block;height:100%;background:var(--blue);transition:width .2s ease}
+.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}
+.speaker-notes{display:none;max-width:930px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}
+body.show-notes .speaker-notes{display:block}
+.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}
+@media (max-width:780px){
+  body{font-size:16px}
+  .topbar{padding:0 1rem}
+  .brand span{display:none}
+  main{padding:82px 1rem 94px}
+  .slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}
+  .stage,.copies,.compare,.case-view,.three{grid-template-columns:1fr}
+  .story{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg)}
+  .hub{min-height:560px}
+  .hub-node{width:145px;font-size:.7rem}
+  .h1{top:4%;left:3%} .h2{top:4%;right:3%} .h3{bottom:5%;left:3%} .h4{bottom:5%;right:3%}
+  .wire{display:none}
+  .nav{gap:.5rem;padding:14px .7rem}
+  .nav button{min-width:82px;font-size:.83rem}
+  .progress{width:90px}
+  .help{display:none}
+}
+@media print{
+  .topbar,.nav,.speaker-toggle,.help{display:none !important}
+  main{display:block;padding:0}
+  .slide{display:flex !important;min-height:100vh;page-break-after:always;box-shadow:none}
+  .speaker-notes{display:block}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><strong>RecordWeb</strong><span>Case, context, reuse</span></div>
+  <div class="counter" id="counter" aria-live="polite">1 / 10</div>
+</header>
+<button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
+<main>
+<div class="deck" id="deck">
+
+<section class="slide active" data-title="Title">
+  <p class="eyebrow">RecordWeb · A story about reuse</p>
+  <h1>One record.<br>Multiple contexts.</h1>
+  <p class="lead">Why the same information doesn't need to be filed multiple times to work meaningfully and reliably across several business cases.</p>
+  <div class="quote">Multiple contexts don't mean multiple copies.</div>
+  <aside class="speaker-notes">This story explains a core difference between container-thinking and a network of records. It's aimed at subject-matter leads, information management, records management, and architecture, while staying grounded in an understandable, person-centred situation.</aside>
+</section>
+
+<section class="slide" data-title="Ms. Roth's foundation">
+  <p class="eyebrow">Scene 1 · A figure that's needed more than once</p>
+  <h2>Ms. Roth has a verified time series on CO₂ emissions.</h2>
+  <div class="stage">
+    <div>
+      <p class="lead">The time series is subject-matter relevant. It forms a basis for the answer to parliament. But it isn't needed only there.</p>
+      <p>Later, a team needs the same data for a climate report. Shortly after, a media enquiry arrives. And the subject-matter strategy references it as well.</p>
+    </div>
+    <div class="card">
+      <div class="person"><div class="avatar green">MR</div><p><b>Ms. Roth</b><small>Subject-matter officer</small></p></div>
+      <div class="data-card">
+        <h3>Verified CO₂ emissions time series</h3>
+        <div class="line blue"></div><div class="line"></div><div class="line short"></div>
+        <span class="badge">Verified · current version</span>
+      </div>
+    </div>
+  </div>
+  <aside class="speaker-notes">The time series is a deliberately simple example of a record that can play a role in several contexts, without appearing arbitrarily in every business case.</aside>
+</section>
+
+<section class="slide" data-title="Copies">
+  <p class="eyebrow">Scene 2 · The familiar solution</p>
+  <h2>Today, the same foundation is often copied and filed multiple times.</h2>
+  <div class="copies">
+    <div class="copy"><h3>Parliamentary answer</h3><p>The time series is filed as an attachment or file in the answer dossier.</p><div class="mini-doc">CO2_series_final.xlsx</div></div>
+    <div class="copy"><h3>Climate report</h3><p>Another copy is saved in the dossier for the report.</p><div class="mini-doc">CO2_series_final_v2.xlsx</div></div>
+    <div class="copy"><h3>Media enquiry</h3><p>Another copy is shared or filed again for the response.</p><div class="mini-doc">CO2_series_released.xlsx</div></div>
+  </div>
+  <div class="warning"><p><b>The problem isn't the copy itself.</b> It becomes a problem when it's later unclear: which version is authoritative? Where was it updated? Which copy belongs to which context?</p></div>
+  <aside class="speaker-notes">Copies aren't inherently wrong; sometimes they're legally, technically, or organisationally necessary. The structural problem is uncontrolled multiplication, where versions drift apart and provenance must be reconstructed later.</aside>
+</section>
+
+<section class="slide" data-title="One reference point">
+  <p class="eyebrow">Scene 3 · The same record, different relationships</p>
+  <h2>RecordWeb gives the time series a stable reference point.</h2>
+  <p class="lead">The time series is kept as a self-contained record. It stays the same piece of information, with one version, one responsible office, and one uniquely referenceable identity.</p>
+  <div class="hub">
+    <div class="hub-center">CO₂ time series<small>a self-contained record<br>a referenceable version</small></div>
+    <div class="wire w1"></div><div class="wire w2"></div><div class="wire w3"></div><div class="wire w4"></div>
+    <div class="hub-node h1"><strong>Parliamentary answer</strong><small>uses the time series as a subject-matter foundation</small></div>
+    <div class="hub-node h2"><strong>Climate report</strong><small>refers to the same time series</small></div>
+    <div class="hub-node h3"><strong>Media enquiry</strong><small>uses the same source for a response</small></div>
+    <div class="hub-node h4"><strong>Subject-matter strategy</strong><small>links the time series to a strategic analysis</small></div>
+  </div>
+  <aside class="speaker-notes">Not four files, but one record with four relationships. Each relationship can explain the role the time series plays in that particular context.</aside>
+</section>
+
+<section class="slide" data-title="The case as a view">
+  <p class="eyebrow">Scene 4 · What Ms. Roth sees day to day</p>
+  <h2>Each case shows the context relevant to its own work.</h2>
+  <div class="case-view">
+    <div class="case">
+      <h3>Case: Parliamentary question</h3>
+      <p>Ms. Roth sees everything relevant to answering it.</p>
+      <span class="record-chip">Formal question</span>
+      <span class="record-chip main">CO₂ time series<small>foundation of the answer</small></span>
+      <span class="record-chip">Draft and finalized answer</span>
+    </div>
+    <div class="case">
+      <h3>Case: Climate report</h3>
+      <p>Another team sees a different, but equally meaningful view.</p>
+      <span class="record-chip">Assignment for the climate report</span>
+      <span class="record-chip main">CO₂ time series<small>foundation of the report</small></span>
+      <span class="record-chip">Analysis and report draft</span>
+    </div>
+  </div>
+  <div class="relationship"><p><b>Key point:</b> The time series appears in both cases without existing twice. The case is a view onto relevant records and their relationships, not necessarily a storage container.</p></div>
+  <aside class="speaker-notes">This slide answers the practical concern: "Where do I see my dossier?" The answer is: in the case. The overview for daily work stays intact; the difference lies beneath the interface.</aside>
+</section>
+
+<section class="slide" data-title="Relationships">
+  <p class="eyebrow">Scene 5 · Context isn't the same as context</p>
+  <h2>The relationship explains why the same record matters here.</h2>
+  <div class="three">
+    <div><span class="check">✓</span><b>In the answer</b><p>The time series serves as the subject-matter foundation for answering a specific parliamentary question.</p></div>
+    <div><span class="check">✓</span><b>In the climate report</b><p>The same time series is used as data foundation for a longer-term analysis.</p></div>
+    <div><span class="check">✓</span><b>In the media enquiry</b><p>It provides a traceable reference for an external response.</p></div>
+  </div>
+  <div class="quote">It's not filing in a folder that explains the context. The explicit relationship explains what meaning the record has in this context.</div>
+  <aside class="speaker-notes">This is the substantive core. Context isn't just a set of documents in the same place; a record can play different roles depending on whether it's a foundation, a result, a trigger, an evidence item, or a reference.</aside>
+</section>
+
+<section class="slide" data-title="Change">
+  <p class="eyebrow">Scene 6 · When the foundation changes</p>
+  <h2>A correction doesn't need to be added to every dossier.</h2>
+  <div class="story">
+    <div class="node source"><strong>New verified version</strong><small>The responsible office corrects or updates the time series traceably.</small></div>
+    <div class="arrow">→</div>
+    <div class="node case-a"><strong>Parliamentary case</strong><small>The relationship shows which version was used for the answer at the time.</small></div>
+    <div class="arrow">→</div>
+    <div class="node case-b"><strong>Report case</strong><small>The team can check whether an update is relevant for the report.</small></div>
+  </div>
+  <div class="quote">A stable reference point doesn't make changes invisible. It creates the basis for recognising and assessing their effect in different contexts.</div>
+  <aside class="speaker-notes">Earlier answers aren't rewritten retroactively. A later correction or new version becomes visible as a successor, and other cases can decide whether and how to respond.</aside>
+</section>
+
+<section class="slide" data-title="Benefit">
+  <p class="eyebrow">Scene 7 · Less reconstruction, clearer responsibility</p>
+  <h2>Reuse becomes more understandable for everyone involved.</h2>
+  <div class="compare">
+    <div class="old">
+      <h3>With uncoordinated copies</h3>
+      <ul>
+        <li>Different file names and storage locations</li>
+        <li>Unclear or diverging versions</li>
+        <li>Repeated maintenance and update effort</li>
+        <li>Difficult provenance and relevance checks</li>
+        <li>Risk that context and responsibility blur</li>
+      </ul>
+    </div>
+    <div class="new">
+      <h3>With linked records</h3>
+      <ul>
+        <li>One clear reference point for the information</li>
+        <li>Explicit relationships to several cases</li>
+        <li>Versions and successors are traceable</li>
+        <li>Targeted use instead of widely scattered duplicates</li>
+        <li>Responsibility stays with the accountable office</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="speaker-notes">Even in a RecordWeb, some replication or derivatives may still be necessary. The architectural idea is that identity, provenance, and relationships shouldn't get lost through uncontrolled copying.</aside>
+</section>
+
+<section class="slide" data-title="Network">
+  <p class="eyebrow">Scene 8 · From dossier to network</p>
+  <h2>This is how a network of records grows.</h2>
+  <div class="stage">
+    <div>
+      <p class="lead">The case gives people an understandable working and orientation view. The record stays self-contained, reusable, and linkable to other contexts at the same time.</p>
+      <p>This way, RecordWeb connects two legitimate needs: overview within a concrete case, and traceability across case boundaries.</p>
+    </div>
+    <div class="card">
+      <div class="person"><div class="avatar">MR</div><p><b>Ms. Roth</b><small>sees her case, not the entire architecture</small></p></div>
+      <div class="data-card">
+        <h3>Case: Parliamentary question</h3>
+        <div class="line blue"></div><div class="line"></div>
+        <span class="badge">Relevant records and relationships</span>
+      </div>
+    </div>
+  </div>
+  <div class="public-note"><p><b>The architecture stays in the background.</b> For Ms. Roth, what matters is being able to work in the right case with the right information. For the organisation, it stays traceable how the same records relate across cases, applications, and time.</p></div>
+  <aside class="speaker-notes">Nobody needs to work in an abstract graph in everyday life. The case is the human perspective; the network is the architecture perspective. Both can be true at the same time without burdening the user with complexity.</aside>
+</section>
+
+<section class="slide" data-title="Closing">
+  <div class="closing">
+    <p class="eyebrow">RecordWeb · Case and context</p>
+    <h2>A record can carry multiple stories,<br>without multiplying itself.</h2>
+    <p class="lead">Through clear identity and explicit relationships, the same information stays usable, understandable, and accountable across different cases.</p>
+    <div class="quote">Not filing repeatedly.<br>Linking meaningfully, repeatedly.</div>
+  </div>
+  <aside class="speaker-notes">Possible follow-up questions: Which information is used across several cases today? Where do copies arise because context can only be captured through containers? Which relationship types would matter most for concrete business cases?</aside>
+</section>
+
+</div>
+</main>
+<div class="help">Keyboard: ← → Home End N (speaker notes)</div>
+<nav class="nav" aria-label="Presentation navigation">
+  <button id="prev" type="button">Back</button>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  <button class="primary" id="next" type="button">Next</button>
+</nav>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+const counter = document.getElementById('counter');
+const progress = document.getElementById('progressBar');
+const notesButton = document.getElementById('notesButton');
+let index = 0;
+function render(){
+  slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+  prev.disabled = index === 0;
+  next.disabled = index === slides.length - 1;
+  next.textContent = index === slides.length - 1 ? 'End' : 'Next';
+  counter.textContent = `${index + 1} / ${slides.length}`;
+  progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+  document.title = `RecordWeb: ${slides[index].dataset.title}`;
+  window.scrollTo({top:0, behavior:'instant'});
+}
+function move(delta){
+  const target = Math.max(0, Math.min(slides.length - 1, index + delta));
+  if (target !== index){ index = target; render(); }
+}
+prev.addEventListener('click', () => move(-1));
+next.addEventListener('click', () => move(1));
+notesButton.addEventListener('click', () => {
+  const visible = document.body.classList.toggle('show-notes');
+  notesButton.textContent = visible ? 'Hide speaker notes' : 'Show speaker notes';
+  notesButton.setAttribute('aria-pressed', String(visible));
+});
+window.addEventListener('keydown', (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey) return;
+  if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' '){ event.preventDefault(); move(1); }
+  if (event.key === 'ArrowLeft' || event.key === 'PageUp'){ event.preventDefault(); move(-1); }
+  if (event.key === 'Home'){ event.preventDefault(); index = 0; render(); }
+  if (event.key === 'End'){ event.preventDefault(); index = slides.length - 1; render(); }
+  if (event.key.toLowerCase() === 'n'){ notesButton.click(); }
+});
+render();
+</script>
+</body>
+</html>

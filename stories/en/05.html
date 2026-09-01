@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb: Responsibility has a place.</title>
+<style>
+:root{
+  --blue:#005a9c; --blue-dark:#003d6b; --blue-soft:#e8f2f8;
+  --ink:#1d2b36; --muted:#536471; --line:#c9d7df; --paper:#fff; --surface:#f5f8fa;
+  --warm:#fff5dc; --warm-line:#d89c23; --red:#ae2626; --red-soft:#fff1f1;
+  --green:#16784b; --green-soft:#eaf7ef; --purple:#68499b; --purple-soft:#f2edf9;
+  --shadow:0 10px 30px rgba(21,47,66,.13);
+}
+*{box-sizing:border-box}
+html{background:var(--surface)}
+body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button{font:inherit}
+.topbar{position:fixed;z-index:10;inset:0 0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}
+.brand strong{font-size:1.2rem}
+.brand span{font-size:.82rem;font-weight:500;opacity:.86}
+.counter{font-size:.9rem;font-variant-numeric:tabular-nums}
+main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}
+.deck{width:min(1140px,100%)}
+.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--blue);box-shadow:var(--shadow)}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.eyebrow{margin:0 0 1rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}
+h1{max-width:920px;font-size:clamp(2.6rem,6.2vw,5.5rem)}
+h2{max-width:900px;font-size:clamp(2rem,4.4vw,3.8rem)}
+h3{font-size:1.12rem}
+.lead{max-width:830px;margin:1.5rem 0 0;color:var(--muted);font-size:clamp(1.15rem,2vw,1.42rem)}
+.quote{max-width:890px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--blue);background:var(--blue-soft);font-size:1.2rem;font-weight:650}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;margin-top:2rem}
+.card{padding:1.3rem;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(20,44,60,.08)}
+.persona{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}
+.avatar{display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.9rem;font-weight:850}
+.avatar.green{background:var(--green)}
+.avatar.purple{background:var(--purple)}
+.persona p{margin:0;line-height:1.25}
+.persona small{display:block;color:var(--muted)}
+.case-card{padding:1rem;border:1px solid #c1d7e2;background:#f6fbfe}
+.case-card h3{color:var(--blue-dark);font-size:1rem}
+.record-row{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.8rem}
+.chip{padding:.45rem .55rem;border:1px solid var(--line);background:#fff;font-size:.76rem;font-weight:750}
+.chip.question{border-color:#9fc4d8;background:var(--blue-soft)}
+.chip.answer{border-color:#8ec6a9;background:var(--green-soft)}
+.chip.chat{border-color:#c0addf;background:var(--purple-soft)}
+.orgs{display:grid;grid-template-columns:1fr auto 1fr;gap:.9rem;align-items:center;margin-top:2rem}
+.org{min-height:265px;padding:1.25rem;border:1px solid var(--line);background:#fff}
+.org h3{color:var(--blue-dark)}
+.org p{margin:.55rem 0 0;color:var(--muted);font-size:.91rem}
+.responsibility{margin-top:1rem;padding:.75rem;border-left:5px solid var(--blue);background:var(--blue-soft);font-size:.86rem;font-weight:700}
+.responsibility.green{border-left-color:var(--green);background:var(--green-soft)}
+.arrow{align-self:center;color:var(--blue);font-size:2rem;font-weight:850}
+.questions{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.question{min-height:190px;padding:1.1rem;border:1px solid #e2aaaa;border-top:6px solid var(--red);background:var(--red-soft)}
+.question .qmark{color:var(--red);font-size:2rem;font-weight:850;line-height:1}
+.question strong{display:block;margin-top:.35rem;color:#6e1f1f}
+.question p{margin:.6rem 0 0;color:#742d2d;font-size:.9rem}
+.map{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:stretch;margin-top:2rem}
+.map .box{min-height:205px;padding:1.2rem;border:1px solid var(--line);background:#fff}
+.map .box h3{color:var(--blue-dark)}
+.map .box p{margin:.55rem 0 0;color:var(--muted);font-size:.9rem}
+.map .box.left{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.map .box.right{border-top:6px solid var(--green);background:var(--green-soft)}
+.map .middle{display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:2.5rem;font-weight:850}
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-top:2rem}
+.role{min-height:205px;padding:1.1rem;border:1px solid var(--line);background:#fff}
+.role .symbol{display:grid;width:35px;height:35px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.8rem;font-weight:850}
+.role:nth-child(2) .symbol{background:var(--green)}
+.role:nth-child(3) .symbol{background:var(--purple)}
+.role:nth-child(4) .symbol{background:var(--warm-line)}
+.role h3{margin-top:.65rem;color:var(--blue-dark);font-size:1.04rem}
+.role p{margin:.5rem 0 0;color:var(--muted);font-size:.84rem}
+.stack{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:stretch;margin-top:2rem}
+.node{display:flex;flex-direction:column;justify-content:center;min-height:164px;padding:1rem;border:1px solid var(--line);background:#fff}
+.node strong{color:var(--blue-dark)}
+.node small{margin-top:.42rem;color:var(--muted)}
+.node.blue{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.node.green{border-top:6px solid var(--green);background:var(--green-soft)}
+.node.purple{border-top:6px solid var(--purple);background:var(--purple-soft)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
+.compare div{padding:1.25rem;border:1px solid var(--line)}
+.compare h3{margin-bottom:.75rem}
+.compare ul{margin:0;padding-left:1.15rem;color:var(--muted)}
+.compare li{margin:.45rem 0}
+.compare .old{border-top:6px solid var(--warm-line)}
+.compare .new{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.transfer{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:center;margin-top:2rem}
+.transfer .box{min-height:160px;padding:1rem;border:1px solid var(--line);background:#fff}
+.transfer .box strong{color:var(--blue-dark)}
+.transfer .box p{margin:.5rem 0 0;color:var(--muted);font-size:.87rem}
+.transfer .box.ais{border:3px solid var(--green);background:var(--green-soft)}
+.governance{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.governance div{min-height:184px;padding:1.15rem;border:1px solid var(--line);background:#fff}
+.governance b{display:block;margin-bottom:.55rem;color:var(--blue-dark);font-size:1.08rem}
+.governance p{margin:0;color:var(--muted);font-size:.9rem}
+.public{max-width:900px;margin-top:2rem;padding:1.35rem;border-left:7px solid var(--blue);background:var(--blue-soft)}
+.public p{margin:.35rem 0}
+.public small{display:block;margin-top:.75rem;color:var(--muted)}
+.closing{text-align:center}
+.closing h2{margin-inline:auto}
+.closing .quote{margin:2rem auto 0;text-align:left}
+.nav{position:fixed;z-index:10;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}
+.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--blue);border-radius:3px;color:var(--blue);background:#fff;font-weight:750;cursor:pointer}
+.nav button.primary{color:#fff;background:var(--blue)}
+.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}
+.progress span{display:block;height:100%;background:var(--blue);transition:width .2s ease}
+.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}
+.speaker-notes{display:none;max-width:940px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}
+body.show-notes .speaker-notes{display:block}
+.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}
+@media (max-width:800px){
+  body{font-size:16px}
+  .topbar{padding:0 1rem}
+  .brand span{display:none}
+  main{padding:82px 1rem 94px}
+  .slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}
+  .stage,.questions,.compare,.governance{grid-template-columns:1fr}
+  .orgs,.map,.stack,.transfer{grid-template-columns:1fr}
+  .roles{grid-template-columns:1fr 1fr}
+  .arrow,.map .middle{transform:rotate(90deg)}
+  .nav{gap:.5rem;padding:14px .7rem}
+  .nav button{min-width:82px;font-size:.83rem}
+  .progress{width:90px}
+  .help{display:none}
+}
+@media print{
+  .topbar,.nav,.speaker-toggle,.help{display:none !important}
+  main{display:block;padding:0}
+  .slide{display:flex !important;min-height:100vh;page-break-after:always;box-shadow:none}
+  .speaker-notes{display:block}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><strong>RecordWeb</strong><span>Governance, roles, responsibility</span></div>
+  <div class="counter" id="counter" aria-live="polite">1 / 10</div>
+</header>
+<button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
+<main>
+<div class="deck" id="deck">
+
+<section class="slide active" data-title="Title">
+  <p class="eyebrow">RecordWeb · A story about responsibility</p>
+  <h1>Responsibility has a place.</h1>
+  <p class="lead">How networked records work across organisational boundaries, without responsibility disappearing into the network.</p>
+  <div class="quote">Decentralized doesn't mean unclear.<br>It means responsibility becomes visible where it actually lies.</div>
+  <aside class="speaker-notes">This presentation complements the story about trust. Trust is verifiable, but who carries responsibility? Especially when records are linked rather than replicated, it must stay visible which organisation, which application, and which role is responsible for which part of the context.</aside>
+</section>
+
+<section class="slide" data-title="Two cases">
+  <p class="eyebrow">Scene 1 · One question, two spheres of responsibility</p>
+  <h2>Mr. Keller asks a question. Two organisations handle different parts of the same story.</h2>
+  <div class="orgs">
+    <div class="org">
+      <h3>Parliament</h3>
+      <p>Mr. Keller submits the parliamentary question. Parliament runs its own case.</p>
+      <div class="responsibility"><b>Responsibility:</b> question, parliamentary business, own provisioning</div>
+    </div>
+    <div class="arrow">↔</div>
+    <div class="org">
+      <h3>Government</h3>
+      <p>Ms. Roth prepares the answer. The government runs its own case.</p>
+      <div class="responsibility green"><b>Responsibility:</b> processing, answer, own provisioning</div>
+    </div>
+  </div>
+  <div class="quote">The question and the answer belong together. Yet they don't have to belong to the same organisation, the same system, or the same dossier.</div>
+  <aside class="speaker-notes">The question and the answer are connected. Still, each side remains responsible for its own records and its own case. The connection doesn't create a transfer of ownership or unclear shared responsibility.</aside>
+</section>
+
+<section class="slide" data-title="The urge to copy">
+  <p class="eyebrow">Scene 2 · The understandable reflex</p>
+  <h2>"Let's just copy the answer into our dossier."</h2>
+  <div class="stage">
+    <div>
+      <p class="lead">This sentence sounds reasonable at first. A copy seems to provide security: what's on our side is under our control.</p>
+      <p>But every copy raises new questions: which version is authoritative? Who updates it? What happens if responsibility, version, or provisioning change?</p>
+    </div>
+    <div class="card">
+      <div class="persona"><div class="avatar">MK</div><p><b>Mr. Keller</b><small>Member of Parliament</small></p></div>
+      <div class="case-card">
+        <h3>Parliamentary case</h3>
+        <div class="record-row">
+          <span class="chip question">Question</span>
+          <span class="chip answer">Copy of the answer?</span>
+          <span class="chip chat">further documents</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="speaker-notes">This slide doesn't morally devalue copies. It shows their cost. A copy can be necessary for certain purposes, but as a default solution for relationships between organisations it multiplies coordination effort, version risk, and uncertainty about the accountable original.</aside>
+</section>
+
+<section class="slide" data-title="Responsibility stays">
+  <p class="eyebrow">Scene 3 · Linking with clear boundaries</p>
+  <h2>A relationship connects. Responsibility stays with the respective record.</h2>
+  <div class="map">
+    <div class="box left"><h3>Parliament</h3><p>The QuestionRecord stays within parliament's sphere of responsibility.</p><p><b>Parliament is responsible for</b> its identity, status, provisioning, and business context.</p></div>
+    <div class="middle">↔</div>
+    <div class="box right"><h3>Government</h3><p>The AnswerRecord stays within the government's sphere of responsibility.</p><p><b>The government is responsible for</b> processing, finalisation, version, and provisioning of the answer.</p></div>
+  </div>
+  <div class="quote">The relationship says: "This answer responds to this question." It doesn't say: "One side takes over responsibility for the other's record."</div>
+  <aside class="speaker-notes">This is the central rule: linking is not ownership. A record can be connected to a record from another party without that organisation becoming the custodian of the other's record. This is exactly what enables a network of accountable nodes, rather than a collection of unclear copies.</aside>
+</section>
+
+<section class="slide" data-title="Roles">
+  <p class="eyebrow">Scene 4 · Responsibility is more than ownership</p>
+  <h2>Several roles can be visible without replacing one another.</h2>
+  <div class="roles">
+    <div class="role"><div class="symbol">E</div><h3>Creating person</h3><p>Ms. Roth or a team creates, checks, and processes a record in its subject-matter context.</p></div>
+    <div class="role"><div class="symbol">R</div><h3>Responsible office</h3><p>An organisation or application is responsible for the custody, finalisation, and provisioning of its record.</p></div>
+    <div class="role"><div class="symbol">A</div><h3>Assessing body</h3><p>The archive or an independent assessment body can evaluate conformance against defined rules.</p></div>
+    <div class="role"><div class="symbol">U</div><h3>Using person</h3><p>Parliament, the public, an archive, or a subject-matter expert uses the record within permitted scope.</p></div>
+  </div>
+  <div class="quote">An assessment doesn't confirm subject-matter responsibility. A link doesn't transfer custodial responsibility. Roles need to be kept apart.</div>
+  <aside class="speaker-notes">This slide prevents an important confusion. The attesting body isn't automatically the owner or operator. The using organisation isn't automatically responsible for creation. And the person who creates a record isn't necessarily the office that provides it long term. RecordWeb can make these roles visible and keep their relationships traceable.</aside>
+</section>
+
+<section class="slide" data-title="The application">
+  <p class="eyebrow">Scene 5 · The application has responsibility too</p>
+  <h2>The responsible application is not a neutral storage location.</h2>
+  <p class="lead">As long as an application is in operation, it manages records within its sphere of responsibility. It must identify its records, maintain their status and version, and provide a reference point — an endpoint.</p>
+  <div class="stack">
+    <div class="node blue"><strong>Business application</strong><small>Creates or processes records in the business process.</small></div>
+    <div class="arrow">→</div>
+    <div class="node purple"><strong>Accountable custody</strong><small>Finalisation, versions, relationships, and provisioning are maintained according to rules.</small></div>
+    <div class="arrow">→</div>
+    <div class="node green"><strong>Resolvable record</strong><small>Other authorised parties can reach the record via its reference point.</small></div>
+  </div>
+  <aside class="speaker-notes">This slide connects responsibility with application architecture. The application isn't merely a technical location; it takes on a role in maintaining and providing its records. Other organisations can rely on this provisioning when responsibility and conformance are traceable.</aside>
+</section>
+
+<section class="slide" data-title="No diffusion of responsibility">
+  <p class="eyebrow">Scene 6 · Decentralized, but not arbitrary</p>
+  <h2>A network needs clear boundaries of responsibility.</h2>
+  <div class="compare">
+    <div class="old">
+      <h3>Without clear boundaries</h3>
+      <ul>
+        <li>Multiple copies look like multiple originals</li>
+        <li>Unclear who may update a version</li>
+        <li>Unclear who must guarantee availability</li>
+        <li>Assessment bodies, applications, and subject-matter offices blur their roles</li>
+        <li>A system change triggers a responsibility debate</li>
+      </ul>
+    </div>
+    <div class="new">
+      <h3>With clear boundaries</h3>
+      <ul>
+        <li>Every record has an accountable context</li>
+        <li>Relationships allow networking without change of ownership</li>
+        <li>Status and version are assigned to the responsible record</li>
+        <li>Conformance can verify creation and custody rules</li>
+        <li>An EoL triggers a defined transition</li>
+      </ul>
+    </div>
+  </div>
+  <div class="quote">The goal isn't to distribute responsibility. The goal is to make it visible and verifiable within a distributed architecture.</div>
+  <aside class="speaker-notes">This slide summarises the governance logic. Decentralisation must not become an excuse for "nobody is responsible." On the contrary: the architecture must make clear who is responsible for which record and for which handover.</aside>
+</section>
+
+<section class="slide" data-title="When responsibility changes">
+  <p class="eyebrow">Scene 7 · Responsibility can transfer</p>
+  <h2>When an application ends, responsibility isn't handed over invisibly.</h2>
+  <p class="lead">At the end of an application's life, a controlled handover — <code>custodyTransfer</code> — is needed. The record stays the same; its custody and provisioning context changes traceably.</p>
+  <div class="transfer">
+    <div class="box"><strong>Previous application</strong><p>Manages the record as long as it's in operation and responsible.</p></div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>custodyTransfer</strong><p>Documented handover of custodial and provisioning responsibility.</p></div>
+    <div class="arrow">→</div>
+    <div class="box ais"><strong>Successor application or AIS</strong><p>Takes on responsibility and provides the existing record in the new context.</p></div>
+  </div>
+  <aside class="speaker-notes">This slide directly connects to the archive story. It's not finalisation that triggers a transfer. The handover becomes necessary when the previously responsible application reaches its end of life. custodyTransfer makes clear: this is a regulated transfer of responsibility, not files disappearing and later being rediscovered.</aside>
+</section>
+
+<section class="slide" data-title="Trust">
+  <p class="eyebrow">Scene 8 · Responsibility becomes verifiable</p>
+  <h2>Other organisations don't just have to believe in responsibility.</h2>
+  <div class="governance">
+    <div><b>For parliament</b><p>It can link to the government's answer and check which office manages it, which version applies, and under which rules it was created.</p></div>
+    <div><b>For the government</b><p>It can link to parliament's question without taking over the original, and check the referenced context.</p></div>
+    <div><b>For the archive</b><p>It can set requirements for custody, conformance, and controlled handover, instead of only rescuing holdings afterwards.</p></div>
+  </div>
+  <div class="public"><p><b>Interplay:</b> Clear responsibility makes linking possible. Verifiability makes that trust resilient. A regulated handover secures responsibility when an application ends.</p></div>
+  <aside class="speaker-notes">Three themes come together here: responsibility, trust, and continuity. This presentation doesn't claim all conflicts are automatically solved, but shows an architecture in which the decisive questions become visible and governable.</aside>
+</section>
+
+<section class="slide" data-title="Closing">
+  <div class="closing">
+    <p class="eyebrow">RecordWeb · Responsibility architecture</p>
+    <h2>A network of records doesn't need central ownership.</h2>
+    <p class="lead">It needs self-contained, accountable records, explicit relationships, verifiable rules, and a traceable transition when responsibility changes.</p>
+    <div class="quote">Not everything belongs to everyone.<br>But everything stays accountable within its context.</div>
+  </div>
+  <aside class="speaker-notes">Possible follow-up questions: which roles need to be explicitly modelled in our environment? Which organisation is the custodian for which record types? Which cross-organisational relationships do we need? How do we document a custodyTransfer when systems are retired?</aside>
+</section>
+
+</div>
+</main>
+<div class="help">Keyboard: ← → Home End N (speaker notes)</div>
+<nav class="nav" aria-label="Presentation navigation">
+  <button id="prev" type="button">Back</button>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  <button class="primary" id="next" type="button">Next</button>
+</nav>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+const counter = document.getElementById('counter');
+const progress = document.getElementById('progressBar');
+const notesButton = document.getElementById('notesButton');
+let index = 0;
+function render(){
+  slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+  prev.disabled = index === 0;
+  next.disabled = index === slides.length - 1;
+  next.textContent = index === slides.length - 1 ? 'End' : 'Next';
+  counter.textContent = `${index + 1} / ${slides.length}`;
+  progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+  document.title = `RecordWeb: ${slides[index].dataset.title}`;
+  window.scrollTo({top:0, behavior:'instant'});
+}
+function move(delta){
+  const target = Math.max(0, Math.min(slides.length - 1, index + delta));
+  if (target !== index){ index = target; render(); }
+}
+prev.addEventListener('click', () => move(-1));
+next.addEventListener('click', () => move(1));
+notesButton.addEventListener('click', () => {
+  const visible = document.body.classList.toggle('show-notes');
+  notesButton.textContent = visible ? 'Hide speaker notes' : 'Show speaker notes';
+  notesButton.setAttribute('aria-pressed', String(visible));
+});
+window.addEventListener('keydown', (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey) return;
+  if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' '){ event.preventDefault(); move(1); }
+  if (event.key === 'ArrowLeft' || event.key === 'PageUp'){ event.preventDefault(); move(-1); }
+  if (event.key === 'Home'){ event.preventDefault(); index = 0; render(); }
+  if (event.key === 'End'){ event.preventDefault(); index = slides.length - 1; render(); }
+  if (event.key.toLowerCase() === 'n'){ notesButton.click(); }
+});
+render();
+</script>
+</body>
+</html>

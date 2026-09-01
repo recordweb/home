@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb: Trust is verifiable</title>
+<style>
+:root{
+  --blue:#005a9c; --blue-dark:#003d6b; --blue-soft:#e8f2f8;
+  --ink:#1d2b36; --muted:#536471; --line:#c9d7df; --paper:#fff; --surface:#f5f8fa;
+  --warm:#fff5dc; --warm-line:#d89c23; --red:#ae2626; --red-soft:#fff1f1;
+  --green:#16784b; --green-soft:#eaf7ef; --purple:#68499b; --purple-soft:#f2edf9;
+  --shadow:0 10px 30px rgba(21,47,66,.13);
+}
+*{box-sizing:border-box}
+html{background:var(--surface)}
+body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button{font:inherit}
+.topbar{position:fixed;z-index:10;inset:0 0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}
+.brand strong{font-size:1.2rem}
+.brand span{font-size:.82rem;font-weight:500;opacity:.86}
+.counter{font-size:.9rem;font-variant-numeric:tabular-nums}
+main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}
+.deck{width:min(1150px,100%)}
+.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--blue);box-shadow:var(--shadow)}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.eyebrow{margin:0 0 1rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}
+h1{max-width:920px;font-size:clamp(2.6rem,6.2vw,5.5rem)}
+h2{max-width:900px;font-size:clamp(2rem,4.4vw,3.8rem)}
+h3{font-size:1.12rem}
+.lead{max-width:830px;margin:1.5rem 0 0;color:var(--muted);font-size:clamp(1.15rem,2vw,1.42rem)}
+.quote{max-width:890px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--blue);background:var(--blue-soft);font-size:1.2rem;font-weight:650}
+.orgs{display:grid;grid-template-columns:1fr auto 1fr;gap:.9rem;align-items:center;margin-top:2rem}
+.org{min-height:238px;padding:1.2rem;border:1px solid var(--line);background:#fff}
+.org h3{color:var(--blue-dark)}
+.org p{margin:.55rem 0 0;color:var(--muted);font-size:.92rem}
+.record{margin-top:1rem;padding:.75rem;border:1px solid #a7cadb;border-left:5px solid var(--blue);background:var(--blue-soft);font-size:.86rem;font-weight:750}
+.record.answer{border-color:#8ec6a9;border-left-color:var(--green);background:var(--green-soft)}
+.arrow{align-self:center;color:var(--blue);font-size:2rem;font-weight:850}
+.trust-line{margin-top:.85rem;color:var(--red);font-size:.85rem;font-weight:750}
+.questions{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.question{min-height:178px;padding:1.1rem;border:1px solid #e2aaaa;border-top:6px solid var(--red);background:var(--red-soft)}
+.question .qmark{color:var(--red);font-size:2rem;font-weight:850;line-height:1}
+.question p{margin:.7rem 0 0;color:#742d2d;font-size:.95rem}
+.question strong{display:block;margin-top:.3rem;color:#6e1f1f}
+.five{display:grid;grid-template-columns:repeat(5,1fr);gap:.65rem;margin-top:2rem}
+.five div{min-height:184px;padding:1rem;border:1px solid var(--line);background:#fff}
+.five .num{display:inline-grid;width:27px;height:27px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.76rem;font-weight:850}
+.five strong{display:block;margin-top:.65rem;color:var(--blue-dark);font-size:.98rem}
+.five p{margin:.45rem 0 0;color:var(--muted);font-size:.81rem;line-height:1.35}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.8rem;align-items:stretch;margin-top:2rem}
+.flow .box{display:flex;flex-direction:column;justify-content:center;min-height:174px;padding:1.15rem;border:1px solid var(--line);background:#fff}
+.flow .box strong{color:var(--blue-dark)}
+.flow .box p{margin:.55rem 0 0;color:var(--muted);font-size:.91rem}
+.flow .box.mid{border:3px solid var(--blue);background:var(--blue-soft)}
+.flow .arrow{align-self:center}
+.json-card{overflow:hidden;margin-top:1.65rem;border:1px solid var(--line);background:#fff}
+.json-head{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;color:#fff;background:var(--blue-dark);font-size:.88rem;font-weight:800}
+pre{max-height:310px;overflow:auto;margin:0;padding:1.15rem;color:#22333d;background:#f7fafb;font:.79rem/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;white-space:pre-wrap;word-break:break-word}
+.highlight{color:#743700;background:#fff1bf;font-weight:850}
+.highlight-green{color:#125f3b;background:#dff3e7;font-weight:850}
+.annotation{max-width:960px;margin-top:1rem;padding:.85rem 1rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#60450c;font-size:.93rem}
+.chain{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:stretch;margin-top:2rem}
+.chain-card{position:relative;min-height:190px;padding:1.1rem;border:1px solid var(--line);background:#fff}
+.chain-card h3{color:var(--blue-dark)}
+.chain-card p{margin:.6rem 0 0;color:var(--muted);font-size:.87rem}
+.chain-card.final{border-top:6px solid var(--green);background:var(--green-soft)}
+.chain-card.schema{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.chain-card.conf{border-top:6px solid var(--purple);background:var(--purple-soft)}
+.tag{display:inline-block;margin-top:.65rem;padding:.22rem .45rem;border-radius:3px;color:#fff;background:var(--blue);font-size:.7rem;font-weight:850;letter-spacing:.04em;text-transform:uppercase}
+.tag.green{background:var(--green)}
+.tag.purple{background:var(--purple)}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:2rem}
+.check-card{padding:1.3rem;border:1px solid var(--line);background:#fff}
+.check-card h3{color:var(--blue-dark)}
+.check-card p{margin:.55rem 0 0;color:var(--muted)}
+.check-card ul{margin:.85rem 0 0;padding-left:1.1rem;color:var(--muted);font-size:.9rem}
+.check-card li{margin:.35rem 0}
+.check{color:var(--green);font-size:1.3rem;font-weight:900}
+.eol{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.8rem;align-items:center;margin-top:2rem}
+.eol .box{min-height:156px;padding:1rem;border:1px solid var(--line);background:#fff}
+.eol .box strong{color:var(--blue-dark)}
+.eol .box p{margin:.5rem 0 0;color:var(--muted);font-size:.88rem}
+.eol .box.ais{border:3px solid var(--green);background:var(--green-soft)}
+.governance{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.governance div{min-height:170px;padding:1.15rem;border:1px solid var(--line);background:#fff}
+.governance b{display:block;margin-bottom:.55rem;color:var(--blue-dark);font-size:1.08rem}
+.governance p{margin:0;color:var(--muted);font-size:.9rem}
+.future{max-width:910px;margin-top:1.8rem;padding:1.3rem;border-left:7px solid var(--blue);background:var(--blue-soft)}
+.future p{margin:.35rem 0}
+.future small{display:block;margin-top:.75rem;color:var(--muted)}
+.closing{text-align:center}
+.closing h2{margin-inline:auto}
+.closing .quote{margin:2rem auto 0;text-align:left}
+.nav{position:fixed;z-index:10;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}
+.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--blue);border-radius:3px;color:var(--blue);background:#fff;font-weight:750;cursor:pointer}
+.nav button.primary{color:#fff;background:var(--blue)}
+.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}
+.progress span{display:block;height:100%;background:var(--blue);transition:width .2s ease}
+.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}
+.speaker-notes{display:none;max-width:940px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}
+body.show-notes .speaker-notes{display:block}
+.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}
+@media (max-width:820px){
+  body{font-size:16px}
+  .topbar{padding:0 1rem}
+  .brand span{display:none}
+  main{padding:82px 1rem 94px}
+  .slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}
+  .stage,.questions,.checks,.governance{grid-template-columns:1fr}
+  .orgs,.flow,.chain,.eol{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg)}
+  .five{grid-template-columns:1fr 1fr}
+  .nav{gap:.5rem;padding:14px .7rem}
+  .nav button{min-width:82px;font-size:.83rem}
+  .progress{width:90px}
+  .help{display:none}
+}
+@media print{
+  .topbar,.nav,.speaker-toggle,.help{display:none !important}
+  main{display:block;padding:0}
+  .slide{display:flex !important;min-height:100vh;page-break-after:always;box-shadow:none}
+  .speaker-notes{display:block}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><strong>RecordWeb</strong><span>Governance, conformance, trust</span></div>
+  <div class="counter" id="counter" aria-live="polite">1 / 12</div>
+</header>
+<button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
+<main>
+<div class="deck" id="deck">
+
+<section class="slide active" data-title="Title">
+  <p class="eyebrow">RecordWeb · Trust perspective</p>
+  <h1>Trust is verifiable.</h1>
+  <p class="lead">How records can be linked across organisational and system boundaries, without requiring blind trust.</p>
+  <div class="quote">Not "trust us."<br>But "check the rules this record was created under."</div>
+  <aside class="speaker-notes">This presentation complements the stories about everyday work, architecture, and handover. At its centre is the trust question: why may one organisation reference another's record instead of copying it? And why can an archive entrust records to a responsible application as long as it's in operation? The answer isn't a mere assurance, but a verifiable framework.</aside>
+</section>
+
+<section class="slide" data-title="Linking">
+  <p class="eyebrow">Scene 1 · Linking instead of replicating</p>
+  <h2>A network of records requires trust between organisations.</h2>
+  <div class="orgs">
+    <div class="org">
+      <h3>Parliament</h3>
+      <p>Runs the case for the parliamentary question.</p>
+      <div class="record">Question<br><small>own record, own context</small></div>
+      <p class="trust-line">Trusts that the government won't change its answer after finalisation.</p>
+    </div>
+    <div class="arrow">↔</div>
+    <div class="org">
+      <h3>Government</h3>
+      <p>Runs the case for answering it.</p>
+      <div class="record answer">Answer<br><small>own record, own context</small></div>
+      <p class="trust-line">Trusts that parliament won't change its question afterwards.</p>
+    </div>
+  </div>
+  <div class="quote">The alternative would be replication: each side copies the other's records. RecordWeb instead relies on self-contained records and explicit relationships.</div>
+  <aside class="speaker-notes">The relationship between question and answer doesn't have to be a data copy. Each organisation stays responsible for its own records. That's exactly why the trust question arises in both directions: does the linked record stay reachable? Does a finalized version stay unchanged? Is it later traceable under which rules it was created?</aside>
+</section>
+
+<section class="slide" data-title="Distrust">
+  <p class="eyebrow">Scene 2 · Trust must not be blind</p>
+  <h2>An assurance alone is not proof.</h2>
+  <div class="questions">
+    <div class="question"><div class="qmark">?</div><strong>Parliament to government</strong><p>Why shouldn't the answer be changed after finalisation?</p></div>
+    <div class="question"><div class="qmark">?</div><strong>Government to parliament</strong><p>Why should the question stay durably resolvable, if we only link to it?</p></div>
+    <div class="question"><div class="qmark">?</div><strong>Archive to application</strong><p>Why should the application maintain records reliably for years, only handing them over at EoL?</p></div>
+  </div>
+  <div class="quote">Self-custody doesn't mean "the application can do whatever it wants." It means responsibility is delegated to an application only within a clear, verifiable framework.</div>
+  <aside class="speaker-notes">The self-custody consideration must stay precise here: an application doesn't automatically become an archive system. The right question is: under which conditions can a responsible application maintain records itself over a longer period? The answer needs rules, evidence, and, if applicable, independent review.</aside>
+</section>
+
+<section class="slide" data-title="Verification areas">
+  <p class="eyebrow">Scene 3 · What must be verifiable</p>
+  <h2>Responsibility for records translates into concrete verification areas.</h2>
+  <div class="five">
+    <div><span class="num">1</span><strong>Identity</strong><p>Does every record get a stable, resolvable reference point?</p></div>
+    <div><span class="num">2</span><strong>Integrity</strong><p>Is the version clearly recognisable and protected after finalisation?</p></div>
+    <div><span class="num">3</span><strong>Relationships</strong><p>Do relationships to the case and further records stay traceable?</p></div>
+    <div><span class="num">4</span><strong>Availability</strong><p>Is it clear who provides the record and where it's currently resolved?</p></div>
+    <div><span class="num">5</span><strong>Transition</strong><p>Is a controlled custodyTransfer planned for an end of life?</p></div>
+  </div>
+  <aside class="speaker-notes">These five areas don't form a complete standard, but an understandable trust map. Detailed test cases, profiles, and test suites can emerge from them for concrete conformance checking. In the Question Time PoC, for example, DID resolution, schema binding, payload validation, snapshot integrity, and immutable finalisation are implemented.</aside>
+</section>
+
+<section class="slide" data-title="Rules and evidence">
+  <p class="eyebrow">Scene 4 · From rulebook to evidence</p>
+  <h2>Rules are described. Applications are assessed. The result stays traceable.</h2>
+  <div class="flow">
+    <div class="box"><strong>SchemaRecord</strong><p>Defines the rules for a RecordType: structure, required fields, allowed states, and transitions.</p></div>
+    <div class="arrow">→</div>
+    <div class="box mid"><strong>Conformance assessment</strong><p>A responsible or independent assessment body evaluates a concrete application and product version.</p></div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>ConformanceRecord</strong><p>Records the claim, subject, evidence, method, results, and validity period as its own record.</p></div>
+  </div>
+  <div class="quote">Not a PDF certificate next to the system, but a self-identifiable, versionable, and verifiable proof of conformance.</div>
+  <aside class="speaker-notes">Depending on governance, the assessment body can be the archive, a responsible public oversight body, or an independent, internationally recognised assessment organisation. What matters is the role: the assessment body doesn't attest abstract "good quality," but assesses a concrete subject against defined requirements.</aside>
+</section>
+
+<section class="slide" data-title="SchemaRecord">
+  <p class="eyebrow">Scene 5 · The SchemaRecord in the PoC</p>
+  <h2>The schema describes how a parliamentary answer is created and finalized.</h2>
+  <p class="lead">In the Question Time PoC, the SchemaRecord for the RecordType "Question Time – Answer" is likewise finalized and versioned. Among other things, it defines required fields and the transition from <code>draft</code> to <code>finalized</code>.</p>
+  <div class="json-card">
+    <div class="json-head"><span>SchemaRecord (shortened excerpt)</span><span>Answer management</span></div>
+    <pre>{
+  "did": "did:rwp:b7d4c810:schema:fragestunde-antwort",
+  "type": "SchemaRecord",
+  "payload": {
+    "displayName": "Question Time – Answer",
+    "allowedStates": ["draft", "finalized"],
+    "stateTransitions": [
+      { "from": "draft", "to": "finalized", <span class="highlight">"requiresOwnerSignature": true</span> }
+    ],
+    "required": ["antworttext", "bundesratdid", "beantwortetam"],
+    <span class="highlight-green">"conformanceRecords"</span>: []
+  },
+  "metadata": { "state": "finalized", "schemaVersion": "sha256:b03e4ff…" }
+}</pre>
+  </div>
+  <aside class="speaker-notes">This slide shows an actual, cleaned excerpt of the SchemaRecord from the Question Time PoC, not a hypothetical model. Two things matter: first, the schema describes the finalisation-relevant transition and requires the owner's signature. Second, the SchemaRecord contains references to conformance records, so the conformance relationship isn't only claimed organisationally but anchored in the rule artefact itself.</aside>
+</section>
+
+<section class="slide" data-title="Conformance Record">
+  <p class="eyebrow">Scene 6 · The Conformance Record in the PoC</p>
+  <h2>Conformance refers to a concrete application and product version.</h2>
+  <p class="lead">In the PoC evidence, the archive attests, using the tool "BAR Conformance Authority," the application "Antwortmanagement" in version <code>0.1.0</code> for the roles "producer" and "custodian."</p>
+  <div class="json-card">
+    <div class="json-head"><span>Conformance Record (shortened excerpt)</span><span>BAR Conformance Authority</span></div>
+    <pre>{
+  "did": "did:rwp:ba31d45f:records:986c4769-0713-4cb6-8292-e7412df3ebd5",
+  "type": "ConformanceRecord",
+  "payload": {
+    "claims": { "roles": ["producer", "custodian"], "profiles": ["RWP Information Record Conformant"] },
+    "subject": {
+      "productName": <span class="highlight">"Antwortmanagement"</span>,
+      "productVersion": <span class="highlight">"0.1.0"</span>,
+      "implementationDid": "did:rwp:b7d4c810:antwortmanagement"
+    },
+    "attester": "did:rwp:ba31d45f:agents:bar-usernik",
+    "issuedAt": "2026-08-24T17:04:50.544Z",
+    "expiresAt": "2026-11-01T17:04:00.000Z",
+    "assessment": { "tool": "BAR Conformance Authority", "method": "independently-assessed" },
+    "assessmentResults": {
+      "did-resolution": "passed", "schema-binding": "passed",
+      "payload-validation": "passed", "snapshot-integrity": "passed",
+      "immutable-finalisation": "passed"
+    }
+  },
+  "metadata": { "state": "finalized", "snapshotHash": "sha256:aad9654…" }
+}</pre>
+  </div>
+  <aside class="speaker-notes">The Conformance Record also carries a DID: did:rwp:ba31d45f:records:986c4769-0713-4cb6-8292-e7412df3ebd5. It concerns Antwortmanagement 0.1.0. The attester sits in the archive namespace, the assessment tool is called "BAR Conformance Authority," and the evidence includes a limited validity period along with concrete passed tests.</aside>
+</section>
+
+<section class="slide" data-title="Trust chain">
+  <p class="eyebrow">Scene 7 · The trust chain</p>
+  <h2>The answer record refers to its schema. The schema binds the conformance evidence.</h2>
+  <div class="chain">
+    <div class="chain-card final"><h3>AnswerRecord</h3><p><b>Question Time – Answer</b><br>state: finalized<br>recordtype: fragestunde-antwort<br>schemaversion: sha256:b03e4ff…</p><span class="tag green">created in conformance?</span></div>
+    <div class="arrow">→</div>
+    <div class="chain-card schema"><h3>SchemaRecord</h3><p>Describes RecordType and finalisation rules.<br><br>Binds the Conformance Record via DID and <code>snapshotHash</code>.</p><span class="tag">Rules</span></div>
+    <div class="arrow">→</div>
+    <div class="chain-card conf"><h3>Conformance Record</h3><p>Attests Antwortmanagement 0.1.0 as "producer" and "custodian" following independent assessment.</p><span class="tag purple">Evidence</span></div>
+  </div>
+  <div class="annotation"><b>Technical detail:</b> The AnswerRecord uses the <code>schemaversion</code> <code>sha256:b03e4ff…</code>, which corresponds to the <code>schemaHash</code> of a specific version of the SchemaRecord. The ConformanceRecord is likewise bound within that SchemaRecord version via DID and its <code>snapshotHash</code>.</div>
+  <aside class="speaker-notes">The three artefacts fit together technically via DID and SnapshotHash. In the Question Time PoC this can be carried out and verified.</aside>
+</section>
+
+<section class="slide" data-title="Who checks what">
+  <p class="eyebrow">Scene 8 · Mutual verifiability</p>
+  <h2>Conformance doesn't create a trust advance. It enables control in both directions.</h2>
+  <div class="checks">
+    <div class="check-card"><span class="check">✓</span><h3>The application's responsible party</h3><p>Can check whether the conformance reference embedded in the schema used is valid and applicable.</p><ul><li>Does the ConformanceRecord DID match?</li><li>Does the bound snapshot match?</li><li>Is the evidence still valid?</li><li>Does it refer to the current product version?</li></ul></div>
+    <div class="check-card"><span class="check">✓</span><h3>Attesting body, e.g. an archive</h3><p>Can check whether its conformance evidence is correctly referenced and unchanged within the SchemaRecord.</p><ul><li>Is its own ConformanceRecord used?</li><li>Does its SnapshotHash match?</li><li>Which application and version were assessed?</li><li>Which tests and evidence exist?</li></ul></div>
+  </div>
+  <div class="quote">Trust isn't issued once and then forgotten. It stays verifiable as a relationship between rules, assessment, and application.</div>
+  <aside class="speaker-notes">This slide addresses bidirectional control. The organisation responsible for the application can check the evidence in the schema. The attesting body can, conversely, check whether its statement is correctly and unaltered embedded. Because the ConformanceRecord has a validity period, it's also clear: conformance is bound to a product state and time, not an unlimited quality claim.</aside>
+</section>
+
+<section class="slide" data-title="EoL and AIS">
+  <p class="eyebrow">Scene 9 · Trust until the transition</p>
+  <h2>When no successor application takes over, AIS steps in.</h2>
+  <p class="lead">The conformance framework strengthens trust in the responsible application as long as it's operated. At end of life, a controlled <code>custodyTransfer</code> is required.</p>
+  <div class="eol">
+    <div class="box"><strong>RWP-conformant application</strong><p>Manages and provides the finalized record under defined and verifiable rules.</p></div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>End of Life</strong><p>No successor application takes over the record and its provisioning.</p></div>
+    <div class="arrow">→</div>
+    <div class="box ais"><strong>AIS</strong><p>Takes over the existing record within a controlled handover framework.</p></div>
+  </div>
+  <div class="quote">Conformance doesn't replace the transition. It makes it more credible that the application can reliably manage the record until that transition.</div>
+  <aside class="speaker-notes">This slide connects the conformance story with the archive story. Finalisation doesn't trigger archiving. As long as an RWP-conformant application is operated, the record stays there. If no successor application is available and the application reaches EoL, AIS is the defined path. The record stays the same; a SIP can form the handover framework.</aside>
+</section>
+
+<section class="slide" data-title="Steering">
+  <p class="eyebrow">Scene 10 · Steering through verifiable requirements</p>
+  <h2>Conformance becomes an instrument for governance and architecture.</h2>
+  <div class="governance">
+    <div><b>For archives</b><p>Requirements for custody and later transferability of records can start earlier, at rules and the environment of creation.</p></div>
+    <div><b>For organisations</b><p>They can link records instead of replicating them, when responsibility and conformance are traceable.</p></div>
+    <div><b>For procurement and architecture</b><p>Conformance profiles can gradually become verifiable requirements for new or renewed applications.</p></div>
+  </div>
+  <div class="future"><p><b>Perspective:</b> An abstract duty to keep orderly records becomes a concrete, testable, and documented property of applications.</p><small>The discussion around self-custody can build on this. RecordWeb doesn't pre-empt it, but offers a basis for delegating responsibility not blindly, but based on verifiable conformance.</small></div>
+  <aside class="speaker-notes">The governance effect is the real strategic benefit. Conformance makes it possible to bring requirements early into architecture, procurement, and further development. It doesn't replace legal or organisational responsibility, but it makes technical and procedural commitments verifiable.</aside>
+</section>
+
+<section class="slide" data-title="Closing">
+  <div class="closing">
+    <p class="eyebrow">RecordWeb · Trust perspective</p>
+    <h2>Linking needs trust.<br>Trust needs evidence.</h2>
+    <p class="lead">SchemaRecords make rules visible. ConformanceRecords document assessments. Applications, organisations, and archives can verify the relationship between the two.</p>
+    <div class="quote">Not blind trust.<br>Verifiable trust.</div>
+  </div>
+  <aside class="speaker-notes">Possible follow-up questions: which minimum tests should apply for producer and custodian? Who may attest conformance, under which governance and with which validity periods? How can this evidence be used in procurement and architecture steering?</aside>
+</section>
+
+</div>
+</main>
+<div class="help">Keyboard: ← → Home End N (speaker notes)</div>
+<nav class="nav" aria-label="Presentation navigation">
+  <button id="prev" type="button">Back</button>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  <button class="primary" id="next" type="button">Next</button>
+</nav>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+const counter = document.getElementById('counter');
+const progress = document.getElementById('progressBar');
+const notesButton = document.getElementById('notesButton');
+let index = 0;
+function render(){
+  slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+  prev.disabled = index === 0;
+  next.disabled = index === slides.length - 1;
+  next.textContent = index === slides.length - 1 ? 'End' : 'Next';
+  counter.textContent = `${index + 1} / ${slides.length}`;
+  progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+  document.title = `RecordWeb: ${slides[index].dataset.title}`;
+  window.scrollTo({top:0, behavior:'instant'});
+}
+function move(delta){
+  const target = Math.max(0, Math.min(slides.length - 1, index + delta));
+  if (target !== index){ index = target; render(); }
+}
+prev.addEventListener('click', () => move(-1));
+next.addEventListener('click', () => move(1));
+notesButton.addEventListener('click', () => {
+  const visible = document.body.classList.toggle('show-notes');
+  notesButton.textContent = visible ? 'Hide speaker notes' : 'Show speaker notes';
+  notesButton.setAttribute('aria-pressed', String(visible));
+});
+window.addEventListener('keydown', (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey) return;
+  if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' '){ event.preventDefault(); move(1); }
+  if (event.key === 'ArrowLeft' || event.key === 'PageUp'){ event.preventDefault(); move(-1); }
+  if (event.key === 'Home'){ event.preventDefault(); index = 0; render(); }
+  if (event.key === 'End'){ event.preventDefault(); index = slides.length - 1; render(); }
+  if (event.key.toLowerCase() === 'n'){ notesButton.click(); }
+});
+render();
+</script>
+</body>
+</html>

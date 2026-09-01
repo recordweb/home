@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb · Where is this record?</title>
+<style>
+:root{--blue:#005a9c;--blue-dark:#003d6b;--blue-soft:#e8f2f8;--ink:#1d2b36;--muted:#536471;--line:#c9d7df;--paper:#fff;--surface:#f5f8fa;--warm:#fff5dc;--warm-line:#d89c23;--red:#ae2626;--red-soft:#fff1f1;--green:#16784b;--green-soft:#eaf7ef;--purple:#68499b;--purple-soft:#f2edf9;--shadow:0 10px 30px rgba(21,47,66,.13)}
+*{box-sizing:border-box}
+html{background:var(--surface)}
+body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button{font:inherit}
+.topbar{position:fixed;z-index:10;inset:0 0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}
+.brand strong{font-size:1.2rem}
+.brand span{font-size:.82rem;font-weight:500;opacity:.86}
+.counter{font-size:.9rem;font-variant-numeric:tabular-nums}
+main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}
+.deck{width:min(1160px,100%)}
+.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--blue);box-shadow:var(--shadow)}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.eyebrow{margin:0 0 1rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}
+h1{max-width:920px;font-size:clamp(2.6rem,6.2vw,5.5rem)}
+h2{max-width:910px;font-size:clamp(2rem,4.4vw,3.8rem)}
+h3{font-size:1.12rem}
+.lead{max-width:840px;margin:1.5rem 0 0;color:var(--muted);font-size:clamp(1.15rem,2vw,1.42rem)}
+.quote{max-width:900px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--blue);background:var(--blue-soft);font-size:1.2rem;font-weight:650}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;margin-top:2rem}
+.card{padding:1.3rem;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(20,44,60,.08)}
+.persona{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}
+.avatar{display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:#fff;background:var(--purple);font-size:.9rem;font-weight:850}
+.persona p{margin:0;line-height:1.25}
+.persona small{display:block;color:var(--muted)}
+.browser{overflow:hidden;border:1px solid var(--line);border-radius:5px;background:#fff;box-shadow:0 4px 18px rgba(20,44,60,.08)}
+.browser-bar{display:flex;align-items:center;gap:.5rem;padding:.65rem .85rem;border-bottom:1px solid var(--line);background:#eef3f5}
+.dot{width:10px;height:10px;border-radius:50%;background:#bdcbd2}
+.address{flex:1;overflow:hidden;padding:.25rem .45rem;border:1px solid #d1dde2;border-radius:3px;color:#51616a;background:#fff;font:.72rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-overflow:ellipsis;white-space:nowrap}
+.error{min-height:280px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;text-align:center;color:var(--red);background:var(--red-soft)}
+.error strong{font-size:clamp(4rem,9vw,7rem);line-height:1;letter-spacing:-.08em}
+.error span{margin-top:.8rem;font-size:1.25rem;font-weight:750}
+.error small{max-width:430px;margin-top:.9rem;color:#865050}
+.caution{margin-top:1.4rem;padding:1rem 1.15rem;border-left:6px solid var(--warm-line);background:var(--warm);color:#60450c}
+.caution p{margin:.15rem 0}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
+.compare>div{padding:1.25rem;border:1px solid var(--line)}
+.compare h3{margin-bottom:.75rem}
+.compare ul{margin:0;padding-left:1.15rem;color:var(--muted)}
+.compare li{margin:.45rem 0}
+.compare .old{border-top:6px solid var(--warm-line)}
+.compare .new{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.did{max-width:1000px;margin-top:2rem;padding:1.15rem;border:1px solid var(--line);border-top:7px solid var(--blue);background:var(--blue-soft);font:.93rem/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+.did .part{padding:.18rem .25rem;border-radius:2px}
+.did .method{color:#fff;background:var(--blue-dark)}
+.did .ns{color:#432c6e;background:#e8dff5;font-weight:850}
+.did .opaque{color:#145d3b;background:#dff3e7;font-weight:850}
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.35rem}
+.parts>div{min-height:150px;padding:1rem;border:1px solid var(--line);background:#fff}
+.parts b{display:block;margin-bottom:.5rem;color:var(--blue-dark);font-size:1.05rem}
+.parts p{margin:0;color:var(--muted);font-size:.86rem}
+.table-wrap{margin-top:1.8rem;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.91rem}
+th,td{padding:.85rem .9rem;border:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:#fff;background:var(--blue-dark)}
+td{background:#fff}
+tr:nth-child(even) td{background:#f7fafb}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:.65rem;align-items:stretch;margin-top:2rem}
+.box{display:flex;flex-direction:column;justify-content:center;min-height:180px;padding:1rem;border:1px solid var(--line);background:#fff}
+.box strong{color:var(--blue-dark)}
+.box small{margin-top:.43rem;color:var(--muted)}
+.box.input{border-top:6px solid var(--purple);background:var(--purple-soft)}
+.box.root{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.box.doc{border-top:6px solid var(--warm-line);background:var(--warm)}
+.box.record{border-top:6px solid var(--green);background:var(--green-soft)}
+.arrow{align-self:center;color:var(--blue);font-size:2rem;font-weight:850}
+.json-card{overflow:hidden;margin-top:1.7rem;border:1px solid var(--line);background:#fff}
+.json-head{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;color:#fff;background:var(--blue-dark);font-size:.88rem;font-weight:800}
+pre{max-height:330px;overflow:auto;margin:0;padding:1.15rem;color:#22333d;background:#f7fafb;font:.79rem/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;white-space:pre-wrap;word-break:break-word}
+.highlight{color:#743700;background:#fff1bf;font-weight:850}
+.highlight-green{color:#125f3b;background:#dff3e7;font-weight:850}
+.annotation{max-width:990px;margin-top:1rem;padding:.85rem 1rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#60450c;font-size:.93rem}
+.transfer{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:center;margin-top:2rem}
+.transfer .box{min-height:165px}
+.transfer .box.ais{border:3px solid var(--green);background:var(--green-soft)}
+.registry{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-top:2rem}
+.registry .box{min-height:205px}
+.registry .box.chain{border:3px solid var(--blue);background:var(--blue-soft)}
+.chain-label{display:grid;width:88px;height:88px;place-items:center;border:4px solid var(--purple);border-radius:50%;color:var(--purple);background:var(--purple-soft);text-align:center;font-size:.76rem;font-weight:850;line-height:1.1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:2rem}
+.two>div{min-height:205px;padding:1.2rem;border:1px solid var(--line);background:#fff}
+.two h3{color:var(--blue-dark)}
+.two p{margin:.6rem 0 0;color:var(--muted);font-size:.9rem}
+.two .today{border-top:6px solid var(--purple);background:var(--purple-soft)}
+.two .vision{border-top:6px solid var(--green);background:var(--green-soft)}
+.governance{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-top:2rem}
+.gov{min-height:185px;padding:1rem;border:1px solid var(--line);background:#fff}
+.gov .num{display:inline-grid;width:28px;height:28px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.76rem;font-weight:850}
+.gov b{display:block;margin-top:.6rem;color:var(--blue-dark);font-size:1rem}
+.gov p{margin:.45rem 0 0;color:var(--muted);font-size:.81rem}
+.closing{text-align:center}
+.closing h2{margin-inline:auto}
+.closing .quote{margin:2rem auto 0;text-align:left}
+.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}
+.speaker-notes{display:none;max-width:960px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}
+body.show-notes .speaker-notes{display:block}
+.nav{position:fixed;z-index:10;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}
+.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--blue);border-radius:3px;color:var(--blue);background:#fff;font-weight:750;cursor:pointer}
+.nav button.primary{color:#fff;background:var(--blue)}
+.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}
+.progress span{display:block;height:100%;background:var(--blue);transition:width .2s ease}
+.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}
+@media (max-width:820px){
+body{font-size:16px}
+.topbar{padding:0 1rem}
+.brand span{display:none}
+main{padding:82px 1rem 94px}
+.slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}
+.stage,.compare,.two{grid-template-columns:1fr}
+.parts,.governance{grid-template-columns:1fr 1fr}
+.flow,.transfer,.registry{grid-template-columns:1fr}
+.arrow{transform:rotate(90deg)}
+.nav{gap:.5rem;padding:14px .7rem}
+.nav button{min-width:82px;font-size:.83rem}
+.progress{width:90px}
+.help{display:none}
+}
+@media print{
+.topbar,.nav,.speaker-toggle,.help{display:none!important}
+main{display:block;padding:0}
+.slide{display:flex!important;min-height:100vh;page-break-after:always;box-shadow:none}
+.speaker-notes{display:block}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="brand"><strong>RecordWeb</strong><span>DID · Namespace · Resolver</span></div>
+<div class="counter" id="counter" aria-live="polite">1 / 15</div>
+</header>
+<button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
+<main>
+<div class="deck">
+
+<section class="slide active" data-title="Title">
+<p class="eyebrow">RecordWeb · Discoverability across change</p>
+<h1>Where is this record?</h1>
+<p class="lead">The name stays. The location can change.</p>
+<div class="quote">Don't search for the old location.<br>Resolve the stable name.</div>
+<aside class="speaker-notes">This presentation has two parts. Part one starts with Ms. Berger and explains, without requiring technical background, why a record must stay discoverable across change. Part two shows the concrete resolution path for a technical audience: DID, namespace, root resolver, DID document, and RecordEndpoint.</aside>
+</section>
+
+<section class="slide" data-title="Part 1">
+<p class="eyebrow">Part 1 · The story of a search</p>
+<h2>Ms. Berger is looking for an answer she once found before.</h2>
+<div class="stage">
+<div>
+<p class="lead">Some years after the question-time session, journalist Ms. Berger wants to refer once more to the earlier answer on the trend in CO₂ emissions.</p>
+<p>She has an old link saved. She clicks it.</p>
+</div>
+<div class="card">
+<div class="persona"><div class="avatar">FB</div><p><b>Ms. Berger</b><small>Journalist, later user</small></p></div>
+<p style="margin:0;color:var(--muted);font-size:.92rem">"I know this answer exists. But where do I find it today?"</p>
+</div>
+</div>
+<aside class="speaker-notes">The starting situation is deliberately human and everyday. It connects to the presentation "The answer explains itself." This time, however, the focus isn't primarily on the context of a found answer, but on the preceding question: how does Ms. Berger find the record again at all, once systems have changed?</aside>
+</section>
+
+<section class="slide" data-title="404">
+<p class="eyebrow">Scene 1 · The old location</p>
+<h2>The saved link leads nowhere.</h2>
+<div class="browser" style="margin-top:1.8rem">
+<div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="address">https://old-system.example.gov/answers/co2-2026</div></div>
+<div class="error"><strong>404</strong><span>Page not found</span><small>The application was retired. The former web address no longer exists.</small></div>
+</div>
+<div class="caution"><p><b>The information may still exist.</b> But its former address described a location that has changed — server, domain, application, or area of responsibility.</p></div>
+<aside class="speaker-notes">The 404 slide is deliberately emotional. But it shouldn't unfairly disparage URLs — URLs can be maintained permanently, redirected, or embedded in PID systems. The claim is narrower: a URL contains a specific hosting location. If that changes, the address must be actively maintained. RecordWeb therefore separates the permanent name of the record from its current endpoint.</aside>
+</section>
+
+<section class="slide" data-title="Name and location">
+<p class="eyebrow">Scene 2 · Separating name and location</p>
+<h2>A URL is an address. A DID is a stable reference point.</h2>
+<div class="compare">
+<div class="old"><h3>Web address</h3>
+<ul>
+<li>Contains domain, server, and path</li>
+<li>Describes where something is available today</li>
+<li>Must be actively updated when systems, domains, or structures change</li>
+<li>Can lead to a 404 page if not maintained</li>
+</ul>
+</div>
+<div class="new"><h3>RecordWeb DID</h3>
+<ul>
+<li>Names exactly this record</li>
+<li>Contains no current server and no domain</li>
+<li>Is resolved via a registry and resolver</li>
+<li>Can lead to the current endpoint when the location changes</li>
+</ul>
+</div>
+</div>
+<div class="quote">The name says: this is this record.<br>Resolution finds out: where is it provided today?</div>
+<aside class="speaker-notes">The term DID can be introduced here — decentralized identifier. For the audience, the separation between identity and location matters more than the abbreviation. Ultimately, the DID is the reason a record can stay referenceable across system retirements and custodyTransfers.</aside>
+</section>
+
+<section class="slide" data-title="DID">
+<p class="eyebrow">Scene 3 · The stable name</p>
+<h2>The DID names the record without speculating about it.</h2>
+<div class="did"><span class="part method">did:rwp:</span><span class="part ns">b7d4c810</span>:<span class="part opaque">2fe14680-575a-4da4-aa65-6e72e0866e9b</span></div>
+<div class="parts">
+<div><b><code>did:rwp:</code></b><p>The marker: this identifier follows the RecordWeb method.</p></div>
+<div><b><code>b7d4c810</code></b><p>Opaque namespace. It leads to the accountable resolution information.</p></div>
+<div><b>2fe14680-575a-4da4-aa65-6e72e0866e9b</b><p>Opaque and technically unique string (UUID). It reveals neither topic, RecordType, organisation, nor current location.</p></div>
+</div>
+<aside class="speaker-notes">The DID is implemented as did:rwp:namespace:uuid. The RecordType only becomes visible when the record is retrieved.</aside>
+</section>
+
+<section class="slide" data-title="Opaque">
+<p class="eyebrow">Scene 4 · Why the identifier doesn't speak</p>
+<h2>A stable name shouldn't encode a changeable assumption.</h2>
+<div class="compare">
+<div class="old"><h3>A descriptive name would lock in</h3>
+<ul>
+<li>which organisation is responsible</li>
+<li>which topic or classification applies</li>
+<li>which RecordType is expected</li>
+<li>which language, structure, or domain is used</li>
+</ul>
+</div>
+<div class="new"><h3>An opaque identifier only says</h3>
+<ul>
+<li>this is exactly this record</li>
+<li>the location can change later</li>
+<li>responsibility can transfer</li>
+<li>type and context are determined from the record itself</li>
+</ul>
+</div>
+</div>
+<div class="quote">Opaque does not mean secret. It means: the permanent name stays neutral toward change.</div>
+<aside class="speaker-notes">An opaque identifier alone doesn't prevent a 404 page. But it does prevent the permanent identity from being directly coupled to a changeable endpoint, an organisation name, or a business structure. For resolution to keep working permanently, a registry, resolver, and governance are also needed.</aside>
+</section>
+
+<section class="slide" data-title="Namespace">
+<p class="eyebrow">Scene 5 · The namespace as a resolution space</p>
+<h2>The namespace doesn't answer "what is this?" but "who knows how to resolve it?"</h2>
+<p class="lead">A namespace bundles a mapping to a resolver. How finely or broadly it is cut is an organisational and governance decision, not a requirement of the protocol.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Namespace design</th><th>Possible strength</th><th>Possible consequence</th></tr></thead>
+<tbody>
+<tr><td>Per organisation</td><td>Simple entry point, few responsibilities</td><td>Changes can affect a large area</td></tr>
+<tr><td>Per application</td><td>Clear technical operating boundary</td><td>More namespaces and more transitions at end of life</td></tr>
+<tr><td>Per business or accountability area</td><td>Can follow stable tasks and custody structures</td><td>Requires clear business governance</td></tr>
+<tr><td>Fine-grained custody areas</td><td>Targeted and smaller custodyTransfers possible</td><td>More administrative and decision-making effort</td></tr>
+</tbody>
+</table>
+</div>
+<aside class="speaker-notes">Important: RWP makes no recommendation. This slide makes visible that namespace strategy is an enormously important adoption and governance topic. A namespace strategy is very hard to change after the fact. Organisations also need to decide which unit is accountable for the resolver and how this responsibility can sensibly continue through custodyTransfers.</aside>
+</section>
+
+<section class="slide" data-title="Resolver">
+<p class="eyebrow">Scene 6 · An established principle</p>
+<h2>A resolver is a signpost.</h2>
+<div class="stage">
+<div>
+<p class="lead">Many people know the principle from DNS: a name is resolved so that a technical target can be found.</p>
+<p>RecordWeb follows the same basic idea, with one extra step: the resolver doesn't just return a technical address, but a DID document with the current RecordEndpoint and further information about the record.</p>
+</div>
+<div class="card">
+<div class="persona"><div class="avatar" style="background:var(--blue)">?</div><p><b>Resolver</b><small>finds the accountable path to the record</small></p></div>
+<div class="caution" style="margin:0"><p><b>Simple picture:</b> DNS helps find a domain name. A RecordWeb resolver helps find a record via its DID and namespace.</p></div>
+</div>
+</div>
+<aside class="speaker-notes">Don't dwell too long on DNS. It's merely a familiar image: resolution is not an exotic idea. The difference is that RecordWeb first finds the namespace resolver, then retrieves the DID document, and finally uses its RecordEndpoint.</aside>
+</section>
+
+<section class="slide" data-title="Part 2">
+<p class="eyebrow">Part 2 · The technical resolution path</p>
+<h2>The RecordFinder shows resolution in four steps.</h2>
+<p class="lead">An application takes a DID through the namespace registry to the accountable resolver. That resolver returns the DID document, whose endpoint returns the record.</p>
+<div class="flow">
+<div class="box input"><strong>1. Input DID</strong><small>Ms. Berger or a client enters the DID.</small></div>
+<div class="arrow">→</div>
+<div class="box root"><strong>2. Root resolver</strong><small>The namespace registry finds the resolver for <code>b7d4c810</code>.</small></div>
+<div class="arrow">→</div>
+<div class="box doc"><strong>3. DID document</strong><small>The namespace resolver returns endpoint, version, and controller.</small></div>
+<div class="arrow">→</div>
+<div class="box record"><strong>4. Record</strong><small>The RecordEndpoint returns the accountable record.</small></div>
+</div>
+<aside class="speaker-notes">This depiction follows the RecordFinder flow from the Root Resolver testnet. The terminology deliberately stays close to the tool: inputDid, root-resolver chaincode, resolverEndpointCalled, and recordEndpointCalled. The RecordFinder and the entire Root Resolver testnet were also used in the "Question time" PoC.</aside>
+</section>
+
+<section class="slide" data-title="Steps 1 and 2">
+<p class="eyebrow">Technical evidence · Steps 1–2</p>
+<h2>The namespace comes from the DID. The root registry finds its resolver.</h2>
+<div class="json-card">
+<div class="json-head"><span>RecordFinder resolution path</span><span>Root resolver chaincode</span></div>
+<pre>1) inputDid
+   inputDid: <span class="highlight">"did:rwp:b7d4c810:2fe14680-575a-4da4-aa65-6e72e0866e9b"</span>
+   extractedNamespace: <span class="highlight">"b7d4c810"</span>
+
+2) Root resolver chaincode (namespace-registry)
+   ResolveNamespace(namespace: "b7d4c810") →
+   resolverEndpoint: <span class="highlight-green">"https://vps.recordweb.dev/antwortmanagement/did"</span>
+   registeredBy: "CH"
+   registeredAt: "2026-08-25T12:51:01Z"
+   endorsedBy: ["CH", "RecordWeb.org"]</pre>
+</div>
+<div class="annotation"><b>In the PoC "Question time":</b> the root registry returns, for namespace <code>b7d4c810</code>, the accountable resolver. The RecordFinder thereby gets not the record itself, but first the reliable path to its DID document.</div>
+<aside class="speaker-notes">The example comes from the "Question time" PoC and the RecordFinder output.</aside>
+</section>
+
+<section class="slide" data-title="Step 3">
+<p class="eyebrow">Technical evidence · Step 3</p>
+<h2>The namespace resolver returns the DID document.</h2>
+<p class="lead">The DID document contains the current information on where the record is provided, plus details supporting its classification and verification.</p>
+<div class="json-card">
+<div class="json-head"><span>DID document — cleaned excerpt</span><span>antwortmanagement/did</span></div>
+<pre>{
+  "@context": "https://www.w3.org/ns/did/v1",
+  "id": "did:rwp:b7d4c810:2fe14680-575a-4da4-aa65-6e72e0866e9b",
+  <span class="highlight-green">"recordEndpoint": "https://vps.recordweb.dev/antwortmanagement/api/records/did%3Arwp%3Ab7d4c810%3A..."</span>,
+  "created": "2026-08-25T14:08:03.956Z",
+  "updated": "2026-08-25T14:14:32.702Z",
+  "currentVersion": "sha256:0661762b2d678e3e0699accfb00d7f227",
+  "controller": "did:rwp:b7d4c810:users:daniel-wyss"
+}</pre>
+</div>
+<div class="annotation"><b>Important:</b> the DID remains the reference point. The <code>recordEndpoint</code> is the current, changeable address that the resolver delivers.</div>
+<aside class="speaker-notes">This slide uses a DID document excerpt from the "Question time" PoC. The RecordEndpoint remains a URL and may change. The resolver exists precisely to deliver the current endpoint, without the referencing DID needing to change.</aside>
+</section>
+
+<section class="slide" data-title="Step 4">
+<p class="eyebrow">Technical evidence · Step 4</p>
+<h2>The RecordEndpoint returns the record, and the record explains its type.</h2>
+<div class="json-card">
+<div class="json-head"><span>Record — cleaned excerpt</span><span>Question-time answer management</span></div>
+<pre>{
+  "did": "did:rwp:b7d4c810:2fe14680-575a-4da4-aa65-6e72e0866e9b",
+  <span class="highlight">"recordType": "did:rwp:b7d4c810:schema:question-time-answer"</span>,
+  "owner": "did:rwp:b7d4c810:users:daniel-wyss",
+  "state": <span class="highlight-green">"finalized"</span>,
+  "schemaVersion": "sha256:b03e4ff45a36431a70a7b08085b8f916",
+  "snapshotHash": "sha256:0661762b2d678e3e0699accfb00d7f227",
+  "payload": {
+    "answerText": "I do not yet know...",
+    "federalCouncilDid": "did:rwp:b7d4c810:users:daniel-wyss",
+    "answeredAt": "2026-08-25T14:08:03.938Z"
+  },
+  "finalized": "2026-08-25T14:14:32.701Z"
+}</pre>
+</div>
+<div class="annotation"><b>The DID doesn't need to reveal a type.</b> The <code>recordType</code> in the retrieved record makes visible what kind of record this is. Status, ownership, and schema/version references can also be checked.</div>
+<aside class="speaker-notes"><p>This completes the technical flow. After retrieval, the RecordFinder shows a human-readable view: payload, record details, and technical metadata. This display illustrates that discoverability and authorisation must be treated separately.</p><p><b>Note:</b> in this example, the RecordType is not yet opaque. With the correct DID, a SchemaRecord can also be read at any time via a RecordFinder.</p></aside>
+</section>
+
+<section class="slide" data-title="Change of location">
+<p class="eyebrow">Technical evidence · When the location changes</p>
+<h2>At custodyTransfer, the endpoint changes, not the identity.</h2>
+<div class="transfer">
+<div class="box"><strong>Old application</strong><small>Provides the record today via its endpoint.</small></div>
+<div class="arrow">→</div>
+<div class="box"><strong>custodyTransfer</strong><small>Responsibility and provision continue in a controlled way.</small></div>
+<div class="arrow">→</div>
+<div class="box ais"><strong>Successor application or AIS</strong><small>Provides the same record via a new accountable endpoint.</small></div>
+</div>
+<div class="quote">Ms. Berger doesn't need to learn a new link. She resolves the same DID again and gets the current path to the record.</div>
+<aside class="speaker-notes">This slide connects the discoverability story with the archival story. At end of life, a successor specialist application or an AIS can take over provision. The concrete RecordEndpoint changes — the DID remains the reference. This deliberately separates the name from the current location.</aside>
+</section>
+
+<section class="slide" data-title="Root registry">
+<p class="eyebrow">Technical evidence · The shared foundation</p>
+<h2>Who decides which resolver is accountable for a namespace?</h2>
+<div class="registry">
+<div class="box"><strong>Namespace</strong><small><code>b7d4c810</code><br>A client knows the namespace from the DID, but not yet the resolver.</small></div>
+<div class="chain-label">jointly<br>operated<br>registry</div>
+<div class="box chain"><strong>Root resolver</strong><small>The namespace registry maps namespace and resolver endpoint in a traceable way.<br>In the testnet: chaincode <code>namespace-registry</code> with <code>ResolveNamespace</code>.</small></div>
+</div>
+<div class="annotation"><b>PoC/testnet:</b> the namespace registry is trialled in a Hyperledger Fabric 2.5 testnet. It is a learning and development platform, not production operation.</div>
+<aside class="speaker-notes">The wording follows the README: "Hyperledger Fabric 2.5 testnet — permissioned blockchain for the did:rwp namespace registry. Purpose: learning environment and development platform for the namespace-registry chaincode, explicitly not production operation." For the non-technical audience, "jointly operated registry" is sufficient.</aside>
+</section>
+
+<section class="slide" data-title="Governance">
+<p class="eyebrow">Technical appendix · Long-term governance</p>
+<h2>A globally resolvable registry needs long-term, shared responsibility.</h2>
+<div class="two">
+<div class="today"><h3>Today: PoC testnet</h3>
+<p>Hyperledger Fabric 2.5 as a permissioned blockchain. The testnet contains 3 sample organisations and one channel, <code>root-resolver</code>.</p>
+<p>It demonstrates the technical and organisational idea of a multilaterally endorsed namespace registration.</p>
+</div>
+<div class="vision"><h3>Discussion picture for later</h3>
+<p>An international RecordWeb steward organisation could be responsible for specification, governance, and initial operation of the root registry.</p>
+<p>Member authorities could gradually take on infrastructure and shared responsibility, so that operation and governance become increasingly federated.</p>
+</div>
+</div>
+<div class="annotation"><b>Framing:</b> the picture on the right is a development hypothesis, not an already existing organisation or a production commitment.</div>
+<aside class="speaker-notes">Here the vision should be clearly labelled as such — for example an internationally oriented steward organisation modelled on a standards-maintaining community, with membership of national authorities. At minimum, it would initially secure registry governance. As participation grows, peers and orderers could be distributed among members. Important: the steward organisation should not necessarily have to operate infrastructure alone long-term, but should secure specification and governance.</aside>
+</section>
+
+<section class="slide" data-title="Federation">
+<p class="eyebrow">Technical appendix · A possible development path</p>
+<h2>From initial operation to a federated trust foundation.</h2>
+<div class="governance">
+<div class="gov"><span class="num">1</span><b>Start</b><p>A steward organisation establishes specification, policies, and an initial registry operation.</p></div>
+<div class="gov"><span class="num">2</span><b>Participation</b><p>National or sectoral authorities join, bringing requirements, legitimacy, and governance.</p></div>
+<div class="gov"><span class="num">3</span><b>Distribution</b><p>Members can co-support infrastructure; the registry becomes technically and organisationally more robust.</p></div>
+<div class="gov"><span class="num">4</span><b>Maturity</b><p>The steward organisation increasingly focuses on specification, interoperability, and governance.</p></div>
+</div>
+<div class="quote">The blockchain is not the story. It's one possible mechanism so that the mapping "namespace → resolver" doesn't depend on a single, changing website.</div>
+<aside class="speaker-notes">This slide answers the "why blockchain?" question. It's about a shared, verifiable, and federally governed root registry. Hyperledger Fabric is the chosen permissioned technology in the PoC. RWP can refine the registry architecture further later — as of now it is not yet reflected in the protocol.</aside>
+</section>
+
+<section class="slide" data-title="Closing">
+<div class="closing">
+<p class="eyebrow">RecordWeb · DID and resolution</p>
+<h2>A record stays discoverable,<br>even when its location changes.</h2>
+<p class="lead">The DID names the record. The namespace leads to the accountable resolver. The DID document delivers the current endpoint. And a jointly operated registry makes the first step traceable in the long term.</p>
+<div class="quote">Don't search for the old location.<br>Resolve the stable name.</div>
+</div>
+<aside class="speaker-notes">Possible follow-up questions: which namespace strategy suits our organisation? Who operates resolvers? What governance is needed for namespace registration? How is a custodyTransfer implemented in the resolver context? What role should an international RecordWeb steward organisation play?</aside>
+</section>
+
+</div>
+</main>
+<div class="help">Keyboard: ← → Home End N speaker notes</div>
+<nav class="nav" aria-label="Presentation navigation">
+<button id="prev" type="button">← Back</button>
+<div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+<button class="primary" id="next" type="button">Next →</button>
+</nav>
+<script>
+const s=document.querySelectorAll('.slide'),p=document.getElementById('prev'),n=document.getElementById('next'),c=document.getElementById('counter'),b=document.getElementById('progressBar'),t=document.getElementById('notesButton');
+let i=0;
+function r(){s.forEach((x,j)=>x.classList.toggle('active',j===i));p.disabled=i===0;n.disabled=i===s.length-1;n.textContent=i===s.length-1?'End':'Next →';c.textContent=(i+1)+' / '+s.length;b.style.width=((i+1)/s.length*100)+'%';document.title='RecordWeb · '+s[i].dataset.title;window.scrollTo({top:0,behavior:'instant'});}
+function m(d){const x=Math.max(0,Math.min(s.length-1,i+d));if(x!==i){i=x;r();}}
+p.addEventListener('click',()=>m(-1));n.addEventListener('click',()=>m(1));
+t.addEventListener('click',()=>{const v=document.body.classList.toggle('show-notes');t.textContent=v?'Hide speaker notes':'Show speaker notes';t.setAttribute('aria-pressed',String(v));});
+window.addEventListener('keydown',(e)=>{if(e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();m(1);}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();m(-1);}if(e.key==='Home'){e.preventDefault();i=0;r();}if(e.key==='End'){e.preventDefault();i=s.length-1;r();}if(e.key.toLowerCase()==='n'){t.click();}});
+r();
+</script>
+</body>
+</html>

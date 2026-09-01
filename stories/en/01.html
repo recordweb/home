@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb: A question. An answer. A context.</title>
+<style>
+:root{
+  --w3c-blue:#005a9c; --w3c-blue-dark:#003d6b; --w3c-blue-soft:#e8f2f8;
+  --ink:#1d2b36; --muted:#536471; --line:#c9d7df; --paper:#ffffff; --surface:#f5f8fa;
+  --warm:#fff5dc; --warm-line:#e4b450; --green:#16784b; --red:#a52828;
+  --shadow:0 10px 30px rgba(21,47,66,.13);
+}
+*{box-sizing:border-box}
+html{background:var(--surface)}
+body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button{font:inherit}
+.topbar{position:fixed;z-index:10;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--w3c-blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}
+.brand strong{font-size:1.2rem}
+.brand span{font-size:.82rem;font-weight:500;opacity:.86}
+.counter{font-size:.9rem;font-variant-numeric:tabular-nums}
+main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}
+.deck{width:min(1120px,100%)}
+.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--w3c-blue);box-shadow:var(--shadow)}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.eyebrow{margin:0 0 1rem;color:var(--w3c-blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}
+h1{max-width:920px;font-size:clamp(2.6rem,6.2vw,5.5rem)}
+h2{max-width:850px;font-size:clamp(2rem,4.4vw,3.8rem)}
+h3{font-size:1.15rem}
+.lead{max-width:760px;margin:1.5rem 0 0;font-size:clamp(1.16rem,2vw,1.45rem);color:var(--muted)}
+.quote{max-width:860px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--w3c-blue);background:var(--w3c-blue-soft);font-size:1.22rem;font-weight:650}
+.stage{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(1.5rem,4vw,4.4rem);align-items:center;margin-top:2rem}
+.scene-card,.screen,.note,.role-card{border:1px solid var(--line);border-radius:5px;background:#fff}
+.scene-card{padding:1.3rem;box-shadow:0 4px 18px rgba(20,44,60,.08)}
+.person{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}
+.avatar{display:grid;width:44px;height:44px;place-items:center;border-radius:50%;color:#fff;background:var(--w3c-blue);font-size:.9rem;font-weight:800}
+.person p{margin:0;line-height:1.25}
+.person small{display:block;color:var(--muted)}
+.deadline{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem .85rem;border-radius:4px;background:#fff1f1;color:var(--red);font-weight:750}
+.document{margin-top:1rem;padding:1rem;border:1px solid #d9e1e5;background:#fcfcfc}
+.document .line{height:10px;margin:.65rem 0;border-radius:9px;background:#dce5e9}
+.document .line.short{width:55%}
+.document .line.accent{width:76%;background:#91bad0}
+.chat{margin-top:1rem;padding:1rem;border:1px solid #d4e1e8;background:#f4f9fb}
+.chat-label{margin-bottom:.65rem;color:var(--muted);font-size:.78rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.bubble{width:fit-content;max-width:90%;margin:.55rem 0;padding:.58rem .75rem;border-radius:9px 9px 9px 2px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);font-size:.88rem}
+.bubble.me{margin-left:auto;border-radius:9px 9px 2px 9px;color:#fff;background:var(--w3c-blue)}
+.phone{position:relative;min-height:310px;padding:2rem 1.25rem;border:8px solid #263a47;border-radius:30px;background:#f7fafb;box-shadow:0 8px 20px rgba(17,35,45,.18)}
+.phone::before{content:"";position:absolute;top:10px;left:50%;width:70px;height:6px;border-radius:8px;background:#263a47;transform:translateX(-50%)}
+.caller{margin-top:1.4rem;text-align:center;font-size:1.4rem;font-weight:800}
+.caller small{display:block;margin-top:.2rem;color:var(--muted);font-size:.85rem;font-weight:500}
+.call-actions{display:flex;justify-content:center;gap:1rem;margin-top:3rem}
+.circle{display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:#fff;background:var(--green);font-weight:800}
+.circle.red{background:var(--red)}
+.dialogue{max-width:730px;margin-top:1.6rem}
+.dialogue p{margin:.7rem 0;padding:.9rem 1.05rem;border-radius:3px;background:var(--surface)}
+.dialogue b{color:var(--w3c-blue-dark)}
+.system-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.flow-box{position:relative;min-height:140px;padding:1rem;border:1px solid var(--line);background:#fff}
+.flow-box:not(:last-child)::after{content:"→";position:absolute;top:50%;right:-1.4rem;z-index:1;color:var(--w3c-blue);font-size:1.7rem;font-weight:800;transform:translateY(-50%)}
+.flow-box h3{color:var(--w3c-blue-dark)}
+.flow-box p{margin:.55rem 0 0;color:var(--muted);font-size:.92rem}
+.multi-screen{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.7rem}
+.screen{padding:1rem}
+.screen-head{display:flex;justify-content:space-between;padding-bottom:.6rem;border-bottom:1px solid var(--line);color:var(--w3c-blue-dark);font-size:.88rem;font-weight:800}
+.task{margin-top:.8rem;padding:.75rem;border-left:4px solid var(--w3c-blue);background:var(--w3c-blue-soft);font-size:.9rem}
+.task small{display:block;margin-top:.25rem;color:var(--muted)}
+.pressure{margin-top:1.2rem;padding:1rem 1.15rem;border:1px solid var(--warm-line);background:var(--warm)}
+.pressure p{margin:0}
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
+.comparison div{padding:1.25rem;border:1px solid var(--line)}
+.comparison h3{margin-bottom:.75rem}
+.comparison ul{margin:0;padding-left:1.1rem;color:var(--muted)}
+.comparison li{margin:.45rem 0}
+.comparison .old{border-top:6px solid var(--warm-line)}
+.comparison .new{border-top:6px solid var(--w3c-blue);background:var(--w3c-blue-soft)}
+.recordweb-map{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.6rem;align-items:stretch;margin-top:2rem}
+.node{display:flex;flex-direction:column;justify-content:center;min-height:135px;padding:1rem;border:1px solid var(--line);background:#fff}
+.node strong{color:var(--w3c-blue-dark)}
+.node small{margin-top:.35rem;color:var(--muted)}
+.arrow{align-self:center;color:var(--w3c-blue);font-size:2rem;font-weight:800}
+.bridge{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.8rem;align-items:center;margin-top:2rem}
+.bridge .node{min-height:160px}
+.bridge .sox{border:3px solid var(--w3c-blue);background:var(--w3c-blue-soft);text-align:center}
+.bridge .sox strong{font-size:1.35rem}
+.teaser{max-width:850px;margin-top:2rem;padding:1.5rem;border-left:7px solid var(--w3c-blue);background:var(--w3c-blue-soft)}
+.teaser p{margin:.4rem 0}
+.closing{text-align:center}
+.closing h2{margin-inline:auto}
+.closing .quote{margin:2rem auto 0;text-align:left}
+.nav{position:fixed;z-index:10;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}
+.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--w3c-blue);border-radius:3px;color:var(--w3c-blue);background:#fff;font-weight:750;cursor:pointer}
+.nav button.primary{color:#fff;background:var(--w3c-blue)}
+.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}
+.progress span{display:block;height:100%;background:var(--w3c-blue);transition:width .2s ease}
+.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--w3c-blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}
+.speaker-notes{display:none;max-width:920px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}
+body.show-notes .speaker-notes{display:block}
+.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}
+@media (max-width:740px){
+  body{font-size:16px}
+  .topbar{padding:0 1rem}
+  .brand span{display:none}
+  main{padding:82px 1rem 94px}
+  .slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}
+  .stage,.comparison,.multi-screen{grid-template-columns:1fr}
+  .system-flow{grid-template-columns:1fr}
+  .flow-box:not(:last-child)::after{top:auto;right:50%;bottom:-1.6rem;transform:translateX(50%) rotate(90deg)}
+  .recordweb-map,.bridge{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg)}
+  .nav{gap:.5rem;padding:14px .7rem}
+  .nav button{min-width:82px;font-size:.83rem}
+  .progress{width:90px}
+  .help{display:none}
+}
+@media print{
+  .topbar,.nav,.speaker-toggle,.help{display:none !important}
+  main{display:block;padding:0}
+  .slide{display:flex !important;min-height:100vh;page-break-after:always;box-shadow:none}
+  .speaker-notes{display:block}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><strong>RecordWeb</strong><span>Proof of Concept: Question Time</span></div>
+  <div class="counter" id="counter" aria-live="polite">1 / 11</div>
+</header>
+<button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
+<main>
+<div class="deck" id="deck">
+
+<section class="slide active" data-title="Title">
+  <p class="eyebrow">A story from everyday administrative work</p>
+  <h1>A question.<br>An answer.<br>A traceable context.</h1>
+  <p class="lead">How RecordWeb connects real digital work with long-term traceability.</p>
+  <div class="quote">Not more rework. More context.</div>
+  <aside class="speaker-notes">Welcome. This story explains RecordWeb through a situation many people know from administrative work: an answer must be delivered reliably and on time, while the next task is already waiting.</aside>
+</section>
+
+<section class="slide" data-title="Time pressure">
+  <p class="eyebrow">Scene 1 · Just before ten</p>
+  <h2>Ms. Roth has only a few minutes left.</h2>
+  <div class="stage">
+    <div>
+      <p class="lead">She works in a government office on the answer to a request from parliament. The figures are almost verified. The answer needs to be approved.</p>
+      <div class="deadline"><span>Answer awaiting approval</span><span>10:00 am</span></div>
+    </div>
+    <div class="scene-card">
+      <div class="person"><div class="avatar">MR</div><p><b>Ms. Roth</b><small>Subject-matter officer</small></p></div>
+      <div class="document"><strong>Draft answer</strong><div class="line accent"></div><div class="line"></div><div class="line short"></div></div>
+      <div class="chat">
+        <div class="chat-label">Internal office chat</div>
+        <div class="bubble">The updated emissions figure has been verified. This version can be used.</div>
+        <div class="bubble me">Thanks, I'll include it in the draft.</div>
+      </div>
+    </div>
+  </div>
+  <aside class="speaker-notes">Ms. Roth is not careless. She works in a focused and professional way. But right now this shows: the answer does not emerge only in the document. It emerges in the interplay of draft, data, follow-up questions, and cross-functional collaboration.</aside>
+</section>
+
+<section class="slide" data-title="Phone call">
+  <p class="eyebrow">Scene 2 · A new question</p>
+  <h2>The phone rings.</h2>
+  <div class="stage">
+    <div class="dialogue">
+      <p><b>Mr. Keller:</b> Good morning, Ms. Roth. I have a question: how have CO₂ emissions developed over the past few years?</p>
+      <p><b>Ms. Roth:</b> I can give you an initial indication. For a binding answer, please submit the question formally.</p>
+      <p class="lead">A conversation can trigger an informal response. But it does not replace a binding parliamentary procedure.</p>
+    </div>
+    <div class="phone">
+      <div class="caller">Mr. Keller<small>Member of Parliament</small></div>
+      <div class="call-actions"><div class="circle red">×</div><div class="circle">☎</div></div>
+    </div>
+  </div>
+  <aside class="speaker-notes">A member of parliament asks the government a question. In the Swiss demonstrator, Mr. Keller is a member of the National Council; formal handling takes place within the so-called Question Time, where a Federal Councillor delivers the official answer to parliament.</aside>
+</section>
+
+<section class="slide" data-title="Formal question">
+  <p class="eyebrow">Scene 3 · The question becomes a mandate</p>
+  <h2>Mr. Keller submits the question formally.</h2>
+  <p class="lead">Now the matter gets a clear reference: who is asking which question, at what point in time — and who is responsible for the answer?</p>
+  <div class="system-flow">
+    <div class="flow-box"><h3>Mr. Keller</h3><p>Submits his parliamentary question.</p></div>
+    <div class="flow-box"><h3>Question management</h3><p>Records the question and makes its status visible.</p></div>
+    <div class="flow-box"><h3>Responsible office</h3><p>Takes on the binding mandate to handle it.</p></div>
+  </div>
+  <div class="quote">A formal question should not only be answered correctly. It should be handled on time and, above all, traceably.</div>
+  <aside class="speaker-notes">This is where the Question Time PoC starts: the submission of a member of parliament's question. In practice this process is quite complex; for demonstrating RecordWeb a strong simplification is sufficient.</aside>
+</section>
+
+<section class="slide" data-title="New task">
+  <p class="eyebrow">Scene 4 · Yet another task</p>
+  <h2>The next question arrives before the previous one is fully closed.</h2>
+  <div class="multi-screen">
+    <div class="screen">
+      <div class="screen-head"><span>Answer management</span><span>Due today</span></div>
+      <div class="task"><b>Question on CO₂ emissions</b><small>Newly assigned · in progress</small></div>
+      <div class="task"><b>Answer on energy supply</b><small>Ready for approval</small></div>
+    </div>
+    <div class="screen">
+      <div class="screen-head"><span>Everyday work</span><span>ongoing</span></div>
+      <div class="task"><b>Chat messages</b><small>Follow-up questions and technical notes</small></div>
+      <div class="task"><b>Emails and files</b><small>Data, drafts, coordination</small></div>
+    </div>
+  </div>
+  <div class="pressure"><p><b>Reality:</b> Ms. Roth must deliver a factually correct and timely answer, while already taking on the next task in parallel.</p></div>
+  <aside class="speaker-notes">This is the core of today's business-management-system problem. The problem is not that Ms. Roth doesn't want order. She must fulfil several obligations at the same time. Her immediate responsibility is the correct and timely answer.</aside>
+</section>
+
+<section class="slide" data-title="Consensus">
+  <p class="eyebrow">Scene 5 · Subject-matter collaboration</p>
+  <h2>Ms. Roth brings her team together.</h2>
+  <div class="stage">
+    <div class="scene-card">
+      <div class="person"><div class="avatar">MR</div><p><b>Ms. Roth</b><small>Opens a chat on the new question</small></p></div>
+      <div class="chat">
+        <div class="chat-label">CO₂ emissions question from Mr. Keller</div>
+        <div class="bubble me">Can you check the current time series and the context by noon today?</div>
+        <div class="bubble">I'll check the figures and the methodological note.</div>
+        <div class="bubble">I'll provide a proposal for the political framing.</div>
+        <div class="bubble me">Good. Let's align the wording together before approval.</div>
+      </div>
+    </div>
+    <div>
+      <p class="lead">The binding answer does not come from a single person, and not from a single place.</p>
+      <p>It emerges from subject-matter expertise, sources, follow-up questions, drafts, and shared consensus.</p>
+      <div class="quote">The chat is not a disruptive side channel. It is an actual place of work.</div>
+    </div>
+  </div>
+  <aside class="speaker-notes">In the Question Time PoC, MiniChat likewise represents — in a strongly simplified way — any communication. What matters is not the individual message but the connection: this chat room belongs to this question; the participants are working on this answer; at the end there is a coordinated result. But how is it linked and persisted?</aside>
+</section>
+
+<section class="slide" data-title="Records-management tension">
+  <p class="eyebrow">Scene 6 · The trade-off</p>
+  <h2>The answer is the goal. The follow-up documentation comes afterwards.</h2>
+  <div class="comparison">
+    <div class="old">
+      <h3>The additional work</h3>
+      <ul>
+        <li>Select and export the chat history</li>
+        <li>Save emails and attachments</li>
+        <li>File and classify documents</li>
+        <li>Retroactively assess relevance and completeness</li>
+        <li>Convert and close the case</li>
+      </ul>
+    </div>
+    <div class="new">
+      <h3>The actual work</h3>
+      <ul>
+        <li>Check the figures</li>
+        <li>Bring subject-matter expertise together</li>
+        <li>Find a sound formulation</li>
+        <li>Take responsibility</li>
+        <li>Deliver the answer on time</li>
+      </ul>
+    </div>
+  </div>
+  <div class="quote">Not because follow-up documentation is unimportant. But because the next question is already waiting.</div>
+  <aside class="speaker-notes">This slide is not meant to devalue records management. Orderly, complete record-keeping is a legitimate and important goal. The tension arises where manually transferring the actual work into a system competes with deadlines, interruptions, and parallel tasks.</aside>
+</section>
+
+<section class="slide" data-title="RecordWeb">
+  <p class="eyebrow">Scene 7 · A different path</p>
+  <h2>RecordWeb starts with work as it actually happens.</h2>
+  <p class="lead">RecordWeb does not require Ms. Roth to do her work twice: once for the answer and once for its traceable documentation.</p>
+  <div class="recordweb-map">
+    <div class="node"><strong>Question</strong><small>Mr. Keller asks a formal question.</small></div>
+    <div class="arrow">→</div>
+    <div class="node"><strong>Collaboration</strong><small>The subject-matter team reviews, discusses, and aligns.</small></div>
+    <div class="arrow">→</div>
+    <div class="node"><strong>Answer</strong><small>An accountable, approved answer is delivered.</small></div>
+  </div>
+  <div class="teaser"><p><b>RecordWeb:</b> The relevant outcomes, responsibilities, and relationships can stay connected while the work happens.</p></div>
+  <aside class="speaker-notes">The message is simple: not a final document without provenance, but a traceable connection between question, work, and answer.</aside>
+</section>
+
+<section class="slide" data-title="SoX">
+  <p class="eyebrow">Scene 8 · The bridge</p>
+  <h2>The chat doesn't need to be replaced.</h2>
+  <p class="lead">Existing chat and business applications can't yet speak RWP. RecordWeb doesn't demand an immediate system change.</p>
+  <div class="bridge">
+    <div class="node"><strong>Existing chat</strong><small>Ms. Roth and her team work in their familiar tool.</small></div>
+    <div class="arrow">→</div>
+    <div class="node sox"><strong>SoX</strong><small>An integration layer establishes the link to RecordWeb</small></div>
+    <div class="arrow">→</div>
+    <div class="node"><strong>RecordWeb</strong><small>Referenceable and traceable information.</small></div>
+  </div>
+  <div class="quote">SoX doesn't replace the working application. SoX creates the connection.</div>
+  <aside class="speaker-notes">SoX = "System of X" — in principle an adapter layer to another system, SoW, SoR, or others. Important: SoX is not an additional storage machine into which Ms. Roth copies everything. It's the bridge that gradually connects the existing application to the RecordWeb environment. SoX has no user interface for staff.</aside>
+</section>
+
+<section class="slide" data-title="Later use">
+  <p class="eyebrow">Scene 9 · Understanding it later</p>
+  <h2>The answer isn't explained by its text alone.</h2>
+  <div class="stage">
+    <div>
+      <p class="lead">Later, a journalist, another member of parliament, or an oversight body might want to know:</p>
+      <div class="dialogue">
+        <p>Which question did this answer refer to?</p>
+        <p>Which office was responsible?</p>
+        <p>Which version was approved, based on which context?</p>
+        <p>In what context did it come about?</p>
+      </div>
+    </div>
+    <div class="scene-card">
+      <div class="person"><div class="avatar">?</div><p><b>Later use</b><small>Research, accountability, oversight</small></p></div>
+      <div class="document"><strong>Binding answer</strong><div class="line accent"></div><div class="line"></div></div>
+      <div class="chat">
+        <div class="chat-label">Linked context</div>
+        <div class="bubble">Question from Mr. Keller</div>
+        <div class="bubble">Coordination in chat by the subject-matter team</div>
+        <div class="bubble">Approval and binding answer</div>
+      </div>
+    </div>
+  </div>
+  <aside class="speaker-notes">This is the basis for trust, accountability, and later use: an answer stays within its relevant context and can therefore be understood more clearly later on.</aside>
+</section>
+
+<section class="slide" data-title="Outlook">
+  <p class="eyebrow">Outlook</p>
+  <h2>RecordWeb doesn't start with a system change.</h2>
+  <div class="teaser">
+    <p>Existing applications can keep working as they are.</p>
+    <p>New or soon-to-be-replaced applications can gradually become interoperable.</p>
+    <p>Over time, this creates an information architecture in which relevant context is preserved.</p>
+  </div>
+  <p class="lead">This is not a big bang. It is a long-term architectural decision.</p>
+  <aside class="speaker-notes">This outlook is deliberately kept brief. Topics such as procurement, conformance, application end-of-life, migration to successor systems, or archiving get their own stories.</aside>
+</section>
+
+<section class="slide" data-title="Closing">
+  <div class="closing">
+    <p class="eyebrow">RecordWeb · Proof of Concept: Question Time</p>
+    <h2>The work is already happening.</h2>
+    <p class="lead">The relevant evidence doesn't need to be produced laboriously afterward.</p>
+    <div class="quote">Not more rework.<br>More context.</div>
+  </div>
+  <aside class="speaker-notes">Possible follow-up questions: Where in our own context does relevant information arise today outside of records management? Which application would be a suitable first integration case? Which relationships need to remain provable in the long term?</aside>
+</section>
+
+</div>
+</main>
+<div class="help">Keyboard: ← → Home End N (speaker notes)</div>
+<nav class="nav" aria-label="Presentation navigation">
+  <button id="prev" type="button">Back</button>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  <button class="primary" id="next" type="button">Next</button>
+</nav>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+const counter = document.getElementById('counter');
+const progress = document.getElementById('progressBar');
+const notesButton = document.getElementById('notesButton');
+let index = 0;
+function render(){
+  slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+  prev.disabled = index === 0;
+  next.disabled = index === slides.length - 1;
+  next.textContent = index === slides.length - 1 ? 'End' : 'Next';
+  counter.textContent = `${index + 1} / ${slides.length}`;
+  progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+  document.title = `RecordWeb: ${slides[index].dataset.title}`;
+  window.scrollTo({top:0, behavior:'instant'});
+}
+function move(delta){
+  const target = Math.max(0, Math.min(slides.length - 1, index + delta));
+  if (target !== index){ index = target; render(); }
+}
+prev.addEventListener('click', () => move(-1));
+next.addEventListener('click', () => move(1));
+notesButton.addEventListener('click', () => {
+  const visible = document.body.classList.toggle('show-notes');
+  notesButton.textContent = visible ? 'Hide speaker notes' : 'Show speaker notes';
+  notesButton.setAttribute('aria-pressed', String(visible));
+});
+window.addEventListener('keydown', (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey) return;
+  if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' '){ event.preventDefault(); move(1); }
+  if (event.key === 'ArrowLeft' || event.key === 'PageUp'){ event.preventDefault(); move(-1); }
+  if (event.key === 'Home'){ event.preventDefault(); index = 0; render(); }
+  if (event.key === 'End'){ event.preventDefault(); index = slides.length - 1; render(); }
+  if (event.key.toLowerCase() === 'n'){ notesButton.click(); }
+});
+render();
+</script>
+</body>
+</html>

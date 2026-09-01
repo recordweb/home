@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb · RWP for implementers</title>
+<style>
+:root{--blue:#005a9c;--blue-dark:#003d6b;--blue-soft:#e8f2f8;--ink:#1d2b36;--muted:#536471;--line:#c9d7df;--paper:#fff;--surface:#f5f8fa;--warm:#fff5dc;--warm-line:#d89c23;--red:#ae2626;--red-soft:#fff1f1;--green:#16784b;--green-soft:#eaf7ef;--purple:#68499b;--purple-soft:#f2edf9;--shadow:0 10px 30px rgba(21,47,66,.13)}
+*{box-sizing:border-box}
+html{background:var(--surface)}
+body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button{font:inherit}
+.topbar{position:fixed;z-index:10;inset:0 0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}
+.brand strong{font-size:1.2rem}
+.brand span{font-size:.82rem;font-weight:500;opacity:.86}
+.counter{font-size:.9rem;font-variant-numeric:tabular-nums}
+main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}
+.deck{width:min(1160px,100%)}
+.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--blue);box-shadow:var(--shadow)}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.eyebrow{margin:0 0 1rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}
+h1{max-width:950px;font-size:clamp(2.6rem,6.2vw,5.5rem)}
+h2{max-width:920px;font-size:clamp(2rem,4.4vw,3.8rem)}
+h3{font-size:1.12rem}
+.lead{max-width:850px;margin:1.5rem 0 0;color:var(--muted);font-size:clamp(1.15rem,2vw,1.42rem)}
+.quote{max-width:900px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--blue);background:var(--blue-soft);font-size:1.2rem;font-weight:650}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;margin-top:2rem}
+.card{padding:1.3rem;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(20,44,60,.08)}
+.persona{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}
+.avatar{display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.9rem;font-weight:850}
+.avatar.purple{background:var(--purple)}
+.persona p{margin:0;line-height:1.25}
+.persona small{display:block;color:var(--muted)}
+.system-card{padding:1rem;border:1px solid #c1d7e2;background:#f6fbfe}
+.system-card h3{color:var(--blue-dark);font-size:1rem}
+.line{height:10px;margin:.65rem 0;border-radius:9px;background:#dce5e9}
+.line.blue{width:78%;background:#91bad0}
+.line.short{width:48%}
+.badge{display:inline-block;margin-top:.5rem;padding:.25rem .5rem;border-radius:3px;color:#155a39;background:var(--green-soft);font-size:.76rem;font-weight:800}
+.problem{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.problem>div{min-height:190px;padding:1.15rem;border:1px solid var(--line);border-top:6px solid var(--warm-line);background:#fff}
+.problem b{display:block;margin-bottom:.55rem;color:#66450a;font-size:1.08rem}
+.problem p{margin:0;color:var(--muted);font-size:.9rem}
+.architecture{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:stretch;margin-top:2rem}
+.box{display:flex;flex-direction:column;justify-content:center;min-height:175px;padding:1rem;border:1px solid var(--line);background:#fff}
+.box strong{color:var(--blue-dark)}
+.box small{margin-top:.42rem;color:var(--muted)}
+.box.app{border-top:6px solid var(--blue);background:var(--blue-soft)}
+.box.rwp{border-top:6px solid var(--purple);background:var(--purple-soft)}
+.box.net{border-top:6px solid var(--green);background:var(--green-soft)}
+.arrow{align-self:center;color:var(--blue);font-size:2rem;font-weight:850}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-top:2rem}
+.pillar{min-height:200px;padding:1.1rem;border:1px solid var(--line);background:#fff}
+.pillar .symbol{display:grid;width:35px;height:35px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.8rem;font-weight:850}
+.pillar:nth-child(2) .symbol{background:var(--purple)}
+.pillar:nth-child(3) .symbol{background:var(--green)}
+.pillar:nth-child(4) .symbol{background:var(--warm-line)}
+.pillar h3{margin-top:.65rem;color:var(--blue-dark);font-size:1.04rem}
+.pillar p{margin:.5rem 0 0;color:var(--muted);font-size:.84rem}
+.lifecycle{display:grid;grid-template-columns:repeat(5,1fr);gap:.65rem;margin-top:2rem}
+.life{position:relative;min-height:185px;padding:1rem;border:1px solid var(--line);background:#fff}
+.life .num{display:inline-grid;width:27px;height:27px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.76rem;font-weight:850}
+.life strong{display:block;margin-top:.65rem;color:var(--blue-dark);font-size:.98rem}
+.life p{margin:.45rem 0 0;color:var(--muted);font-size:.8rem;line-height:1.35}
+.life.final{border-top:6px solid var(--green);background:var(--green-soft)}
+.json-card{overflow:hidden;margin-top:1.65rem;border:1px solid var(--line);background:#fff}
+.json-head{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;color:#fff;background:var(--blue-dark);font-size:.88rem;font-weight:800}
+pre{max-height:310px;overflow:auto;margin:0;padding:1.15rem;color:#22333d;background:#f7fafb;font:.79rem/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;white-space:pre-wrap;word-break:break-word}
+.highlight{color:#743700;background:#fff1bf;font-weight:850}
+.highlight-green{color:#125f3b;background:#dff3e7;font-weight:850}
+.annotation{max-width:970px;margin-top:1rem;padding:.85rem 1rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#60450c;font-size:.93rem}
+.resolver{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.8rem;align-items:center;margin-top:2rem}
+.resolver .box{min-height:165px}
+.resolver .box.did{border:3px solid var(--blue);background:var(--blue-soft)}
+.resolver .box.endpoint{border:3px solid var(--green);background:var(--green-soft)}
+.schema{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-top:2rem}
+.schema .box{min-height:185px}
+.schema .seal{display:grid;width:82px;height:82px;place-items:center;border:4px solid var(--purple);border-radius:50%;color:var(--purple);background:var(--purple-soft);text-align:center;font-size:.74rem;font-weight:850;line-height:1.1}
+.integration{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.8rem;align-items:center;margin-top:2rem}
+.integration .box{min-height:180px}
+.integration .box.sox{border:3px solid var(--blue);background:var(--blue-soft);text-align:center}
+.integration .box.sox strong{font-size:1.32rem}
+.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.checks>div{min-height:190px;padding:1.15rem;border:1px solid var(--line);background:#fff}
+.check{display:block;color:var(--green);font-size:1.35rem;font-weight:900}
+.checks b{display:block;margin-top:.35rem;color:var(--blue-dark);font-size:1.06rem}
+.checks p{margin:.5rem 0 0;color:var(--muted);font-size:.88rem}
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-top:2rem}
+.step{min-height:210px;padding:1.15rem;border:1px solid var(--line);border-top:6px solid var(--blue);background:#fff}
+.step .num{display:inline-grid;width:30px;height:30px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.8rem;font-weight:850}
+.step h3{margin-top:.65rem;color:var(--blue-dark)}
+.step p{margin:.55rem 0 0;color:var(--muted);font-size:.87rem}
+.callout{margin-top:1.5rem;padding:1rem 1.15rem;border-left:6px solid var(--green);background:var(--green-soft);color:#175d3b}
+.callout p{margin:.15rem 0}
+.closing{text-align:center}
+.closing h2{margin-inline:auto}
+.closing .quote{margin:2rem auto 0;text-align:left}
+.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}
+.speaker-notes{display:none;max-width:950px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}
+body.show-notes .speaker-notes{display:block}
+.nav{position:fixed;z-index:10;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}
+.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--blue);border-radius:3px;color:var(--blue);background:#fff;font-weight:750;cursor:pointer}
+.nav button.primary{color:#fff;background:var(--blue)}
+.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}
+.progress span{display:block;height:100%;background:var(--blue);transition:width .2s ease}
+.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}
+@media (max-width:820px){
+body{font-size:16px}
+.topbar{padding:0 1rem}
+.brand span{display:none}
+main{padding:82px 1rem 94px}
+.slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}
+.stage,.problem,.pillars,.checks,.roadmap{grid-template-columns:1fr}
+.architecture,.resolver,.schema,.integration{grid-template-columns:1fr}
+.arrow{transform:rotate(90deg)}
+.lifecycle{grid-template-columns:1fr 1fr}
+.nav{gap:.5rem;padding:14px .7rem}
+.nav button{min-width:82px;font-size:.83rem}
+.progress{width:90px}
+.help{display:none}
+}
+@media print{
+.topbar,.nav,.speaker-toggle,.help{display:none!important}
+main{display:block;padding:0}
+.slide{display:flex!important;min-height:100vh;page-break-after:always;box-shadow:none}
+.speaker-notes{display:block}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="brand"><strong>RecordWeb</strong><span>RWP · Perspective for software providers</span></div>
+<div class="counter" id="counter" aria-live="polite">1 / 12</div>
+</header>
+<button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
+<main>
+<div class="deck">
+
+<section class="slide active" data-title="Title">
+<p class="eyebrow">RecordWeb · For implementers</p>
+<h1>RWP for implementers.</h1>
+<p class="lead">How applications can not merely store records, but manage them as linked, accountable, and long-term connectable information objects.</p>
+<div class="quote">Your application doesn't have to become the only system.<br>It can become an accountable node in the RecordWeb.</div>
+<aside class="speaker-notes">This presentation targets vendors of records management, GEVER (Swiss electronic records management), specialist, and collaboration applications. It is not a complete implementation manual. It explains what RWP means for a product architecture, which capabilities can emerge step by step, and why this is an attractive development path for both customers and vendors.</aside>
+</section>
+
+<section class="slide" data-title="Starting point">
+<p class="eyebrow">Scene 1 · The product reality</p>
+<h2>Your application already matters, but it isn't alone.</h2>
+<div class="stage">
+<div>
+<p class="lead">In public administration, business-relevant information arises in specialist applications, chat, email, office tools, records management, and portals.</p>
+<p>Your customers still expect this information to eventually connect, remain understandable, and be available across system boundaries when needed.</p>
+</div>
+<div class="card">
+<div class="persona"><div class="avatar purple">SW</div><p><b>Software provider</b><small>develops a specialist or records-management application</small></p></div>
+<div class="system-card"><h3>Your application</h3>
+<div class="line blue"></div><div class="line"></div><div class="line short"></div>
+<span class="badge">own business logic · own user interface</span>
+</div>
+</div>
+</div>
+<aside class="speaker-notes">The opening honours the existing product landscape. RWP does not demand that every application master all information or replace a new central system. It offers a shared path so that applications can keep their own relevant records and connect with other applications.</aside>
+</section>
+
+<section class="slide" data-title="Today's effort">
+<p class="eyebrow">Scene 2 · The integration trap</p>
+<h2>Today, relationships are often rebuilt per application and per project.</h2>
+<div class="problem">
+<div><b>Point-to-point integration</b><p>Every new interface connects two products for one specific purpose, with its own semantics and its own operational responsibility.</p></div>
+<div><b>Retroactive capture</b><p>Relevant work information is exported, copied, or manually transferred into another system.</p></div>
+<div><b>System retirement</b><p>At end of life, data, relationships, and evidence are often only cleaned up, converted, and reconstructed years later.</p></div>
+</div>
+<div class="quote">Customers don't just buy a feature. They buy the ability to manage their information responsibly across applications and over time.</div>
+<aside class="speaker-notes">This is not a criticism of existing vendors. Today's landscape grew this way historically. The opportunity is that a shared protocol can reduce the cost of repeated one-off integration and later reconstruction.</aside>
+</section>
+
+<section class="slide" data-title="What RWP is">
+<p class="eyebrow">Scene 3 · The role of RWP</p>
+<h2>RWP is a shared layer — not a new specialist application.</h2>
+<div class="architecture">
+<div class="box app"><strong>Your application</strong><small>Business logic, process, user interface, and your own data stay with you.</small></div>
+<div class="arrow">→</div>
+<div class="box rwp"><strong>RWP capability</strong><small>Records get identity, status, versions, relationships, and a resolvable context.</small></div>
+<div class="arrow">→</div>
+<div class="box net"><strong>RecordWeb</strong><small>Other authorised applications can reference, verify, and incorporate records into their own business context.</small></div>
+</div>
+<div class="quote">RWP does not standardise your business process. It creates connectability for the records that arise within your business process.</div>
+<aside class="speaker-notes">This is the most important architectural distinction. RWP is not competing with a vendor's domain logic. Nor is it a dossier product. RWP describes a shared information and trust layer for records, so a product can keep its strengths and still become part of a cross-application network.</aside>
+</section>
+
+<section class="slide" data-title="Four capabilities">
+<p class="eyebrow">Scene 4 · The four product capabilities</p>
+<h2>RWP capability begins with four clear responsibilities.</h2>
+<div class="pillars">
+<div class="pillar"><div class="symbol">1</div><h3>Manage a record</h3><p>Create, edit, and finalise business-relevant information as a standalone record.</p></div>
+<div class="pillar"><div class="symbol">2</div><h3>Resolve identity</h3><p>Provide a stable record reference and make it resolvable via your own namespace or resolver.</p></div>
+<div class="pillar"><div class="symbol">3</div><h3>Express relationships</h3><p>Connect records with cases, sources, results, triggers, or other records.</p></div>
+<div class="pillar"><div class="symbol">4</div><h3>Support transition</h3><p>At end of life, enable a controlled handover to a successor application or an AIS.</p></div>
+</div>
+<aside class="speaker-notes">These are deliberately product-oriented capabilities. A first implementation doesn't need to cover every possible relationship or protocol detail. What matters is that the application can responsibly manage its own records, make them resolvable, and not confine its context to a closed product container.</aside>
+</section>
+
+<section class="slide" data-title="Lifecycle">
+<p class="eyebrow">Scene 5 · A record lifecycle</p>
+<h2>The record becomes final in the work process, not only in a later handover project.</h2>
+<div class="lifecycle">
+<div class="life"><span class="num">1</span><strong>Create</strong><p>The application creates a record with a type, accountable identity, and the necessary context.</p></div>
+<div class="life"><span class="num">2</span><strong>Edit</strong><p>Drafts and working states can continue to be developed as long as the record is not yet finalised.</p></div>
+<div class="life final"><span class="num">3</span><strong>Finalise</strong><p>An authorised person or role marks a binding version and protects it from silent change.</p></div>
+<div class="life"><span class="num">4</span><strong>Provide</strong><p>The record remains resolvable via its accountable context and endpoint.</p></div>
+<div class="life"><span class="num">5</span><strong>Transfer</strong><p>At end of life, a controlled custodyTransfer to a successor application or an AIS.</p></div>
+</div>
+<div class="quote">Finalisation is a professional and technical turning point: the record is ready, even while its application keeps running for many more years.</div>
+<aside class="speaker-notes">This slide matters for vendors because it connects familiar lifecycle logic to RWP language. Finalisation is not necessarily archiving. As long as the application is operating, it remains responsible for provision. Only end of life triggers a controlled custodyTransfer, either to a successor application or to an AIS.</aside>
+</section>
+
+<section class="slide" data-title="DID and resolver">
+<p class="eyebrow">Scene 6 · How other applications find a record</p>
+<h2>A DID remains the reference point. The resolver finds the current endpoint.</h2>
+<div class="resolver">
+<div class="box did"><strong>DID</strong><small><code>did:rwp:namespace:uuid</code><br>Stable name of the record.</small></div>
+<div class="arrow">→</div>
+<div class="box"><strong>Namespace resolver</strong><small>Resolves the DID and returns the DID document with the accountable RecordEndpoint.</small></div>
+<div class="arrow">→</div>
+<div class="box endpoint"><strong>RecordEndpoint</strong><small>Your application provides the record in its currently accountable context.</small></div>
+</div>
+<div class="json-card">
+<div class="json-head"><span>DID document — simplified excerpt</span><span>RWP resolution</span></div>
+<pre>{
+  "id": "did:rwp:s73f42a3:787475d4-5572-44a2-a62e-b4aaf7d590e3",
+  <span class="highlight">"recordEndpoint": "https://api.records/787475d4-5572-44a2-a62e-b4aaf7d590e3"</span>,
+  "currentVersion": "sha256:...",
+  "controller": "did:rwp:s73f42a3:...",
+  "record": {
+    "recordType": "MiniChat",
+    <span class="highlight-green">"status": "finalized"</span>,
+    "version": 1
+  }
+}</pre>
+</div>
+<aside class="speaker-notes">This simplified DID document comes from the PoC "Question time". For vendors, the separation matters: the DID is the stable reference. The resolver is the resolution mechanism. The endpoint is where the accountable application provides the record. At transition, the endpoint may change while the DID as a reference stays constant.</aside>
+</section>
+
+<section class="slide" data-title="Schema and conformance">
+<p class="eyebrow">Scene 7 · Rules an application can fulfil</p>
+<h2>SchemaRecords define what a RecordType must be able to do.</h2>
+<div class="schema">
+<div class="box"><strong>SchemaRecord</strong><small>Describes structure, mandatory fields, allowed states, and state transitions of a RecordType.<br>Example: <em>"question time answer"</em> with a transition from <code>draft</code> to <code>finalized</code>.</small></div>
+<div class="seal">verifiable<br>rules</div>
+<div class="box"><strong>Your application</strong><small>Validates payload, state changes, and further rules when creating and finalising records.<br>It can prove which schema version a record is based on.</small></div>
+</div>
+<div class="quote">A schema is not just a data form. It is a versioned contract about which properties a RecordType should have.</div>
+<aside class="speaker-notes">The key message: vendors can implement and test clearly which rules a RecordType must satisfy. The SchemaRecord is itself a versioned and revisable artefact. In further governance, ConformanceRecords can be bound to a schema and document that a concrete application and product version were checked against these rules.</aside>
+</section>
+
+<section class="slide" data-title="Integration">
+<p class="eyebrow">Scene 8 · Not every application starts RWP-native</p>
+<h2>SoX shows the entry path via integration.</h2>
+<p class="lead">For existing products, a connector and integration layer can mediate RWP capability initially. This creates a transition without immediately rebuilding the user interface or business logic.</p>
+<div class="integration">
+<div class="box"><strong>Existing product</strong><small>For example Teams, a legacy specialist system, or an existing collaboration solution.</small></div>
+<div class="arrow">→</div>
+<div class="box sox"><strong>SoX</strong><small>Connector and integration layer<br>manages integrated records in the accountable context</small></div>
+<div class="arrow">→</div>
+<div class="box"><strong>RecordWeb</strong><small>The relevant records and relationships become referenceable across applications.</small></div>
+</div>
+<div class="callout"><p><b>Product opportunity:</b> a vendor can first offer integration capability and later adopt RWP capabilities natively into the product.</p></div>
+<aside class="speaker-notes">This slide matters especially for existing vendors of business records management or specialist systems. No one demands that all existing products be immediately and completely rebuilt. SoX illustrates the adapter path. A newly procured or further-developed product can later become natively RWP-capable, while other products remain connected via connectors.</aside>
+</section>
+
+<section class="slide" data-title="Testing">
+<p class="eyebrow">Scene 9 · Implementation must be verifiable</p>
+<h2>Interoperability doesn't come from self-declaration, but from tests.</h2>
+<div class="checks">
+<div><span class="check">✓</span><b>DID resolution</b><p>Can an independent client resolve the DID and find the accountable endpoint?</p></div>
+<div><span class="check">✓</span><b>Schema binding</b><p>Can the application prove which schema and which schema version it uses to create a record?</p></div>
+<div><span class="check">✓</span><b>Integrity and finalisation</b><p>Are payload, snapshot, and final version traceable — are unauthorised changes prevented?</p></div>
+</div>
+<div class="quote">The question isn't only "does the product support RWP?" It's also: which profiles, roles, and test cases does this specific product version demonstrably satisfy?</div>
+<aside class="speaker-notes">This slide references the conformance tests used in the PoC without claiming full certification here. A ConformanceRecord can precisely capture: product, product version, deployment, roles, profile, test tool, evidence, results, and validity period. This gives vendors a traceable basis for quality and customer trust.</aside>
+</section>
+
+<section class="slide" data-title="Development path">
+<p class="eyebrow">Scene 10 · A realistic development path</p>
+<h2>RWP capability can grow into a product iteratively.</h2>
+<div class="roadmap">
+<div class="step"><span class="num">1</span><h3>Scope</h3><p>Select one or two RecordTypes with high business value.</p></div>
+<div class="step"><span class="num">2</span><h3>Manage</h3><p>Manage these records in the product with identity, status, finalisation, schema, and a traceable version.</p></div>
+<div class="step"><span class="num">3</span><h3>Connect</h3><p>Add resolver capability and relationships to cases, sources, or records of other applications.</p></div>
+<div class="step"><span class="num">4</span><h3>Demonstrate</h3><p>Build profiles, tests, and, where relevant, conformance evidence for specific product versions.</p></div>
+</div>
+<div class="callout"><p><b>No big bang:</b> a first RWP capability can start small, but should from the outset produce real, resolvable, and accountable records.</p></div>
+<aside class="speaker-notes">The roadmap is deliberately product-near. A vendor can start with a RecordType that creates clear value for its customers. What matters is not stopping at a pure export function, but building a record lifecycle that can later be extended and networked with other applications.</aside>
+</section>
+
+<section class="slide" data-title="Shared path">
+<p class="eyebrow">Scene 11 · What we can define together</p>
+<h2>Vendor knowledge and RecordWeb governance belong together.</h2>
+<div class="stage">
+<div>
+<p class="lead">Software vendors know their products, deployment realities, and integration limits. RecordWeb creates an open framework for shared requirements, profiles, test cases, and interoperability.</p>
+<p>The next sensible question is therefore not "can you implement everything tomorrow?"</p>
+<div class="quote">But rather: which RecordType and which concrete use case are suitable for a first, demonstrable RWP integration?</div>
+</div>
+<div class="card">
+<div class="persona"><div class="avatar">RW</div><p><b>Shared first step</b><small>Vendor · business side · records management · architecture</small></p></div>
+<div class="system-card"><h3>Example pilot</h3>
+<p style="margin:.55rem 0 0;color:var(--muted);font-size:.88rem">A formal decision is managed as the first RecordType, made RWP-capable, resolved, and tested.</p>
+<span class="badge">start small · grow interoperably</span>
+</div>
+</div>
+</div>
+<aside class="speaker-notes">RecordWeb needs vendors as co-creators. The goal is not to prescribe a finished solution. The goal is to develop precise profiles, test cases, and integration patterns based on real products and real public-sector requirements.</aside>
+</section>
+
+<section class="slide" data-title="Closing">
+<div class="closing">
+<p class="eyebrow">RecordWeb · RWP for implementers</p>
+<h2>Your application doesn't get smaller<br>when it becomes connectable.</h2>
+<p class="lead">It keeps its business logic and user experience. With RWP, however, it can manage records so that they remain referenceable, accountable, and verifiable across applications, organisations, and system changes.</p>
+<div class="quote">Not another one-off integration.<br>An open path into a network of records.</div>
+</div>
+<aside class="speaker-notes">Possible follow-up questions: which RecordType would be a sensible entry point for your product? Which existing identifiers and status models can be reused? Which resolver and endpoint functions would be needed? Which tests and conformance profiles should be prioritised?</aside>
+</section>
+
+</div>
+</main>
+<div class="help">Keyboard: ← → Home End N speaker notes</div>
+<nav class="nav" aria-label="Presentation navigation">
+<button id="prev" type="button">← Back</button>
+<div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+<button class="primary" id="next" type="button">Next →</button>
+</nav>
+<script>
+const s=document.querySelectorAll('.slide'),p=document.getElementById('prev'),n=document.getElementById('next'),c=document.getElementById('counter'),b=document.getElementById('progressBar'),t=document.getElementById('notesButton');
+let i=0;
+function r(){s.forEach((x,j)=>x.classList.toggle('active',j===i));p.disabled=i===0;n.disabled=i===s.length-1;n.textContent=i===s.length-1?'End':'Next →';c.textContent=(i+1)+' / '+s.length;b.style.width=((i+1)/s.length*100)+'%';document.title='RecordWeb · '+s[i].dataset.title;window.scrollTo({top:0,behavior:'instant'});}
+function m(d){const x=Math.max(0,Math.min(s.length-1,i+d));if(x!==i){i=x;r();}}
+p.addEventListener('click',()=>m(-1));n.addEventListener('click',()=>m(1));
+t.addEventListener('click',()=>{const v=document.body.classList.toggle('show-notes');t.textContent=v?'Hide speaker notes':'Show speaker notes';t.setAttribute('aria-pressed',String(v));});
+window.addEventListener('keydown',(e)=>{if(e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();m(1);}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();m(-1);}if(e.key==='Home'){e.preventDefault();i=0;r();}if(e.key==='End'){e.preventDefault();i=s.length-1;r();}if(e.key.toLowerCase()==='n'){t.click();}});
+r();
+</script>
+</body>
+</html>
