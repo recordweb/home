@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb – Becoming RWP-Conformant</title>
+<style>
+  :root {
+    --blue:#005a9c;--blue-dark:#003d6b;--blue-soft:#e8f2f8;--ink:#1d2b36;--muted:#536471;
+    --line:#c9d7df;--paper:#fff;--surface:#f5f8fa;--warm:#fff5dc;--warm-line:#d89c23;
+    --green:#16784b;--green-soft:#eaf7ef;--purple:#68499b;--purple-soft:#f2edf9;
+    --grey-soft:#eef1f3;--grey-line:#c3ccd1;--red:#ae2626;
+    --shadow:0 10px 30px rgba(21,47,66,.13);
+
+    /* Tune these two to adjust the module row */
+    --module-width: 355px;
+    --module-gap: 50px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    color:var(--ink);background:var(--surface);
+    font:17px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:100vh;padding:3vh 3vw;
+  }
+  .wrap{width:min(1320px,100%)}
+  .head{margin-bottom:1.4rem;text-align:left}
+  .eyebrow{margin:0 0 .5rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+  h1{margin:0;font-size:clamp(1.6rem,3vw,2.35rem);letter-spacing:-.03em;line-height:1.15}
+  .sub{margin:.55rem 0 0;max-width:900px;color:var(--muted);font-size:1rem}
+
+  .stage{
+    position:relative;padding:1.9rem clamp(1rem,2.4vw,2.4rem) 1.7rem;
+    border:1px solid var(--line);border-top:9px solid var(--blue);
+    background:var(--paper);box-shadow:var(--shadow);
+  }
+
+  .modules{
+    display:flex;flex-wrap:wrap;justify-content:center;
+    gap:var(--module-gap);
+  }
+  .module{
+    position:relative;padding:1rem .9rem;border:2px solid var(--line);background:#fff;
+    display:flex;flex-direction:column;gap:.55rem;min-height:300px;
+    width:var(--module-width);flex:0 0 var(--module-width);
+    opacity:.4;filter:grayscale(.5);
+    transition:opacity .45s ease, filter .45s ease, border-color .45s ease, box-shadow .45s ease, transform .45s ease;
+  }
+  .module.active{
+    opacity:1;filter:grayscale(0);border-color:var(--blue);
+    box-shadow:0 10px 22px rgba(0,90,156,.16);transform:translateY(-3px);
+  }
+  .module .num{
+    display:inline-grid;width:26px;height:26px;place-items:center;border-radius:50%;
+    color:#fff;background:var(--grey-line);font-size:.74rem;font-weight:850;
+    transition:background .45s ease;
+  }
+  .module.active .num{background:var(--blue)}
+  .module strong{color:var(--blue-dark);font-size:.98rem;line-height:1.25}
+  .module p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.45}
+  .module .tag{
+    align-self:flex-start;padding:.15rem .5rem;border-radius:10px;font-size:.66rem;font-weight:800;
+    letter-spacing:.03em;text-transform:uppercase;background:var(--grey-soft);color:#7d8a91;
+  }
+  .module.active .tag.role-infra{background:var(--warm);color:#7a5a0c}
+  .module.active .tag.role-app{background:var(--blue-soft);color:var(--blue-dark)}
+
+  .mini-doc{
+    margin-top:auto;padding:.6rem .65rem;border:1px solid #2b3d47;border-radius:5px;
+    background:#0f2129;color:#d7e6ec;font:.66rem/1.42 "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    white-space:pre;overflow-x:auto;max-height:150px;
+  }
+  .mini-doc .punct{color:#7c93a0}
+  .mini-doc .key{color:#79c0ff}
+  .mini-doc .str{color:#a5d6a7}
+  .mini-doc .num-v{color:#f0c987}
+  .mini-doc .comment{color:#6b7f8a;font-style:italic}
+
+  .process-row{
+    margin-top:1.8rem;padding-top:1.4rem;border-top:1px dashed var(--line);
+  }
+  .process-label{
+    margin:0 0 .9rem;color:var(--muted);font-size:.74rem;font-weight:800;
+    letter-spacing:.08em;text-transform:uppercase;text-align:center;
+  }
+  .process-steps{
+    display:flex;justify-content:center;align-items:stretch;
+  }
+  .p-step{
+    position:relative;display:flex;align-items:center;gap:.5rem;
+    padding:.6rem 1.1rem .6rem 1.6rem;margin-left:-14px;
+    background:#fff;border:1px solid var(--line);cursor:pointer;
+    font-size:.8rem;color:var(--muted);font-weight:650;
+    clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%);
+    transition:background .3s ease, color .3s ease, border-color .3s ease, z-index .1s;
+    z-index:1;
+  }
+  .p-step:first-child{margin-left:0;padding-left:1.1rem;clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);}
+  .p-step .p-num{
+    display:inline-grid;width:20px;height:20px;place-items:center;border-radius:50%;
+    background:var(--grey-line);color:#fff;font-size:.68rem;font-weight:850;flex-shrink:0;
+  }
+  .p-step.active{
+    background:var(--blue);color:#fff;border-color:var(--blue);z-index:2;
+  }
+  .p-step.active .p-num{background:#fff;color:var(--blue)}
+
+  .caption-bar{
+    margin-top:1.3rem;min-height:56px;padding:.85rem 1.05rem;
+    border-left:6px solid var(--blue);background:var(--blue-soft);
+    font-size:.94rem;color:var(--ink);
+  }
+  .caption-bar b{color:var(--blue-dark)}
+
+  .controls{
+    display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.4rem;
+  }
+  .controls button{
+    min-width:120px;padding:.62rem 1.05rem;border:1px solid var(--blue);border-radius:3px;
+    color:var(--blue);background:#fff;font-weight:750;font-size:.98rem;cursor:pointer;font-family:inherit;
+  }
+  .controls button.primary{color:#fff;background:var(--blue)}
+  .controls button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+  .step-label{min-width:150px;text-align:center;color:var(--muted);font-size:.82rem;font-variant-numeric:tabular-nums}
+
+  @media (max-width:900px){
+    .process-steps{flex-wrap:wrap;justify-content:center;row-gap:.5rem}
+    .p-step{clip-path:none !important;margin-left:0 !important;border-radius:20px;padding:.5rem .9rem !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <p class="eyebrow">RecordWeb · From legacy application to RWP conformance</p>
+    <h1>Five building blocks turn an existing application into an RWP-conformant one.</h1>
+    <p class="sub">Each block depends on the one before it. The Resolver may be shared infrastructure or integrated, depending on organizatinos architecture.</p>
+  </div>
+
+  <div class="stage">
+    <div class="modules">
+      <div class="module" data-step="1">
+        <span class="num">1</span>
+        <span class="tag role-infra">Shared infrastructure</span>
+        <strong>Namespace registration</strong>
+        <p>Register a namespace either through your country's national authority, or self-service through the RecordWeb Trust Association's registration app. You submit your endpoint URL and receive a namespace in return.</p>
+        <div class="mini-doc" id="doc1"><span class="comment">// Global Namespace Registry</span>
+<span class="punct">{</span>
+  <span class="key">"namespace"</span><span class="punct">:</span> <span class="str">"8f3a"</span><span class="punct">,</span>
+  <span class="key">"resolverEndpoint"</span><span class="punct">:</span> <span class="str">"https://vps.recordweb.dev/…"</span>
+<span class="punct">}</span></div>
+      </div>
+
+      <div class="module" data-step="2">
+        <span class="num">2</span>
+        <span class="tag role-app">Application builds this</span>
+        <strong>SchemaRecord</strong>
+        <p>Defines the shape for one record type as its own versioned, referenceable record — before any actual record of that type can be created.</p>
+        <div class="mini-doc" id="doc2"><span class="punct">{</span>
+  <span class="key">"did"</span><span class="punct">:</span> <span class="str">"did:rwp:8f3a:report-v1"</span><span class="punct">,</span>
+  <span class="key">"recordType"</span><span class="punct">:</span> <span class="str">"SchemaRecord"</span><span class="punct">,</span>
+  <span class="key">"title"</span><span class="punct">:</span> <span class="str">"Report"</span><span class="punct">,</span>
+  <span class="key">"version"</span><span class="punct">:</span> <span class="str">"1.0.0"</span>
+<span class="punct">}</span></div>
+      </div>
+
+      <div class="module" data-step="3">
+        <span class="num">3</span>
+        <span class="tag role-app">Application builds this</span>
+        <strong>IMS / DMS / RMS</strong>
+        <p>Creates records that reference the SchemaRecord, carries the required core, governance and (optionally) extension metadata, and manages the draft → finalized lifecycle.</p>
+        <div class="mini-doc" id="doc3"><span class="punct">{</span>
+  <span class="key">"did"</span><span class="punct">:</span> <span class="str">"did:rwp:8f3a:9d21"</span><span class="punct">,</span>
+  <span class="key">"payload"</span><span class="punct">:</span> <span class="punct">[</span><span class="comment"> /* 1 finalized snapshot */ </span><span class="punct">]</span><span class="punct">,</span>
+  <span class="key">"metadata"</span><span class="punct">: {</span>
+    <span class="key">"core"</span><span class="punct">: {</span>
+      <span class="key">"recordType"</span><span class="punct">:</span> <span class="str">"did:rwp:8f3a:report-v1"</span><span class="punct">,</span>
+      <span class="key">"schemaVersion"</span><span class="punct">:</span> <span class="str">"sha256:a665a4…"</span>
+    <span class="punct">},</span>
+    <span class="key">"governance"</span><span class="punct">: {</span>
+      <span class="key">"owner"</span><span class="punct">:</span> <span class="str">"did:rwp:met-office"</span><span class="punct">,</span>
+      <span class="key">"classification"</span><span class="punct">:</span> <span class="str">"public"</span><span class="punct">,</span>
+      <span class="key">"tags"</span><span class="punct">: [</span><span class="str">"weather"</span><span class="punct">,</span> <span class="str">"2026-08-25"</span><span class="punct">]</span>
+    <span class="punct">},</span>
+    <span class="key">"extensions"</span><span class="punct">: [</span>
+      <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"did:…:geo-station-ref"</span><span class="punct">,</span>
+        <span class="key">"stationId"</span><span class="punct">:</span> <span class="str">"CH-BE-014"</span> <span class="punct">}</span>
+    <span class="punct">]</span>
+  <span class="punct">},</span>
+  <span class="key">"recordHash"</span><span class="punct">:</span> <span class="str">"sha256:9f8e7d…"</span>
+<span class="punct">}</span></div>
+      </div>
+
+      <div class="module" data-step="4">
+        <span class="num">4</span>
+        <span class="tag role-app">Application builds this</span>
+        <strong>Delivery API</strong>
+        <p>Serves the record and its metadata over HTTP at a stable URL — this is exactly the address that <code>recordEndpoint</code> in the DID document will point to. Don't forget to implement access control and more, this is not covered by RWP.</p>
+        <div class="mini-doc" id="doc4"><span class="comment">// GET</span>
+<span class="str">https://vps.recordweb.dev/records/
+  did%3Arwp%3A8f3a%3A9d21</span>
+<span class="comment">// → 200 OK, application/json
+// → returns the record shown left</span></div>
+      </div>
+
+      <div class="module" data-step="5">
+        <span class="num">5</span>
+        <span class="tag role-infra">Shared infrastructure</span>
+        <strong>Resolver linkage</strong>
+        <p>The application's endpoint is written into the DID document maintained by the Resolver (if not integrated).</p>
+        <div class="mini-doc" id="doc5"><span class="punct">{</span>
+  <span class="key">"id"</span><span class="punct">:</span> <span class="str">"did:rwp:8f3a:9d21"</span><span class="punct">,</span>
+  <span class="key">"recordEndpoint"</span><span class="punct">:</span>
+    <span class="str">"https://vps.recordweb.dev/…"</span>
+<span class="punct">}</span></div>
+      </div>
+    </div>
+
+    <div class="process-row">
+      <p class="process-label">Build order</p>
+      <div class="process-steps" id="processSteps">
+        <div class="p-step" data-step="1"><span class="p-num">1</span>Namespace</div>
+        <div class="p-step" data-step="2"><span class="p-num">2</span>SchemaRecord</div>
+        <div class="p-step" data-step="3"><span class="p-num">3</span>Record engine</div>
+        <div class="p-step" data-step="4"><span class="p-num">4</span>Delivery API</div>
+        <div class="p-step" data-step="5"><span class="p-num">5</span>Resolver linkage</div>
+      </div>
+    </div>
+
+    <div class="caption-bar" id="captionBar"></div>
+  </div>
+
+  <div class="controls">
+    <button id="backBtn" type="button">← Back</button>
+    <span class="step-label" id="stepLabel">Step 1 / 5</span>
+    <button class="primary" id="nextBtn" type="button">Next →</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const captions = [
+    "<b>1 · Namespace registration.</b> Before anything else, the application's operating organization needs a namespace. This comes either from a national registration authority, or self-service via the RecordWeb Trust Association's app — recorded in the Global Namespace Registry.",
+    "<b>2 · SchemaRecord.</b> The application defines what a given record type looks like (here, a generic \"Report\") as its own versioned record, before it can issue any record of that type.",
+    "<b>3 · Record engine.</b> The application creates actual records: a stable DID, a payload snapshot lifecycle, and metadata (core, governance, and optionally extensions) that make the record findable and classifiable.",
+    "<b>4 · Delivery API.</b> The application exposes an HTTP endpoint that serves the record on request — the exact address the DID document will later reference.",
+    "<b>5 · Resolver linkage.</b> The application's endpoint is registered in the DID document. The Resolver itself may be shared or integrated, depending on the organizatinos architecture."
+  ];
+
+  const modules = [...document.querySelectorAll('.module')];
+  const pSteps = [...document.querySelectorAll('.p-step')];
+  const captionBar = document.getElementById('captionBar');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const stepLabel = document.getElementById('stepLabel');
+  const total = 5;
+  let i = 1;
+
+  function render() {
+    modules.forEach(m => m.classList.toggle('active', Number(m.dataset.step) === i));
+    pSteps.forEach(p => p.classList.toggle('active', Number(p.dataset.step) === i));
+    captionBar.innerHTML = captions[i - 1];
+    stepLabel.textContent = `Step ${i} / ${total}`;
+    backBtn.disabled = i === 1;
+    nextBtn.disabled = i === total;
+    nextBtn.textContent = i === total ? 'End' : 'Next →';
+  }
+
+  function move(delta) {
+    const t = Math.max(1, Math.min(total, i + delta));
+    if (t !== i) { i = t; render(); }
+  }
+
+  backBtn.addEventListener('click', () => move(-1));
+  nextBtn.addEventListener('click', () => move(1));
+  pSteps.forEach(p => p.addEventListener('click', () => { i = Number(p.dataset.step); render(); }));
+  window.addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); move(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); move(-1); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
