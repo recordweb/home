@@ -1,334 +1,51 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RecordWeb: The answer explains itself.</title>
-<style>
-:root{
-  --blue:#005a9c; --blue-dark:#003d6b; --blue-soft:#e8f2f8;
-  --ink:#1d2b36; --muted:#536471; --line:#c9d7df; --paper:#fff; --surface:#f5f8fa;
-  --warm:#fff5dc; --warm-line:#d89c23; --red:#ae2626; --red-soft:#fff1f1;
-  --green:#16784b; --green-soft:#eaf7ef; --purple:#68499b; --purple-soft:#f2edf9;
-  --shadow:0 10px 30px rgba(21,47,66,.13);
-}
-*{box-sizing:border-box}
-html{background:var(--surface)}
-body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-button{font:inherit}
-.topbar{position:fixed;z-index:10;inset:0 0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}
-.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}
-.brand strong{font-size:1.2rem}
-.brand span{font-size:.82rem;font-weight:500;opacity:.86}
-.counter{font-size:.9rem;font-variant-numeric:tabular-nums}
-main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}
-.deck{width:min(1140px,100%)}
-.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--blue);box-shadow:var(--shadow)}
-.slide.active{display:flex;flex-direction:column;justify-content:center}
-.eyebrow{margin:0 0 1rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
-h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}
-h1{max-width:920px;font-size:clamp(2.6rem,6.2vw,5.5rem)}
-h2{max-width:900px;font-size:clamp(2rem,4.4vw,3.8rem)}
-h3{font-size:1.12rem}
-.lead{max-width:830px;margin:1.5rem 0 0;color:var(--muted);font-size:clamp(1.15rem,2vw,1.42rem)}
-.quote{max-width:890px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--blue);background:var(--blue-soft);font-size:1.2rem;font-weight:650}
-.stage{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;margin-top:2rem}
-.card{padding:1.3rem;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(20,44,60,.08)}
-.status-line{display:flex;justify-content:space-between;align-items:center;padding:.7rem .85rem;border-radius:4px;background:var(--green-soft);color:#175d3b;font-weight:700;font-size:.9rem}
-.record-box{margin-top:1rem;padding:1rem;border:1px solid #d9e1e5;background:#fcfcfc}
-.record-box .line{height:10px;margin:.65rem 0;border-radius:9px;background:#dce5e9}
-.record-box .line.accent{width:76%;background:#91bad0}
-.record-box .line.short{width:52%}
-.questions3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
-.q-card{min-height:200px;padding:1.15rem;border:1px solid var(--line);border-top:6px solid var(--warm-line);background:#fff}
-.q-card h3{color:var(--blue-dark);font-size:1.02rem}
-.q-card p{margin:.6rem 0 0;color:var(--muted);font-size:.87rem}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:1.5rem}
-.field{padding:.9rem 1rem;border-left:5px solid var(--blue);background:var(--blue-soft);font-size:.92rem}
-.field b{display:block;color:var(--blue-dark)}
-.story-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:stretch;margin-top:2rem}
-.node{display:flex;flex-direction:column;justify-content:center;min-height:170px;padding:1rem;border:1px solid var(--line);background:#fff}
-.node strong{color:var(--blue-dark)}
-.node small{margin-top:.4rem;color:var(--muted)}
-.arrow{align-self:center;color:var(--blue);font-size:2rem;font-weight:850}
-.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
-.compare div{padding:1.25rem;border:1px solid var(--line)}
-.compare h3{margin-bottom:.75rem}
-.compare ul{margin:0;padding-left:1.15rem;color:var(--muted)}
-.compare li{margin:.45rem 0}
-.compare .old{border-top:6px solid var(--warm-line)}
-.compare .new{border-top:6px solid var(--blue);background:var(--blue-soft)}
-.four{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-top:2rem}
-.four div{min-height:175px;padding:1.1rem;border:1px solid var(--line);background:#fff}
-.four strong{display:block;color:var(--blue-dark);font-size:1rem}
-.four p{margin:.55rem 0 0;color:var(--muted);font-size:.86rem}
-.dialogue{max-width:800px;margin-top:1.6rem}
-.dialogue p{margin:.7rem 0;padding:.9rem 1.05rem;border-radius:3px;background:var(--surface)}
-.dialogue b{color:var(--blue-dark)}
-.limits{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
-.limits div{padding:1.25rem;border:1px solid var(--line)}
-.limits h3{margin-bottom:.75rem;color:var(--blue-dark)}
-.limits ul{margin:0;padding-left:1.15rem;color:var(--muted)}
-.limits li{margin:.45rem 0}
-.public-note{max-width:900px;margin-top:2rem;padding:1.35rem;border-left:7px solid var(--blue);background:var(--blue-soft)}
-.public-note p{margin:.35rem 0}
-.public-note small{display:block;margin-top:.75rem;color:var(--muted)}
-.closing{text-align:center}
-.closing h2{margin-inline:auto}
-.closing .quote{margin:2rem auto 0;text-align:left}
-.nav{position:fixed;z-index:10;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}
-.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--blue);border-radius:3px;color:var(--blue);background:#fff;font-weight:750;cursor:pointer}
-.nav button.primary{color:#fff;background:var(--blue)}
-.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
-.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}
-.progress span{display:block;height:100%;background:var(--blue);transition:width .2s ease}
-.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}
-.speaker-notes{display:none;max-width:940px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}
-body.show-notes .speaker-notes{display:block}
-.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}
-@media (max-width:800px){
-  body{font-size:16px}
-  .topbar{padding:0 1rem}
-  .brand span{display:none}
-  main{padding:82px 1rem 94px}
-  .slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}
-  .stage,.questions3,.compare,.four,.limits{grid-template-columns:1fr}
-  .story-flow{grid-template-columns:1fr}
-  .arrow{transform:rotate(90deg)}
-  .fields{grid-template-columns:1fr}
-  .nav{gap:.5rem;padding:14px .7rem}
-  .nav button{min-width:82px;font-size:.83rem}
-  .progress{width:90px}
-  .help{display:none}
-}
-@media print{
-  .topbar,.nav,.speaker-toggle,.help{display:none !important}
-  main{display:block;padding:0}
-  .slide{display:flex !important;min-height:100vh;page-break-after:always;box-shadow:none}
-  .speaker-notes{display:block}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RecordWeb – The Answer Explains Itself</title>
+  <style>
+    :root { --blue:#005a9c;--blue-dark:#003d6b;--blue-soft:#e8f2f8;--ink:#1d2b36;--muted:#536471;--line:#c9d7df;--paper:#fff;--surface:#f5f8fa;--warm:#fff5dc;--warm-line:#d89c23;--red:#ae2626;--red-soft:#fff1f1;--green:#16784b;--green-soft:#eaf7ef;--purple:#68499b;--purple-soft:#f2edf9;--shadow:0 10px 30px rgba(21,47,66,.13); }
+    *{box-sizing:border-box}html{background:var(--surface)}body{margin:0;color:var(--ink);background:var(--surface);font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}button{font:inherit}.topbar{position:fixed;z-index:10;inset:0 0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;color:#fff;background:var(--blue-dark);box-shadow:0 2px 10px rgba(0,0,0,.18)}.brand{display:flex;align-items:baseline;gap:.75rem;font-weight:700;letter-spacing:-.02em}.brand strong{font-size:1.2rem}.brand span{font-size:.82rem;font-weight:500;opacity:.86}.counter{font-size:.9rem;font-variant-numeric:tabular-nums}main{min-height:100vh;display:grid;place-items:center;padding:94px 5vw 106px}.deck{width:min(1120px,100%)}.slide{display:none;min-height:min(670px,calc(100vh - 190px));padding:clamp(2rem,5vw,5rem);background:var(--paper);border-top:9px solid var(--blue);box-shadow:var(--shadow)}.slide.active{display:flex;flex-direction:column;justify-content:center}.eyebrow{margin:0 0 1rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.035em}h1{max-width:920px;font-size:clamp(2.6rem,6.2vw,5.5rem)}h2{max-width:890px;font-size:clamp(2rem,4.4vw,3.8rem)}h3{font-size:1.12rem}.lead{max-width:820px;margin:1.5rem 0 0;color:var(--muted);font-size:clamp(1.15rem,2vw,1.42rem)}.quote{max-width:875px;margin:2rem 0 0;padding:1.1rem 1.35rem;border-left:6px solid var(--blue);background:var(--blue-soft);font-size:1.2rem;font-weight:650}.stage{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;margin-top:2rem}.card{padding:1.3rem;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(20,44,60,.08)}.persona{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}.avatar{display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:#fff;background:var(--blue);font-size:.9rem;font-weight:850}.avatar.journal{background:var(--purple)}.persona p{margin:0;line-height:1.25}.persona small{display:block;color:var(--muted)}.phone{padding:1.15rem;border:8px solid #263a47;border-radius:30px;background:#f7fafb;box-shadow:0 8px 20px rgba(17,35,45,.18)}.phone-top{padding-bottom:.7rem;border-bottom:1px solid var(--line);color:var(--blue-dark);font-weight:800}.search{margin-top:.9rem;padding:.6rem .75rem;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:#fff;font-size:.87rem}.result{margin-top:.85rem;padding:.8rem;border-left:5px solid var(--green);background:var(--green-soft);font-size:.86rem}.result strong{display:block;color:#155a39}.result small{display:block;margin-top:.35rem;color:var(--muted)}.question{margin-top:1rem;padding:1rem;border:1px solid #e2aaaa;background:var(--red-soft)}.question p{margin:.2rem 0;color:#752d2d}.question strong{color:var(--red)}.drawer{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;margin-top:2rem}.drawer>div{min-height:160px;padding:1.05rem;border:1px solid var(--line);background:#fff}.drawer b{display:block;margin-bottom:.55rem;color:var(--blue-dark);font-size:1.05rem}.drawer p{margin:0;color:var(--muted);font-size:.88rem}.drawer .unknown{border-top:6px solid var(--red);background:var(--red-soft)}.drawer .unknown b{color:#7a2929}.record-view{display:grid;grid-template-columns:1.05fr .95fr;gap:1.2rem;align-items:stretch;margin-top:2rem}.record-main{padding:1.2rem;border:1px solid var(--line);border-top:7px solid var(--green);background:var(--green-soft)}.record-main h3{color:#155a39}.record-main p{margin:.6rem 0 0;color:#35664e}.meta{display:grid;gap:.55rem;margin-top:1rem}.meta div{padding:.55rem .7rem;border:1px solid #b8d8c4;background:#fff;font-size:.84rem}.meta b{color:#175d3b}.context{padding:1.2rem;border:1px solid var(--line);background:#fff}.context h3{color:var(--blue-dark)}.context-node{position:relative;margin-top:.7rem;padding:.62rem .75rem;border-left:5px solid var(--blue);background:var(--blue-soft);font-size:.84rem}.context-node.chat{border-left-color:var(--purple);background:var(--purple-soft)}.context-node.final{border-left-color:var(--green);background:var(--green-soft)}.context-node small{display:block;margin-top:.2rem;color:var(--muted)}.timeline{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.75rem;align-items:stretch;margin-top:2rem}.node{display:flex;flex-direction:column;justify-content:center;min-height:150px;padding:1rem;border:1px solid var(--line);background:#fff}.node strong{color:var(--blue-dark)}.node small{margin-top:.4rem;color:var(--muted)}.node.question-node{border-top:6px solid var(--blue);background:var(--blue-soft)}.node.chat-node{border-top:6px solid var(--purple);background:var(--purple-soft)}.node.answer-node{border-top:6px solid var(--green);background:var(--green-soft)}.arrow{align-self:center;color:var(--blue);font-size:2rem;font-weight:850}.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}.compare>div{padding:1.25rem;border:1px solid var(--line)}.compare h3{margin-bottom:.75rem}.compare ul{margin:0;padding-left:1.15rem;color:var(--muted)}.compare li{margin:.45rem 0}.compare .old{border-top:6px solid var(--warm-line)}.compare .new{border-top:6px solid var(--blue);background:var(--blue-soft)}.proof{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-top:2rem}.proof>div{min-height:170px;padding:1.05rem;border:1px solid var(--line);background:#fff}.proof .check{display:block;color:var(--green);font-size:1.35rem;font-weight:900}.proof b{display:block;margin-top:.4rem;color:var(--blue-dark)}.proof p{margin:.45rem 0 0;color:var(--muted);font-size:.84rem}.dialogue{max-width:840px;margin-top:1.8rem}.dialogue p{margin:.75rem 0;padding:.9rem 1.05rem;border-radius:3px;background:var(--surface)}.dialogue b{color:var(--blue-dark)}.public{max-width:900px;margin-top:2rem;padding:1.4rem;border-left:7px solid var(--blue);background:var(--blue-soft)}.public p{margin:.35rem 0}.public small{display:block;margin-top:.75rem;color:var(--muted)}.closing{text-align:center}.closing h2{margin-inline:auto}.closing .quote{margin:2rem auto 0;text-align:left}.speaker-toggle{position:fixed;z-index:9;right:1.2rem;top:78px;padding:.5rem .8rem;border:1px solid var(--line);border-radius:4px;color:var(--blue-dark);background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.08);font-size:.84rem;font-weight:700;cursor:pointer}.speaker-notes{display:none;max-width:920px;margin-top:2rem;padding:1rem 1.2rem;border-left:5px solid var(--warm-line);background:var(--warm);color:#57420d;font-size:.93rem}body.show-notes .speaker-notes{display:block}.nav{position:fixed;z-index:10;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:1rem;padding:19px 5vw;border-top:1px solid #c7d3da;background:rgba(255,255,255,.97);backdrop-filter:blur(5px)}.nav button{min-width:120px;padding:.66rem 1rem;border:1px solid var(--blue);border-radius:3px;color:var(--blue);background:#fff;font-weight:750;cursor:pointer}.nav button.primary{color:#fff;background:var(--blue)}.nav button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}.progress{width:min(280px,28vw);height:6px;overflow:hidden;border-radius:4px;background:#d7e2e8}.progress span{display:block;height:100%;background:var(--blue);transition:width .2s ease}.help{position:fixed;z-index:9;left:1.2rem;bottom:89px;color:var(--muted);font-size:.77rem}@media(max-width:760px){body{font-size:16px}.topbar{padding:0 1rem}.brand span{display:none}main{padding:82px 1rem 94px}.slide{min-height:calc(100vh - 168px);padding:2rem 1.4rem}.stage,.compare,.record-view{grid-template-columns:1fr}.drawer,.proof{grid-template-columns:1fr}.timeline{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.nav{gap:.5rem;padding:14px .7rem}.nav button{min-width:82px;font-size:.83rem}.progress{width:90px}.help{display:none}}@media print{.topbar,.nav,.speaker-toggle,.help{display:none!important}main{display:block;padding:0}.slide{display:flex!important;min-height:100vh;page-break-after:always;box-shadow:none}.speaker-notes{display:block}}
+  </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand"><strong>RecordWeb</strong><span>A story about context</span></div>
-  <div class="counter" id="counter" aria-live="polite">1 / 10</div>
-</header>
-<button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
-<main>
-<div class="deck" id="deck">
+  <header class="topbar"><div class="brand"><strong>RecordWeb</strong><span>Public access · Usage · Context</span></div><div class="counter" id="counter" aria-live="polite">1 / 10</div></header>
+  <button class="speaker-toggle" id="notesButton" type="button" aria-pressed="false">Show speaker notes</button>
+  <main><div class="deck">
+    <section class="slide active" data-title="Title"><p class="eyebrow">RecordWeb · A story about context</p><h1>The answer explains itself.</h1><p class="lead">What a person should be able to understand when they find a single record years later.</p><div class="quote">An answer is more than its text. It carries its context with it.</div><aside class="speaker-notes">This story continues the Question Time PoC, but shifts the perspective. It is not Ms. Roth producing the answer, but Ms. Berger later trying to understand what this answer means. The point: information only becomes usable in the long term when it is not just findable, but also placeable in context.</aside></section>
 
-<section class="slide active" data-title="Title">
-  <p class="eyebrow">RecordWeb · A story about context</p>
-  <h1>The answer explains itself.</h1>
-  <p class="lead">What a person should be able to understand when they find a single record years later.</p>
-  <div class="quote">Not just published. Provable.</div>
-  <aside class="speaker-notes">Welcome. This story looks at RecordWeb from the perspective of someone finding a record much later, without the original working context in front of them.</aside>
-</section>
 
-<section class="slide" data-title="Years later">
-  <p class="eyebrow">Scene 1 · A few years later</p>
-  <h2>Ms. Berger is searching for an old answer about the development of CO₂ emissions.</h2>
-  <div class="stage">
-    <div>
-      <p class="lead">Ms. Berger is a journalist. For a piece about the impact of climate measures, she wants to know what the government told parliament, in binding terms, at the time.</p>
-      <p>She finds an answer. But is the text alone enough to understand it correctly?</p>
-    </div>
-    <div class="card">
-      <div class="status-line"><span>Answer to a parliamentary question</span><span>Finalized</span></div>
-      <div class="record-box"><strong>Government side</strong><div class="line accent"></div><div class="line"></div><div class="line short"></div></div>
-      <p style="margin:.6rem 0 0;color:var(--muted);font-size:.85rem">August 25, 2026</p>
-    </div>
-  </div>
-  <aside class="speaker-notes">Ms. Berger's situation is deliberately simple: she has found an answer, but needs to understand the context around it to use it responsibly.</aside>
-</section>
+    <section class="slide" data-title="Research"><p class="eyebrow">Scene 1 · A few years later</p><h2>Ms. Berger is searching for an old answer about the development of CO₂ emissions.</h2><div class="stage"><div><p class="lead">Ms. Berger is a journalist. For a piece on the effectiveness of climate measures, she wants to know what the government committed to in its answer to Parliament at the time.</p><p>She finds an answer. But is the text alone enough to understand it correctly?</p></div><div class="phone"><div class="phone-top">Public research</div><div class="search">⌕ CO₂ emissions parliamentary answer</div><div class="result"><strong>Answer to a parliamentary question</strong><small>Finalized · Government page · August 25, 2026</small></div></div></div><aside class="speaker-notes">The main character is deliberately not a records management specialist. Ms. Berger represents the public, media, research, citizens, oversight bodies, or even future administrative staff. She doesn't want to understand an archiving system. She wants to be able to assess what an answer states, how reliable it is, or how it came about from a socio-cultural point of view.</aside></section>
 
-<section class="slide" data-title="The text isn't enough">
-  <p class="eyebrow">Scene 2 · The text isn't enough</p>
-  <h2>A found answer immediately raises new questions.</h2>
-  <p class="lead" style="font-weight:650;font-style:italic">"CO₂ emissions developed as follows over the period under review…"</p>
-  <p>The answer sounds clear. But which period does it mean? Which formal question is it responding to? Which office was responsible? What context led to this statement?</p>
-  <div class="questions3">
-    <div class="q-card"><h3>What was the question about?</h3><p>Without the original question, it's unclear exactly what was meant to be answered (usually not a problem in today's dossier-centred way of working).</p></div>
-    <div class="q-card"><h3>In what context did the answer arise?</h3><p>Without context, it's not visible which office argued how, or how much weight was given to whom.</p></div>
-    <div class="q-card"><h3>Which version applies?</h3><p>Without version and status information, a draft can look like a binding answer.</p></div>
-  </div>
-  <aside class="speaker-notes">These three uncertainties are exactly what a well-formed record with context is meant to resolve.</aside>
-</section>
 
-<section class="slide" data-title="A record with context">
-  <p class="eyebrow">Scene 3 · A record with context</p>
-  <h2>The CaseRecord shows more than content.</h2>
-  <p class="lead">The actual answer text stays visible and readable. At the same time, the record carries information that allows it to be placed in context.</p>
-  <div class="fields">
-    <div class="field"><b>Status:</b> finalized</div>
-    <div class="field"><b>Responsibility:</b> the responsible government office</div>
-    <div class="field"><b>Version:</b> a uniquely referenceable version</div>
-    <div class="field"><b>Created:</b> point in time of creation and finalisation</div>
-  </div>
-  <aside class="speaker-notes">The CaseRecord for "Answer to a parliamentary question" carries status, responsibility, version, and creation information alongside its readable text.</aside>
-</section>
+    <section class="slide" data-title="Questions"><p class="eyebrow">Scene 2 · The text is not enough</p><h2>A found answer immediately raises new questions.</h2><div class="question"><strong>"CO₂ emissions developed as follows over the period under review …"</strong><p>The answer sounds clear. But which period does it mean? Which formal question is it responding to? Which body was responsible? What context led to this statement?</p></div><div class="drawer"><div class="solved"><b>What was the question referring to?</b><p>Without the original question, it remains unclear exactly what was meant to be answered (usually not a problem in today's dossier-centered way of working).</p></div><div class="unknown"><b>In what context did the answer arise?</b><p>Without context, it is not visible which body argued in what way, or how much weight was given to whom.</p></div><div class="unknown"><b>Which version is authoritative?</b><p>Without version and status information, a draft can look like a binding answer.</p></div></div><div class="quote">Findability is only the beginning. Trust arises when information also makes its context understandable.</div><aside class="speaker-notes">The text of an answer can be formally correct and still provide too little context. Anyone who wants to report, verify, or build on it responsibly needs more context.</aside></section>
 
-<section class="slide" data-title="The answer tells its story">
-  <p class="eyebrow">Scene 4 · The answer tells its story</p>
-  <h2>Ms. Berger can trace the path to the answer.</h2>
-  <p class="lead">Not as a confusing pile of files. But as an understandable sequence and relationship of self-contained records.</p>
-  <div class="story-flow">
-    <div class="node"><strong>Formal question</strong><small>Mr. Keller asks how CO₂ emissions have developed.</small></div>
-    <div class="arrow">→</div>
-    <div class="node"><strong>Processing</strong><small>Ms. Roth and her team check data, discuss, and align.</small></div>
-    <div class="arrow">→</div>
-    <div class="node"><strong>Finalized answer</strong><small>The responsible government office takes ownership of the binding version.</small></div>
-  </div>
-  <aside class="speaker-notes">The relationship chain — question, processing, finalized answer — replaces a pile of disconnected files with an understandable story.</aside>
-</section>
 
-<section class="slide" data-title="Not ten folders">
-  <p class="eyebrow">Scene 5 · Not searching through ten folders</p>
-  <h2>Ms. Berger doesn't need to piece the context together herself.</h2>
-  <div class="compare">
-    <div class="old">
-      <h3>When only files exist</h3>
-      <ul>
-        <li>She searches across several portals and dossiers</li>
-        <li>She compares similar file names and timestamps</li>
-        <li>She asks about responsibility and approval</li>
-        <li>She doesn't know what's missing or was discarded</li>
-        <li>She reconstructs context from clues</li>
-      </ul>
-    </div>
-    <div class="new">
-      <h3>When records are linked</h3>
-      <ul>
-        <li>She starts from the found AnswerRecord</li>
-        <li>She follows the relationship to the formal question</li>
-        <li>She recognises the responsible office and status</li>
-        <li>She sees the relevant business context</li>
-        <li>She can open sources and further records directly</li>
-      </ul>
-    </div>
-  </div>
-  <aside class="speaker-notes">Linked records turn a laborious reconstruction into a guided path from the found record outward.</aside>
-</section>
+    <section class="slide" data-title="The Record"><p class="eyebrow">Scene 3 · A record with context</p><h2>The CaseRecord shows more than content.</h2><div class="record-view"><div class="record-main"><h3>Answer to a parliamentary question</h3><p>The actual answer text remains visible and readable. At the same time, the record carries information that enables its classification.</p><div class="meta"><div><b>Status:</b> finalized</div><div><b>Responsibility:</b> responsible government body</div><div><b>Version:</b> uniquely referenceable version</div><div><b>Created:</b> time of creation and finalization</div></div></div><div class="context"><h3>Linked context</h3><div class="context-node">Parliamentary question<small>Trigger and subject of the answer</small></div><div class="context-node chat">Processing in the specialist team<small>Relevant collaboration and coordination</small></div><div class="context-node final">Binding answer<small>Finalized, accountable version</small></div></div></div><aside class="speaker-notes">Not every view needs to show all the technical metadata. The presentation should make the humanly relevant information visible: What is this? Who is responsible for it? What status applies? What does it relate to?</aside></section>
 
-<section class="slide" data-title="Published, and provable">
-  <p class="eyebrow">Scene 6 · Not just published, but provable</p>
-  <h2>The answer isn't just a web page that could disappear tomorrow.</h2>
-  <p class="lead">It's an identifiable record. Its status, its version, and its hosting context can be traced.</p>
-  <div class="four">
-    <div><strong>It provably exists</strong><p>A stable reference point makes clear which record is meant.</p></div>
-    <div><strong>It is finalized</strong><p>The status distinguishes the binding answer from a working draft.</p></div>
-    <div><strong>It stays placeable</strong><p>Relationships lead to the question, the case, and the accountable context.</p></div>
-    <div><strong>It can be verified</strong><p>Version, integrity, and the hosting responsibility are traceable.</p></div>
-  </div>
-  <aside class="speaker-notes">Existence, finalisation, placeability, and verifiability together make the record trustworthy over time.</aside>
-</section>
 
-<section class="slide" data-title="From a find to understanding">
-  <p class="eyebrow">Scene 7 · A find becomes understanding</p>
-  <h2>Ms. Berger can justify her research in a traceable way.</h2>
-  <div class="dialogue">
-    <p><b>Ms. Berger:</b> "The government answered a parliamentary question about the development of CO₂ emissions in August 2026."</p>
-    <p><b>Ms. Berger:</b> "The answer is finalized, its signature is valid, the document is unchanged."</p>
-    <p><b>Ms. Berger:</b> "For context, I can open the original question and its related context."</p>
-  </div>
-  <aside class="speaker-notes">Because the record is traceable, Ms. Berger can state precisely what she knows and how she knows it.</aside>
-</section>
+    <section class="slide" data-title="History"><p class="eyebrow">Scene 4 · The answer tells its story</p><h2>Ms. Berger can trace the path leading to the answer.</h2><p class="lead">Not as a confusing pile of files. But as an understandable sequence and relationship of independent records.</p><div class="timeline"><div class="node question-node"><strong>Formal question</strong><small>Mr. Keller asks how CO₂ emissions have developed.</small></div><div class="arrow">→</div><div class="node chat-node"><strong>Processing</strong><small>Ms. Roth and her specialist team review data, discuss, and coordinate.</small></div><div class="arrow">→</div><div class="node answer-node"><strong>Finalized answer</strong><small>The responsible government body takes ownership of the binding version.</small></div></div><div class="quote">The answer does not need to repeat every detail of how it came about. But it can show where its relevant context lies.</div><aside class="speaker-notes">The story does not necessarily show every chat message or every discarded note. It's about the relevant context. RecordWeb makes it accessible as relationships: the question triggers processing; processing leads to the answer; cases provide the organizational framework. That is more than a link in the text — it is a traceable network.</aside></section>
 
-<section class="slide" data-title="Transparency with responsibility">
-  <p class="eyebrow">Scene 8 · Transparency with responsibility</p>
-  <h2>Linking doesn't mean unlimited publication.</h2>
-  <div class="limits">
-    <div>
-      <h3>RecordWeb does not claim</h3>
-      <ul>
-        <li>That every working note must be public</li>
-        <li>That all chat contributions become visible</li>
-        <li>That data protection and retention periods disappear</li>
-        <li>That any person may resolve everything</li>
-      </ul>
-    </div>
-    <div>
-      <h3>RecordWeb enables</h3>
-      <ul>
-        <li>Clear, accountable provision</li>
-        <li>Public or authorised views of relevant records</li>
-        <li>Traceable relationships within permitted scope</li>
-        <li>A better basis for transparency and accountability</li>
-      </ul>
-    </div>
-  </div>
-  <aside class="speaker-notes">Linking records is not the same as making everything public. Access control and legitimate confidentiality remain fully in place.</aside>
-</section>
 
-<section class="slide" data-title="An answer that keeps working">
-  <p class="eyebrow">Scene 9 · An answer that keeps working</p>
-  <h2>The value doesn't end once the question is answered.</h2>
-  <p class="lead">Ms. Roth needed a timely, factually correct answer. Mr. Keller needed his question handled in a binding way.</p>
-  <p>Years later, Ms. Berger needs an understandable and verifiable context. RecordWeb connects these needs across the lifespan of the same records.</p>
-  <div class="public-note">
-    <p><b>RecordWeb perspective:</b> Information doesn't just get left behind. It remains a usable, accountable, and referenceable part of institutional memory.</p>
-    <small>How this context is displayed in a concrete user interface, a public search, or a personal data space is a design question for applications and systems.</small>
-  </div>
-  <aside class="speaker-notes">The same records serve Ms. Roth's immediate need, Mr. Keller's formal question, and Ms. Berger's later research — without duplication.</aside>
-</section>
+    <section class="slide" data-title="Not Just a Dossier"><p class="eyebrow">Scene 5 · Not searching through ten folders</p><h2>Ms. Berger doesn't have to piece the context together herself.</h2><div class="compare"><div class="old"><h3>When only files are available</h3><ul><li>She searches across multiple portals and dossiers</li><li>She compares similar file names and time stamps</li><li>She asks about responsibility and approval</li><li>She doesn't know what's missing or was discarded</li><li>She reconstructs the context from clues</li></ul></div><div class="new"><h3>When records are linked</h3><ul><li>She starts from the answer record she found</li><li>She follows the relationship to the formal question</li><li>She recognizes the responsible body and status</li><li>She sees the relevant business context</li><li>She can open sources and further records in a targeted way</li></ul></div></div><div class="quote">A case remains a helpful view. But the context does not depend on all information sitting in the same digital box.</div><aside class="speaker-notes">This is not a promise that every search will immediately deliver every answer. Access rights, retention periods, and data protection remain in force. But wherever a person researches with authorization or in public, they should be able to access the context via linked records, instead of being dependent on manual reconstruction.</aside></section>
 
-<section class="slide" data-title="Closing">
-  <div class="closing">
-    <p class="eyebrow">RecordWeb · Use and the public</p>
-    <h2>An answer that shows its context can still be understood later.</h2>
-    <p class="lead">RecordWeb connects self-contained records, accountable contexts, and traceable relationships, so that a find can become a justified piece of information.</p>
-    <div class="quote">Understand, place in context, and verify.</div>
-  </div>
-  <aside class="speaker-notes">Possible follow-up questions could explore what user interfaces for later resolution should look like, and where the boundary between public and authorised access should be drawn.</aside>
-</section>
 
-</div>
-</main>
-<div class="help">Keyboard: ← → Home End N (speaker notes)</div>
-<nav class="nav" aria-label="Presentation navigation">
-  <button id="prev" type="button">Back</button>
-  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
-  <button class="primary" id="next" type="button">Next</button>
-</nav>
-<script>
-const slides = Array.from(document.querySelectorAll('.slide'));
-const prev = document.getElementById('prev');
-const next = document.getElementById('next');
-const counter = document.getElementById('counter');
-const progress = document.getElementById('progressBar');
-const notesButton = document.getElementById('notesButton');
-let index = 0;
-function render(){
-  slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-  prev.disabled = index === 0;
-  next.disabled = index === slides.length - 1;
-  next.textContent = index === slides.length - 1 ? 'End' : 'Next';
-  counter.textContent = `${index + 1} / ${slides.length}`;
-  progress.style.width = `${((index + 1) / slides.length) * 100}%`;
-  document.title = `RecordWeb: ${slides[index].dataset.title}`;
-  window.scrollTo({top:0, behavior:'instant'});
-}
-function move(delta){
-  const target = Math.max(0, Math.min(slides.length - 1, index + delta));
-  if (target !== index){ index = target; render(); }
-}
-prev.addEventListener('click', () => move(-1));
-next.addEventListener('click', () => move(1));
-notesButton.addEventListener('click', () => {
-  const visible = document.body.classList.toggle('show-notes');
-  notesButton.textContent = visible ? 'Hide speaker notes' : 'Show speaker notes';
-  notesButton.setAttribute('aria-pressed', String(visible));
-});
-window.addEventListener('keydown', (event) => {
-  if (event.altKey || event.ctrlKey || event.metaKey) return;
-  if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' '){ event.preventDefault(); move(1); }
-  if (event.key === 'ArrowLeft' || event.key === 'PageUp'){ event.preventDefault(); move(-1); }
-  if (event.key === 'Home'){ event.preventDefault(); index = 0; render(); }
-  if (event.key === 'End'){ event.preventDefault(); index = slides.length - 1; render(); }
-  if (event.key.toLowerCase() === 'n'){ notesButton.click(); }
-});
-render();
-</script>
+    <section class="slide" data-title="Verifiable Holding"><p class="eyebrow">Scene 6 · Not just published, but verifiable</p><h2>The answer is not simply a web page that could disappear tomorrow.</h2><p class="lead">It is an identifiable record. Its status, its version, and its provisioning context can be traceable.</p><div class="proof"><div><span class="check">✓</span><b>It demonstrably exists</b><p>A stable reference point makes clear which record is meant.</p></div><div><span class="check">✓</span><b>It is finalized</b><p>The status distinguishes the binding answer from a working draft.</p></div><div><span class="check">✓</span><b>It remains classifiable</b><p>Relationships lead to the question, the case, and the accountable context.</p></div><div><span class="check">✓</span><b>It can be verified</b><p>Version, integrity, and the providing authority are traceable.</p></div></div><aside class="speaker-notes">This touches on the principle of public access, without making detailed legal claims. When an authority publishes or makes information accessible, it's not only the text that's relevant. It also matters whether the statement is verifiable, whether a binding version remains identifiable, and whether the institutional context can be traced.</aside></section>
+
+
+    <section class="slide" data-title="Ms. Berger Follows Up"><p class="eyebrow">Scene 7 · From a find to understanding</p><h2>Ms. Berger can justify her research in a traceable way.</h2><div class="dialogue"><p><b>Ms. Berger:</b> "The government responded in August 2026 to a parliamentary question about the development of CO₂ emissions."</p><p><b>Ms. Berger:</b> "The answer is finalized, its signature is valid, the document is unaltered."</p><p><b>Ms. Berger:</b> "For context, I can open the original question and the associated context."</p></div><div class="quote">She doesn't have to blindly trust the answer. She can show which record she used and how she traced its context.</div><aside class="speaker-notes">This is the emotional turning point: Ms. Berger doesn't gain omniscience, but she gains orientation and a verifiable basis. This is the same benefit for journalism, research, parliamentary oversight, administration, and the public — each with different access rights and levels of detail.</aside></section>
+
+
+    <section class="slide" data-title="Limits"><p class="eyebrow">Scene 8 · Transparency with responsibility</p><h2>Linking does not mean unlimited publication.</h2><div class="compare"><div class="old"><h3>RecordWeb does not claim</h3><ul><li>That every working note must be public</li><li>That all chat messages become visible</li><li>That data protection and retention periods no longer apply</li><li>That everyone is allowed to resolve everything</li></ul></div><div class="new"><h3>RecordWeb enables</h3><ul><li>Clear, accountable provisioning</li><li>Public or authorized views of relevant records</li><li>Traceable relationships within the permitted scope</li><li>A better basis for transparency and accountability</li></ul></div></div><div class="quote">Transparency doesn't just need openness. It also needs clear responsibility, tiered access, and traceable limits.</div><aside class="speaker-notes">This slide protects the story from an obvious misunderstanding. The relevant context is not necessarily fully public. However, RecordWeb can help provide the permitted view in a clean and traceable way. What is public, what remains protected, and who may access what continues to be determined by law, governance, and permissions within the systems themselves.</aside></section>
+
+
+    <section class="slide" data-title="Impact"><p class="eyebrow">Scene 9 · An answer that keeps working</p><h2>The value doesn't end once the question has been answered.</h2><div class="stage"><div><p class="lead">Ms. Roth needed a timely, professionally correct answer. Mr. Keller needed his question to be handled in a binding way.</p><p>Years later, Ms. Berger needs an understandable and verifiable way to place it in context. RecordWeb connects these needs across the lifecycle of the same records.</p></div><div class="card"><div class="persona"><div class="avatar journal">FB</div><p><b>Ms. Berger</b><small>Journalist · later user</small></p></div><div class="record-main" style="margin:0;padding:1rem;"><h3 style="font-size:1.05rem;">Answer found</h3><p style="font-size:.88rem;">Not just readable. Also understandable in its relevant context.</p></div></div></div><div class="public"><p><b>RecordWeb perspective:</b> Information does not simply linger. It remains a usable, accountable, and referenceable part of institutional memory.</p><small>How this context is displayed in a specific user interface, in a public search, or in a personal data space is a design question for applications and systems.</small></div><aside class="speaker-notes">Here the arc closes with all the previous stories. The work of Ms. Roth, the architecture, the trust rules, and the EoL transition ultimately serve one simple outcome: information should not just still be there later — it should be understandable and usable.</aside></section>
+
+
+    <section class="slide" data-title="Closing"><div class="closing"><p class="eyebrow">RecordWeb · Usage and public access</p><h2>An answer that shows its context<br>can still be understood later.</h2><p class="lead">RecordWeb connects independent records, accountable contexts, and traceable relationships, so that a found item can become well-founded information.</p><div class="quote">Not just finding.<br>Understanding, contextualizing, and verifying.</div></div><aside class="speaker-notes">Possible follow-up questions: What information would a public record view need to show at a minimum? Which relationships are relevant for different target audiences? Which parts of the working context remain protected, and how is the binding information still made classifiable despite that?</aside></section>
+  </div></main>
+  <div class="help">Keyboard: ← → · Home/End · N: speaker notes</div><nav class="nav" aria-label="Presentation navigation"><button id="prev" type="button">← Back</button><div class="progress" aria-hidden="true"><span id="progressBar"></span></div><button class="primary" id="next" type="button">Next →</button></nav>
+  <script>(()=>{const s=[...document.querySelectorAll('.slide')],p=document.getElementById('prev'),n=document.getElementById('next'),c=document.getElementById('counter'),b=document.getElementById('progressBar'),t=document.getElementById('notesButton');let i=0;function r(){s.forEach((x,j)=>x.classList.toggle('active',j===i));p.disabled=i===0;n.disabled=i===s.length-1;n.textContent=i===s.length-1?'End':'Next →';c.textContent=`${i+1} / ${s.length}`;b.style.width=`${(i+1)/s.length*100}%`;document.title=`RecordWeb – ${s[i].dataset.title}`;window.scrollTo({top:0,behavior:'instant'})}function m(d){const x=Math.max(0,Math.min(s.length-1,i+d));if(x!==i){i=x;r()}}p.addEventListener('click',()=>m(-1));n.addEventListener('click',()=>m(1));t.addEventListener('click',()=>{const v=document.body.classList.toggle('show-notes');t.textContent=v?'Hide speaker notes':'Show speaker notes';t.setAttribute('aria-pressed',String(v))});window.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey)return;if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();m(1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();m(-1)}if(e.key==='Home'){e.preventDefault();i=0;r()}if(e.key==='End'){e.preventDefault();i=s.length-1;r()}if(e.key.toLowerCase()==='n')t.click()});r()})();</script>
 </body>
 </html>
