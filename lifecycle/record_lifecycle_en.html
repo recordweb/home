@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb – Record Lifecycle</title>
+<style>
+  :root {
+    --blue:#005a9c;--blue-dark:#003d6b;--blue-soft:#e8f2f8;--ink:#1d2b36;--muted:#536471;
+    --line:#c9d7df;--paper:#fff;--surface:#f5f8fa;--warm:#fff5dc;--warm-line:#d89c23;
+    --green:#16784b;--green-soft:#eaf7ef;--purple:#68499b;--purple-soft:#f2edf9;
+    --grey-soft:#eef1f3;--grey-line:#c3ccd1;--red:#ae2626;
+    --shadow:0 10px 30px rgba(21,47,66,.13);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    color:var(--ink);background:var(--surface);
+    font:18px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:100vh;padding:3vh 4vw;
+  }
+  .wrap{width:min(1180px,100%)}
+  .head{margin-bottom:1.6rem;text-align:left}
+  .eyebrow{margin:0 0 .5rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+  h1{margin:0;font-size:clamp(1.7rem,3.2vw,2.5rem);letter-spacing:-.03em;line-height:1.15}
+  .sub{margin:.6rem 0 0;max-width:800px;color:var(--muted);font-size:1.05rem}
+
+  .stage{
+    position:relative;padding:2.4rem clamp(1.2rem,3vw,3rem) 2rem;
+    border:1px solid var(--line);border-top:9px solid var(--blue);
+    background:var(--paper);box-shadow:var(--shadow);
+    min-height:560px;
+  }
+
+  .did-banner{
+    display:flex;align-items:center;justify-content:center;gap:.6rem;
+    margin:0 auto 2.2rem;padding:.55rem 1.1rem;
+    border:1px dashed var(--blue);border-radius:30px;background:var(--blue-soft);
+    color:var(--blue-dark);font-weight:750;font-size:.95rem;width:fit-content;
+  }
+  .did-banner .dot{width:9px;height:9px;border-radius:50%;background:var(--blue);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  .systems{
+    display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,6rem);
+    align-items:start;position:relative;margin-top:1rem;
+  }
+  .system-col{display:flex;flex-direction:column;align-items:center;gap:0}
+  .system-box{
+    width:100%;min-height:190px;padding:1.1rem;border:2px solid var(--line);
+    background:#fff;position:relative;display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;gap:.5rem;
+    transition:opacity .5s ease, border-color .5s ease, background .5s ease;
+  }
+  .system-box .icon{font-size:1.7rem}
+  .system-box strong{color:var(--blue-dark);font-size:1.05rem;text-align:center}
+  .system-box small{color:var(--muted);font-size:.82rem;text-align:center;line-height:1.4}
+  .system-box.app{border-top:6px solid var(--blue)}
+  .system-box.ais{border-top:6px solid var(--green)}
+  .system-box.eol{opacity:.4;border-color:var(--grey-line);border-top-color:var(--grey-line)}
+  .system-box.eol strong{color:#7a868d}
+  .system-box.empty{
+    display:flex;align-items:center;justify-content:center;border-style:dashed;
+    border-color:var(--grey-line);background:var(--grey-soft);color:#9aa5ab;
+    font-size:.88rem;min-height:190px;
+  }
+
+  .record-slot{
+    width:120px;min-height:64px;margin-top:.3rem;padding:.5rem .6rem;
+    border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:.25rem;font-size:.78rem;font-weight:750;text-align:center;
+    border:2px solid var(--line);background:var(--grey-soft);color:#8b969c;
+    opacity:0;transform:translateY(6px) scale(.92);
+    transition:opacity .5s ease, transform .5s ease, border-color .5s ease, background .5s ease, color .5s ease;
+  }
+  .record-slot.present{opacity:1;transform:translateY(0) scale(1)}
+  .record-slot.draft{border-color:var(--warm-line);background:var(--warm);color:#7a5a0c}
+  .record-slot.final{border-color:var(--green);background:var(--green-soft);color:#175d3b}
+  .record-slot.copy-inactive{border-color:#b9c3c9;background:#eef1f3;color:#7d8a91}
+  .status-chip{
+    display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.68rem;font-weight:800;
+    letter-spacing:.03em;text-transform:uppercase;
+  }
+  .status-chip.draft{background:var(--warm-line);color:#fff}
+  .status-chip.final{background:var(--green);color:#fff}
+  .status-chip.copy{background:#9aa7ad;color:#fff}
+
+  /* DID document block that travels left <-> right */
+  .did-block-row{
+    position:relative;margin-top:1.6rem;height:230px;
+  }
+  .did-block{
+    position:absolute;top:0;width:calc(50% - clamp(1rem,3vw,3rem));
+    transition:left 1.1s cubic-bezier(.65,0,.35,1), right 1.1s cubic-bezier(.65,0,.35,1);
+  }
+  .did-block.pos-left{left:0}
+  .did-block.pos-right{left:calc(50% + clamp(1rem,3vw,3rem));}
+  .connector-line{
+    border-top:2px dashed var(--line);position:relative;margin-bottom:.4rem;
+  }
+  .connector-label{
+    position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+    background:var(--surface);padding:0 .7rem;color:var(--muted);
+    font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .did-doc{
+    margin-top:1.1rem;padding:.95rem 1.05rem;border:1px solid #2b3d47;border-radius:6px;
+    background:#0f2129;color:#d7e6ec;font:.78rem/1.55 "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    box-shadow:0 6px 16px rgba(10,25,32,.28);white-space:pre;overflow-x:auto;
+  }
+  .did-doc .punct{color:#7c93a0}
+  .did-doc .key{color:#79c0ff}
+  .did-doc .str{color:#a5d6a7}
+  .did-doc .endpoint-value{color:#a5d6a7;transition:color .4s ease}
+  .did-doc .endpoint-value.changed{color:#ff8a8a;font-weight:700}
+
+  .transfer-badge{
+    position:absolute;top:-38px;left:50%;transform:translateX(-50%);
+    padding:.3rem .65rem;border:1px solid var(--warm-line);border-radius:4px;
+    background:var(--warm);color:#60450c;font-size:.72rem;font-weight:750;white-space:nowrap;
+    opacity:0;transition:opacity .5s ease;
+  }
+  .transfer-badge.show{opacity:1}
+
+  .switch-flag{
+    position:absolute;top:-38px;left:50%;transform:translateX(-50%);
+    padding:.35rem .75rem;border-radius:4px;background:var(--blue-dark);color:#fff;
+    font-size:.75rem;font-weight:800;letter-spacing:.02em;white-space:nowrap;
+    opacity:0;transition:opacity .5s ease;
+  }
+  .switch-flag.show{opacity:1}
+
+  .caption-bar{
+    margin-top:1.8rem;min-height:64px;padding:.95rem 1.15rem;
+    border-left:6px solid var(--blue);background:var(--blue-soft);
+    font-size:.98rem;color:var(--ink);
+  }
+  .caption-bar b{color:var(--blue-dark)}
+
+  .controls{
+    display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.6rem;
+  }
+  .controls button{
+    min-width:120px;padding:.66rem 1.1rem;border:1px solid var(--blue);border-radius:3px;
+    color:var(--blue);background:#fff;font-weight:750;font-size:1rem;cursor:pointer;font-family:inherit;
+  }
+  .controls button.primary{color:#fff;background:var(--blue)}
+  .controls button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+  .step-dots{display:flex;gap:.45rem}
+  .step-dots span{width:9px;height:9px;border-radius:50%;background:#d7e2e8}
+  .step-dots span.active{background:var(--blue)}
+  .step-label{min-width:150px;text-align:center;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+
+  @media (max-width:820px){
+    .systems{grid-template-columns:1fr;gap:1.6rem}
+    .did-block-row{height:auto}
+    .did-block{position:static;width:100%;margin-top:1.2rem}
+    .did-block.pos-left,.did-block.pos-right{left:auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <p class="eyebrow">RecordWeb · Record Lifecycle</p>
+    <h1>One record. One DID. Two systems over time.</h1>
+    <p class="sub">The record never changes identity. What changes is which system the DID document's service endpoint currently points to.</p>
+  </div>
+
+  <div class="stage">
+    <div class="did-banner"><span class="dot"></span> did:rwp:8f3a:9d21 <span class="dot"></span></div>
+
+    <div class="systems">
+      <div class="system-col">
+        <div class="system-box app" id="appBox">
+          <span class="icon">🖥️</span>
+          <strong>RWP-compliant application</strong>
+          <small>Where the record is created and worked on</small>
+          <div class="record-slot" id="appSlot"><span>did:rwp:8f3a:9d21</span><span class="status-chip draft" id="appChip">draft</span></div>
+        </div>
+        <div class="system-box empty" id="appEmptyBox" style="display:none;">Application decommissioned</div>
+      </div>
+      <div class="system-col">
+        <div class="system-box ais" id="aisBox">
+          <span class="icon">🏛️</span>
+          <strong>AIS</strong>
+          <small>Archival Information System</small>
+          <div class="record-slot" id="aisSlot"><span>did:rwp:8f3a:9d21</span><span class="status-chip copy" id="aisChip">copy</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="did-block-row">
+      <div class="did-block pos-left" id="didBlock">
+        <div class="connector-line">
+          <span class="connector-label">DID document · service endpoint</span>
+        </div>
+        <div class="transfer-badge" id="transferBadge">Statutory transfer · required after X years</div>
+        <div class="switch-flag" id="switchFlag">DID document updated</div>
+        <div class="did-doc" id="didDoc"></div>
+      </div>
+    </div>
+
+    <div class="caption-bar" id="captionBar"></div>
+  </div>
+
+  <div class="controls">
+    <button id="backBtn" type="button">← Back</button>
+    <div class="step-dots" id="stepDots"></div>
+    <span class="step-label" id="stepLabel">Step 1 / 5</span>
+    <button class="primary" id="nextBtn" type="button">Next →</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const APP_ENDPOINT = "https://vps.recordweb.dev/antwortmanagement/api/records/did%3Arwp%3Ab7d4c810%3A...";
+  const AIS_ENDPOINT = "https://ais.com/did%3Arwp%3Ab7d4c810%3A...";
+
+  function renderDoc(created, updated, version, endpoint, endpointChanged) {
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const endpointClass = 'endpoint-value' + (endpointChanged ? ' changed' : '');
+    return `<span class="punct">{</span>
+  <span class="key">"@context"</span><span class="punct">:</span> <span class="str">"https://www.w3.org/ns/did/v1"</span><span class="punct">,</span>
+  <span class="key">"id"</span><span class="punct">:</span> <span class="str">"did:rwp:8f3a:9d21"</span><span class="punct">,</span>
+  <span class="key">"recordEndpoint"</span><span class="punct">:</span> <span class="${endpointClass}">"${esc(endpoint)}"</span><span class="punct">,</span>
+  <span class="key">"created"</span><span class="punct">:</span> <span class="str">"${created}"</span><span class="punct">,</span>
+  <span class="key">"updated"</span><span class="punct">:</span> <span class="str">"${updated}"</span><span class="punct">,</span>
+  <span class="key">"currentVersion"</span><span class="punct">:</span> <span class="str">"${version}"</span>
+<span class="punct">}</span>`;
+  }
+
+  const steps = [
+    {
+      caption: "<b>1 · Created.</b> The record originates inside the RWP-compliant application. Its status is <b>draft</b>. The DID document's service endpoint points to the RWP-compliant application.",
+      app: { present:true, cls:'draft', chip:'draft', chipCls:'draft', boxEol:false, hide:false },
+      ais: { present:false },
+      didPos: 'left', endpoint: APP_ENDPOINT, endpointChanged:false,
+      created:"2026-08-25T14:08:03.956Z", updated:"2026-08-25T14:08:03.956Z", version:"sha256:draft-pending",
+      transfer:false, switchFlag:false
+    },
+    {
+      caption: "<b>2 · Finalized.</b> The record becomes immutable and gets status <b>finalized</b>. The DID stays the same. The service endpoint still points to the RWP-compliant application.",
+      app: { present:true, cls:'final', chip:'finalized', chipCls:'final', boxEol:false, hide:false },
+      ais: { present:false },
+      didPos: 'left', endpoint: APP_ENDPOINT, endpointChanged:false,
+      created:"2026-08-25T14:08:03.956Z", updated:"2026-08-25T14:14:32.702Z", version:"sha256:0661762b2d678e3e0699accfb00d7f227",
+      transfer:false, switchFlag:false
+    },
+    {
+      caption: "<b>3 · Offered to the archive.</b> Swiss retention rules require finalized records to be offered to the archive after a defined number of years. A copy is transferred to the AIS (shown greyed out, inactive) — but the application is not yet EoL, so the service endpoint still points there.",
+      app: { present:true, cls:'final', chip:'finalized', chipCls:'final', boxEol:false, hide:false },
+      ais: { present:true, cls:'copy-inactive', chip:'finalized', chipCls:'copy' },
+      didPos: 'left', endpoint: APP_ENDPOINT, endpointChanged:false,
+      created:"2026-08-25T14:08:03.956Z", updated:"2026-08-25T14:14:32.702Z", version:"sha256:0661762b2d678e3e0699accfb00d7f227",
+      transfer:true, switchFlag:false
+    },
+    {
+      caption: "<b>4 · Endpoint switch.</b> The DID document is updated: the service endpoint now points to the AIS. The AIS copy becomes active, and the application is decommissioned (EoL) right after the switch.",
+      app: { present:true, cls:'copy-inactive', chip:'finalized', chipCls:'copy' },
+      ais: { present:true, cls:'final', chip:'finalized', chipCls:'final' },
+      didPos: 'right', endpoint: AIS_ENDPOINT, endpointChanged:true,
+      created:"2026-08-25T14:08:03.956Z", updated:"2028-09-25T09:02:11.114Z", version:"sha256:0661762b2d678e3e0699accfb00d7f227",
+      transfer:false, switchFlag:true
+    },
+    {
+      caption: "<b>5 · AIS serves the record from now on.</b> The application is gone. The DID and the record's identity remain unchanged — only the resolvable location has moved.",
+      app: { present:false, hide:true },
+      ais: { present:true, cls:'final', chip:'finalized', chipCls:'final' },
+      didPos: 'right', endpoint: AIS_ENDPOINT, endpointChanged:true,
+      created:"2026-08-25T14:08:03.956Z", updated:"2028-09-25T09:02:11.114Z", version:"sha256:0661762b2d678e3e0699accfb00d7f227",
+      transfer:false, switchFlag:false
+    }
+  ];
+
+  const appBox = document.getElementById('appBox');
+  const appEmptyBox = document.getElementById('appEmptyBox');
+  const appSlot = document.getElementById('appSlot');
+  const appChip = document.getElementById('appChip');
+  const aisSlot = document.getElementById('aisSlot');
+  const aisChip = document.getElementById('aisChip');
+  const didBlock = document.getElementById('didBlock');
+  const didDoc = document.getElementById('didDoc');
+  const transferBadge = document.getElementById('transferBadge');
+  const switchFlag = document.getElementById('switchFlag');
+  const captionBar = document.getElementById('captionBar');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const stepLabel = document.getElementById('stepLabel');
+  const stepDots = document.getElementById('stepDots');
+
+  steps.forEach((_, idx) => {
+    const d = document.createElement('span');
+    if (idx === 0) d.classList.add('active');
+    stepDots.appendChild(d);
+  });
+  const dots = [...stepDots.children];
+
+  let i = 0;
+
+  function render() {
+    const s = steps[i];
+
+    if (s.app.hide) {
+      appBox.style.display = 'none';
+      appEmptyBox.style.display = 'flex';
+    } else {
+      appBox.style.display = 'flex';
+      appEmptyBox.style.display = 'none';
+      appBox.classList.toggle('eol', !!s.app.boxEol);
+      appSlot.classList.remove('present','draft','final','copy-inactive');
+      appChip.classList.remove('draft','final');
+      if (s.app.present) {
+        appSlot.classList.add('present', s.app.cls);
+        appChip.textContent = s.app.chip;
+        appChip.classList.add(s.app.chipCls);
+      }
+    }
+
+    aisSlot.classList.remove('present','draft','final','copy-inactive');
+    aisChip.classList.remove('draft','final','copy');
+    if (s.ais.present) {
+      aisSlot.classList.add('present', s.ais.cls);
+      aisChip.textContent = s.ais.chip;
+      aisChip.classList.add(s.ais.chipCls);
+    }
+
+    didBlock.classList.toggle('pos-left', s.didPos === 'left');
+    didBlock.classList.toggle('pos-right', s.didPos === 'right');
+
+    didDoc.innerHTML = renderDoc(s.created, s.updated, s.version, s.endpoint, s.endpointChanged);
+
+    switchFlag.classList.toggle('show', s.switchFlag);
+
+    captionBar.innerHTML = s.caption;
+    stepLabel.textContent = `Step ${i+1} / ${steps.length}`;
+    dots.forEach((d, j) => d.classList.toggle('active', j === i));
+
+    backBtn.disabled = i === 0;
+    nextBtn.disabled = i === steps.length - 1;
+    nextBtn.textContent = i === steps.length - 1 ? 'End' : 'Next →';
+  }
+
+  function move(delta) {
+    const t = Math.max(0, Math.min(steps.length - 1, i + delta));
+    if (t !== i) { i = t; render(); }
+  }
+
+  backBtn.addEventListener('click', () => move(-1));
+  nextBtn.addEventListener('click', () => move(1));
+  window.addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); move(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); move(-1); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
