@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AgentRecord: wie RecordWeb verantwortliche Personen, Stellen und Systeme von Dokumenten unterscheidet.">
+  <title>AgentRecord — Glossar — RecordWeb</title>
+  <link rel="stylesheet" href="../../assets/css/recordweb.css">
+  <link rel="stylesheet" href="../../assets/css/glossary.css">
+</head>
+<body class="home-page glossary-page glossary-entry">
+  <header class="site-header">
+    <a class="wordmark" href="../../" aria-label="RecordWeb home">RecordWeb</a>
+    <nav class="header-nav" aria-label="Primary navigation">
+      <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">Concept</a>
+      <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">Protocol</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <a class="glossary-back" href="index.html">&larr; Zur&uuml;ck zum Glossar</a>
+
+        <article>
+          <p class="glossary-kicker">Glossar &middot; Deutsch</p>
+          <h1>AgentRecord</h1>
+
+          <h2>Wer ist verantwortlich?</h2>
+          <p>
+            Stell dir vor, die Stadt bewilligt ein Bauprojekt. Das Baugesuch selbst ist ein Fall:
+            Es hat eine Geschichte mit mehreren Dokumenten (Einreichung, R&uuml;ckfrage, Erg&auml;nzung,
+            Entscheid), und diese Geschichte l&auml;sst sich l&uuml;ckenlos nachweisen.
+          </p>
+          <p>
+            Aber wer hat entschieden? Welche Abteilung ist zust&auml;ndig? Wer hat die Erg&auml;nzung
+            gepr&uuml;ft und freigegeben? Diese Personen und Stellen sind selbst keine F&auml;lle mit
+            einer Versionsgeschichte &ndash; sie sind die <em>Verantwortlichen</em> hinter den Dokumenten.
+          </p>
+          <p>
+            RecordWeb unterscheidet deshalb zwei Arten von Dingen, die beide &uuml;ber dieselbe Art
+            Adresse (eine DID) identifiziert werden:
+          </p>
+          <ul>
+            <li>
+              <strong>Dokumente (InformationRecords)</strong> &ndash; das Baugesuch, die Entscheidung,
+              jede Version davon. Diese Dinge haben eine nachvollziehbare Geschichte.
+            </li>
+            <li>
+              <strong>Verantwortliche (AgentRecords)</strong> &ndash; die Abteilung, die
+              Sachbearbeiterin, die Software, die eine Pr&uuml;fung automatisiert durchgef&uuml;hrt hat.
+              Diese Dinge sind Akteure, keine F&auml;lle. Sie tauchen in Dokumenten auf (&bdquo;wer hat
+              das freigegeben?&ldquo;), haben aber selbst keine Versionsgeschichte im
+              RecordWeb-Sinn.
+            </li>
+          </ul>
+          <p>
+            Diese Unterscheidung ist wichtig, damit ein System, das einen RecordWeb-Verweis aufl&ouml;st,
+            sofort wei&szlig;, womit es es zu tun hat: mit einem nachvollziehbaren Fall oder mit der
+            Identit&auml;t einer verantwortlichen Stelle. Das sch&uuml;tzt vor einem naheliegenden
+            Missverst&auml;ndnis, dass man versucht, die &bdquo;Versionsgeschichte&ldquo; einer
+            Abteilung oder Person abzurufen, wo es so etwas in RecordWeb gar nicht gibt.
+          </p>
+
+          <p class="glossary-source">
+            Mehr dazu im technischen Konzept:
+            <a href="https://recordweb.github.io/rwc/#section-record-agents" target="_blank" rel="noopener">
+              RWC &ndash; Identifying Agents Alongside Records &#8599;
+            </a>
+          </p>
+        </article>
+
+        <div class="glossary-entry-nav">
+          <a href="index.html">&larr; Alle Begriffe</a>
+          <a href="../en/agentrecord.html" lang="en">English version &rarr;</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <a class="wordmark footer-wordmark" href="../../">RecordWeb</a>
+        <p>The future of Records Management.</p>
+      </div>
+      <nav aria-label="RecordWeb community links">
+        <a href="https://www.w3.org/community/recordweb/" target="_blank" rel="noopener">RecordWeb Community Group</a>
+        <a href="https://github.com/recordweb" target="_blank" rel="noopener">GitHub organisation</a>
+        <a href="https://github.com/recordweb/.github" target="_blank" rel="noopener">Contribution and governance</a>
+        <a href="https://lists.w3.org/Archives/Public/public-recordweb/" target="_blank" rel="noopener">Mailing list</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

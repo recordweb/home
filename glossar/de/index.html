@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RecordWeb Glossar: Begriffe rund um Records, Agents, Identifikatoren und Governance.">
+  <title>Glossar — RecordWeb</title>
+  <link rel="stylesheet" href="../../assets/css/recordweb.css">
+  <link rel="stylesheet" href="../../assets/css/glossary.css">
+</head>
+<body class="home-page glossary-page">
+  <header class="site-header">
+    <a class="wordmark" href="../../" aria-label="RecordWeb home">RecordWeb</a>
+    <nav class="header-nav" aria-label="Primary navigation">
+      <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">Concept</a>
+      <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">Protocol</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Glossar</p>
+        <h2>Begriffe von RecordWeb.</h2>
+        <p class="section-lead">
+          Kurze, verstandliche Erklarungen der zentralen RecordWeb-Begriffe &mdash; mit Verweisen
+          auf die vertiefenden Abschnitte in Konzept und Protokoll.
+        </p>
+
+        <div class="glossary-toolbar">
+          <div class="glossary-lang-switch">
+            <a href="index.html" lang="de" aria-current="true">Deutsch</a>
+            <a href="../en/index.html" lang="en">English</a>
+          </div>
+        </div>
+
+        <nav class="glossary-index" aria-label="Alphabetische Navigation" id="glossary-index">
+          <!-- wird per Skript aus GLOSSARY_TERMS befuellt -->
+        </nav>
+
+        <div id="glossary-list">
+          <!-- wird per Skript aus GLOSSARY_TERMS befuellt -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <a class="wordmark footer-wordmark" href="../../">RecordWeb</a>
+        <p>The future of Records Management.</p>
+      </div>
+      <nav aria-label="RecordWeb community links">
+        <a href="https://www.w3.org/community/recordweb/" target="_blank" rel="noopener">RecordWeb Community Group</a>
+        <a href="https://github.com/recordweb" target="_blank" rel="noopener">GitHub organisation</a>
+        <a href="https://github.com/recordweb/.github" target="_blank" rel="noopener">Contribution and governance</a>
+        <a href="https://lists.w3.org/Archives/Public/public-recordweb/" target="_blank" rel="noopener">Mailing list</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    /*
+     * Statisches Glossar-Register.
+     * Neuen Begriff hinzufuegen: einfach ein Objekt in dieses Array einfuegen.
+     * "file" ist der Dateiname im selben Verzeichnis (glossar/de/...).
+     * Die Liste wird automatisch alphabetisch nach "term" sortiert und
+     * nach Anfangsbuchstaben gruppiert -- keine manuelle Sortierung noetig.
+     */
+    const GLOSSARY_TERMS = [
+      {
+        term: "AgentRecord",
+        file: "agentrecord.html",
+        summary: "Identifiziert eine verantwortliche Stelle (Person, Abteilung, Software) hinter einem Record - ohne eigene Versionsgeschichte."
+      }
+      // { term: "Case", file: "case.html", summary: "..." },
+      // { term: "DID", file: "did.html", summary: "..." },
+    ];
+
+    function groupAndRender(terms) {
+      const sorted = [...terms].sort((a, b) => a.term.localeCompare(b.term, "de"));
+      const groups = new Map();
+      for (const t of sorted) {
+        const letter = t.term.charAt(0).toUpperCase();
+        if (!groups.has(letter)) groups.set(letter, []);
+        groups.get(letter).push(t);
+      }
+
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+      const indexNav = document.getElementById("glossary-index");
+      const list = document.getElementById("glossary-list");
+
+      for (const letter of alphabet) {
+        if (groups.has(letter)) {
+          const a = document.createElement("a");
+          a.href = "#letter-" + letter;
+          a.textContent = letter;
+          indexNav.appendChild(a);
+        } else {
+          const span = document.createElement("span");
+          span.textContent = letter;
+          span.setAttribute("aria-hidden", "true");
+          indexNav.appendChild(span);
+        }
+      }
+
+      for (const [letter, items] of groups) {
+        const section = document.createElement("section");
+        section.className = "glossary-letter-group";
+        section.id = "letter-" + letter;
+
+        const heading = document.createElement("h3");
+        heading.className = "glossary-letter-heading";
+        heading.textContent = letter;
+        section.appendChild(heading);
+
+        const ul = document.createElement("ul");
+        ul.className = "glossary-term-list";
+        for (const item of items) {
+          const li = document.createElement("li");
+          li.innerHTML = '<a href="' + item.file + '">' + item.term + '</a><p>' + item.summary + '</p>';
+          ul.appendChild(li);
+        }
+        section.appendChild(ul);
+        list.appendChild(section);
+      }
+    }
+
+    groupAndRender(GLOSSARY_TERMS);
+  </script>
+</body>
+</html>

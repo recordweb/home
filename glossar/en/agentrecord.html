@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AgentRecord: how RecordWeb distinguishes responsible people, units and systems from documents.">
+  <title>AgentRecord — Glossary — RecordWeb</title>
+  <link rel="stylesheet" href="../../assets/css/recordweb.css">
+  <link rel="stylesheet" href="../../assets/css/glossary.css">
+</head>
+<body class="home-page glossary-page glossary-entry">
+  <header class="site-header">
+    <a class="wordmark" href="../../" aria-label="RecordWeb home">RecordWeb</a>
+    <nav class="header-nav" aria-label="Primary navigation">
+      <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">Concept</a>
+      <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">Protocol</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <a class="glossary-back" href="index.html">&larr; Back to the glossary</a>
+
+        <article>
+          <p class="glossary-kicker">Glossary &middot; English</p>
+          <h1>AgentRecord</h1>
+
+          <h2>Who is responsible?</h2>
+          <p>
+            Imagine a city approving a construction project. The building permit application
+            itself is a case: it has a history made up of several documents (submission, query,
+            amendment, decision), and that history can be proven without gaps.
+          </p>
+          <p>
+            But who decided? Which department is responsible? Who reviewed and approved the
+            amendment? These people and units are not themselves cases with a version history
+            &ndash; they are the <em>responsible parties</em> behind the documents.
+          </p>
+          <p>
+            RecordWeb therefore distinguishes two kinds of things, both identified through the
+            same type of address (a DID):
+          </p>
+          <ul>
+            <li>
+              <strong>Documents (InformationRecords)</strong> &ndash; the building permit
+              application, the decision, every version of it. These things have a traceable
+              history.
+            </li>
+            <li>
+              <strong>Responsible parties (AgentRecords)</strong> &ndash; the department, the
+              case officer, the software that carried out an automated review. These things are
+              actors, not cases. They appear within documents ("who approved this?"), but have no
+              version history of their own in the RecordWeb sense.
+            </li>
+          </ul>
+          <p>
+            This distinction matters so that a system resolving a RecordWeb reference immediately
+            knows what it is dealing with: a traceable case, or the identity of a responsible
+            party. It guards against an obvious misunderstanding &ndash; trying to retrieve the
+            "version history" of a department or a person, something that simply does not exist in
+            RecordWeb.
+          </p>
+
+          <p class="glossary-source">
+            More on this in the technical concept:
+            <a href="https://recordweb.github.io/rwc/#section-record-agents" target="_blank" rel="noopener">
+              RWC &ndash; Identifying Agents Alongside Records &#8599;
+            </a>
+          </p>
+        </article>
+
+        <div class="glossary-entry-nav">
+          <a href="index.html">&larr; All terms</a>
+          <a href="../de/agentrecord.html" lang="de">Deutsche Version &rarr;</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <a class="wordmark footer-wordmark" href="../../">RecordWeb</a>
+        <p>The future of Records Management.</p>
+      </div>
+      <nav aria-label="RecordWeb community links">
+        <a href="https://www.w3.org/community/recordweb/" target="_blank" rel="noopener">RecordWeb Community Group</a>
+        <a href="https://github.com/recordweb" target="_blank" rel="noopener">GitHub organisation</a>
+        <a href="https://github.com/recordweb/.github" target="_blank" rel="noopener">Contribution and governance</a>
+        <a href="https://lists.w3.org/Archives/Public/public-recordweb/" target="_blank" rel="noopener">Mailing list</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
