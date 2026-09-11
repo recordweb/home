@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Eine einfache Einführung in die RecordWeb Reference Architecture und den RecordWeb Reference Stack.">
+  <title>RecordWeb · Reference Architecture</title>
+  <link rel="stylesheet" href="../../assets/css/recordweb.css">
+</head>
+
+<body class="stories-page rwra-page">
+  <header class="site-header">
+    <a class="wordmark" href="../../">RecordWeb</a>
+    <nav class="header-nav" aria-label="Hauptnavigation">
+      <a href="../de/">Stories</a>
+      <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">Konzept</a>
+      <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">Protokoll</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="stories-hero">
+      <div class="container">
+        <p class="eyebrow">RecordWeb erklärt</p>
+        <h1>Die RecordWeb Reference Architecture</h1>
+        <p class="hero-lead">
+          RecordWeb macht nicht das Internet neu. Es schafft eine gemeinsame
+          Architektur dafür, dass institutionelle Information über Systeme,
+          Organisationen und Zeit hinweg als nachvollziehbarer Record erhalten bleibt.
+        </p>
+
+        <div class="language-switch" aria-label="Sprache wählen">
+          <span class="current" lang="de">DE</span>
+          <a href="rwra_en.html" lang="en">EN</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container reading-content">
+        <p class="section-label">Worum es geht</p>
+        <h2>Ein Record ist mehr als eine Datei</h2>
+
+        <p class="section-lead">
+          Eine Datei, ein Datenbankeintrag, ein Link oder ein Repository können sich
+          ändern, verschoben werden oder ganz verschwinden. Ein Record muss trotzdem
+          über längere Zeit identifizierbar, verständlich und überprüfbar bleiben.
+        </p>
+
+        <div class="architecture-boundary">
+          <div class="boundary-main">
+            <p class="boundary-label">Die zentrale Unterscheidung</p>
+            <p>
+              Ein Record ist nicht identisch mit seiner Datei, seinem Speicherort,
+              seiner URL, seinem Repository oder der Anwendung, in der er entstanden ist.
+            </p>
+          </div>
+
+          <div class="boundary-example">
+            <p class="boundary-label">Beispiel</p>
+            <p>
+              Eine Stellungnahme kann zunächst in einem Fachsystem entstehen, als PDF
+              exportiert, in ein Archiv überführt und später über einen anderen Dienst
+              zugänglich gemacht werden. Der technische Träger ändert sich. Der Record
+              kann dennoch dieselbe Identität und eine prüfbare Geschichte behalten.
+            </p>
+          </div>
+        </div>
+
+        <p>
+          Die RecordWeb Reference Architecture, kurz <strong>RWRA</strong>, hilft dabei,
+          diese verschiedenen Fragen auseinanderzuhalten. Sie ist kein zusätzliches
+          Netzwerkprotokoll und keine Vorgabe für eine bestimmte Softwarearchitektur.
+        </p>
+
+        <p>
+          Sie beschreibt, welche Aufgaben zusammengehören: technische Infrastruktur,
+          Informationsdarstellung, Record und Nachweis, Kontext, Governance und die
+          institutionelle Nutzung von Information.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Die sechs Ebenen</p>
+        <h2>Der RecordWeb Reference Stack</h2>
+
+        <p class="section-lead">
+          Die sechs Ebenen sind ein Denkmodell. Sie bedeuten nicht, dass jede Ebene
+          durch ein eigenes System oder eine eigene Organisation umgesetzt werden muss.
+          Ein Fachsystem kann mehrere Ebenen zugleich abdecken.
+        </p>
+
+        <div class="rw-stack" aria-label="RecordWeb Reference Stack mit sechs Ebenen">
+          <article class="stack-layer stack-use">
+            <div class="stack-number">6</div>
+            <div class="stack-content">
+              <h3>Nutzung und institutionelle Wirkung</h3>
+              <p>
+                Wofür wird der Record verwendet? Etwa für einen Entscheid,
+                Rechenschaft, Öffentlichkeit, Forschung oder archivische Nutzung.
+              </p>
+            </div>
+          </article>
+
+          <article class="stack-layer stack-governance">
+            <div class="stack-number">5</div>
+            <div class="stack-content">
+              <h3>Governance und Records Continuum</h3>
+              <p>
+                Wer trägt Verantwortung? Welche Regeln gelten für Zugriff,
+                Aufbewahrung, Bewertung, Übergabe, Löschung und Erhaltung?
+              </p>
+            </div>
+          </article>
+
+          <article class="stack-layer stack-context">
+            <div class="stack-number">4</div>
+            <div class="stack-content">
+              <h3>Kontext, Relationen und Case Views</h3>
+              <p>
+                In welchem fachlichen, organisatorischen, rechtlichen und zeitlichen
+                Zusammenhang steht ein Record? Wie hängt er mit anderen Records zusammen?
+              </p>
+            </div>
+          </article>
+
+          <article class="stack-layer stack-record">
+            <div class="stack-number">3</div>
+            <div class="stack-content">
+              <h3>Record und Evidenz</h3>
+              <p>
+                Was ist der persistente, zitierbare und überprüfbare Record?
+                Identität, Zustand, Versionen, Provenienz, Integrität und Nachweise
+                stehen im Zentrum.
+              </p>
+            </div>
+          </article>
+
+          <div class="stack-boundary" role="note">
+            <span>Die RecordWeb-Grenze</span>
+            <p>
+              Oberhalb dieser Grenze geht es um den Record als institutionelles Objekt.
+              Darunter geht es um seine Darstellungen und technischen Träger.
+            </p>
+          </div>
+
+          <article class="stack-layer stack-information">
+            <div class="stack-number">2</div>
+            <div class="stack-content">
+              <h3>Informationspaket und Darstellung</h3>
+              <p>
+                Wie wird Inhalt strukturiert, ausgetauscht und interpretiert?
+                Dazu gehören Inhalte, Metadaten, Schemata, Dateien, JSON, JSON-LD,
+                RDF und weitere Repräsentationen.
+              </p>
+            </div>
+          </article>
+
+          <article class="stack-layer stack-infrastructure">
+            <div class="stack-number">1</div>
+            <div class="stack-content">
+              <h3>Träger und Infrastruktur</h3>
+              <p>
+                Wo und wie wird Information gespeichert, übertragen, repliziert,
+                aufgelöst und technisch erhalten? Dazu gehören Repositories,
+                Datenbanken, APIs, Resolver, Netzwerke und Speicher.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="stack-reading-note">
+          <p>
+            <strong>RWP</strong> konzentriert sich vor allem auf Ebene 3:
+            <em>Record und Evidenz</em>. Es definiert, wie ein Record persistent
+            identifiziert, versioniert, finalisiert, überprüft und mit Nachweisen
+            versehen werden kann.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Die Ebenen zusammen</p>
+        <h2>Von Infrastruktur zu institutioneller Wirkung</h2>
+
+        <div class="architecture-grid">
+          <article class="architecture-card infrastructure-card">
+            <span class="architecture-tag">1–2</span>
+            <h3>Technik und Darstellung</h3>
+            <p>
+              Infrastruktur speichert und überträgt Information. Repräsentationen
+              machen sie lesbar, austauschbar und maschinenverarbeitbar.
+            </p>
+            <p>
+              Eine URL kann zeigen, wo etwas heute erreichbar ist. Eine Datei kann
+              eine Darstellung enthalten. Beides beantwortet aber noch nicht, was
+              der persistente Record ist.
+            </p>
+          </article>
+
+          <article class="architecture-card record-card">
+            <span class="architecture-tag">3</span>
+            <h3>Record und Nachweis</h3>
+            <p>
+              Hier wird Information zu einem überprüfbaren Record: mit dauerhafter
+              Identität, klarer Version, Zustand, Integrität, Provenienz und
+              zugeordneten Verantwortlichkeiten.
+            </p>
+            <p>
+              Dieser Layer macht es möglich, später nicht nur etwas zu finden,
+              sondern festzustellen, welcher konkrete Zustand eines Records
+              verwendet, freigegeben oder übergeben wurde.
+            </p>
+          </article>
+
+          <article class="architecture-card context-card">
+            <span class="architecture-tag">4</span>
+            <h3>Kontext und Beziehungen</h3>
+            <p>
+              Ein einzelner Record genügt selten. Seine Bedeutung entsteht auch durch
+              Aufgaben, Prozesse, Personen, Rechtsgrundlagen, Themen und Beziehungen
+              zu weiteren Records.
+            </p>
+            <p>
+              Ein Case oder Dossier kann deshalb als nachvollziehbare Sicht auf
+              verknüpfte Records entstehen, statt als einziger und dauerhafter Container
+              aller Information.
+            </p>
+          </article>
+
+          <article class="architecture-card governance-card">
+            <span class="architecture-tag">5–6</span>
+            <h3>Verantwortung und Nutzung</h3>
+            <p>
+              Governance bestimmt, welche Pflichten für einen Record gelten. Die
+              institutionelle Nutzung bestimmt, welche Wirkung er entfalten kann.
+            </p>
+            <p>
+              Ein technisch gültiger Record wird nicht automatisch öffentlich,
+              rechtlich verbindlich oder dauerhaft aufzubewahren. Dafür braucht es
+              Regeln, Zuständigkeiten und einen konkreten institutionellen Zweck.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Zwei Perspektiven über alle Ebenen</p>
+        <h2>Zeit und Vertrauen</h2>
+
+        <p class="section-lead">
+          Die Ebenen beschreiben unterschiedliche Aufgaben. Zwei Fragen begleiten
+          jedoch jede Ebene: Wie bleibt etwas über Zeit hinweg kontinuierlich? Und
+          warum kann eine Person oder Organisation einem Record vertrauen?
+        </p>
+
+        <div class="dimension-grid">
+          <article class="dimension-card continuity-card">
+            <p class="dimension-kicker">Querschnittsdimension</p>
+            <h3>Zeit und Kontinuität</h3>
+            <p>
+              Ein Record kann erstellt, überarbeitet, finalisiert, übertragen,
+              migriert, aufbewahrt, bewertet, gelöscht oder archivisch erhalten werden.
+            </p>
+            <p>
+              Ein Speicherort oder eine Darstellung kann dabei wechseln. RecordWeb
+              unterstützt die Kontinuität des Records durch persistente Identität,
+              Versionen, Provenienz und überprüfbare Beziehungen.
+            </p>
+          </article>
+
+          <article class="dimension-card trust-card">
+            <p class="dimension-kicker">Querschnittsdimension</p>
+            <h3>Vertrauen, Assurance und Conformance</h3>
+            <p>
+              Vertrauen beruht nicht auf einem einzelnen technischen Signal. Relevant
+              sind beispielsweise verantwortliche Akteure, Zuständigkeiten, Signaturen,
+              Integritätsnachweise, Provenienz, Regeln und unabhängige Überprüfung.
+            </p>
+            <p>
+              RecordWeb trennt bewusst die Validierung eines konkreten Records von der
+              Beurteilung einer Softwareimplementierung und von einer institutionellen
+              Zertifizierung.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container reading-content">
+        <p class="section-label">Einordnung von RecordWeb</p>
+        <h2>Was RWC und RWP beitragen</h2>
+
+        <div class="rwc-rwp-grid">
+          <article class="rwc-rwp-card rwc-card">
+            <p class="rwc-rwp-label">RWC</p>
+            <h3>Das Konzept</h3>
+            <p>
+              Das RecordWeb Concept erklärt die Grundideen: Was ist ein Record?
+              Wie unterscheidet er sich von Datei, Speicherort und Anwendung?
+              Wie hängen Kontext, Governance, Zeit und institutionelle Wirkung zusammen?
+            </p>
+          </article>
+
+          <article class="rwc-rwp-card rwp-card">
+            <p class="rwc-rwp-label">RWP</p>
+            <h3>Das Protokoll</h3>
+            <p>
+              Das RecordWeb Protocol spezifiziert vor allem die Ebene
+              <em>Record und Evidenz</em>: Identität, Record-Typen, Zustände,
+              Versionen, Integrität, Provenienz und Verifikation.
+            </p>
+          </article>
+        </div>
+
+        <div class="architecture-note">
+          <p class="boundary-label">Nicht vorgeschrieben</p>
+          <p>
+            Die Reference Architecture schreibt nicht vor, welches Repository,
+            welche Datenbank, welchen Resolver, welches API, welche Programmiersprache
+            oder welches Benutzerinterface eine Organisation einsetzen muss.
+          </p>
+          <p>
+            Sie hilft vielmehr, Schnittstellen und Verantwortlichkeiten so zu
+            gestalten, dass Records auch dann verständlich und überprüfbar bleiben,
+            wenn sich Systeme, Datenformate oder Speicherorte ändern.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container reading-content">
+        <p class="section-label">Conformance Records veröffentlichen</p>
+        <h2>Nachweise können sichtbar gemacht werden</h2>
+
+        <p class="section-lead">
+          Eine Organisation kann einen ConformanceRecord oder einen überprüfbaren
+          Verweis darauf veröffentlichen. Damit kann sie erklären, welche
+          RecordWeb-Profile und Rollen eine bestimmte Softwareversion abdeckt und
+          auf welcher Grundlage diese Aussage gemacht wird.
+        </p>
+
+        <div class="publication-flow" aria-label="Beispiel einer Veröffentlichung eines ConformanceRecord">
+          <div class="publication-step">
+            <span>1</span>
+            <p>Eine Implementierung wird beurteilt</p>
+          </div>
+          <div class="publication-arrow" aria-hidden="true">→</div>
+          <div class="publication-step">
+            <span>2</span>
+            <p>Ein Attester erstellt einen ConformanceRecord</p>
+          </div>
+          <div class="publication-arrow" aria-hidden="true">→</div>
+          <div class="publication-step">
+            <span>3</span>
+            <p>Die Organisation veröffentlicht ihn passend zu ihrem Kontext</p>
+          </div>
+          <div class="publication-arrow" aria-hidden="true">→</div>
+          <div class="publication-step">
+            <span>4</span>
+            <p>Andere prüfen Aussage, Evidenz und Vertrauensgrundlage</p>
+          </div>
+        </div>
+
+        <p>
+          Mögliche Wege sind eine Website, ein Beschaffungs- oder Audit-Repository,
+          ein institutionelles Register, ein DID-bezogener Service oder eine signierte
+          Nanopublication. Auch eine direkte Bereitstellung an eine Beschaffungsstelle
+          oder Revisionsstelle kann angemessen sein.
+        </p>
+
+        <div class="architecture-note publication-note">
+          <p class="boundary-label">Wichtig</p>
+          <p>
+            Die Veröffentlichung macht eine Aussage auffindbar. Sie beweist nicht
+            allein, dass die Aussage wahr, unabhängig geprüft oder zertifiziert ist.
+            Das beurteilt jede prüfende Stelle anhand des Attesters, des Prüfverfahrens,
+            der Evidenz und ihrer eigenen Vertrauensregeln.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container reading-content">
+        <p class="section-label">Kurz gesagt</p>
+        <h2>RecordWeb schafft Orientierung</h2>
+
+        <p class="section-lead">
+          RecordWeb trennt technische Speicherung von persistenter Identität,
+          Informationsdarstellung von Evidenz, Kontext von technischen Beziehungen
+          und Governance von blossen Systemeigenschaften.
+        </p>
+
+        <div class="summary-quote">
+          <p>
+            Ein Record bleibt nicht dadurch vertrauenswürdig, dass er an einem
+            bestimmten Ort liegt. Er bleibt nachvollziehbar, wenn seine Identität,
+            sein Zustand, seine Geschichte, sein Kontext und seine Nachweise auch
+            nach Veränderungen von Systemen und Darstellungen überprüft werden können.
+          </p>
+        </div>
+
+        <p>
+          Die Reference Architecture zeigt, wo diese Aufgaben im Gesamtbild liegen.
+          RWP stellt die interoperablen Bausteine für den Record und seine Evidenz
+          bereit. Organisationen entscheiden selbst, wie sie diese Bausteine in ihre
+          Anwendungen, Governance und langfristige Informationsverantwortung einbetten.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <a class="wordmark footer-wordmark" href="index_de.html">RecordWeb</a>
+        <p>
+          Persistente, kontextualisierte und überprüfbare institutionelle Information.
+        </p>
+      </div>
+
+      <nav aria-label="Weiterführende Links">
+        <a href="../../">RecordWeb Übersicht</a>
+        <a href="../de/">Alle Stories</a>
+        <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">RecordWeb Concept</a>
+        <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">RecordWeb Protocol</a>
+        <a href="https://github.com/recordweb" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
