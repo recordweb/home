@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A RecordWeb story about Source Integration: how existing business applications can be connected to accountable, traceable Records without replacing them.">
+  <title>RecordWeb – The chat stays. The context becomes traceable.</title>
+  <link rel="stylesheet" href="../assets/recordweb.css">
+</head>
+
+<body class="stories-page">
+  <header class="site-header">
+    <a class="wordmark" href="../index.html">RecordWeb</a>
+    <nav class="header-nav" aria-label="Main navigation">
+      <a href="../index.html">Overview</a>
+      <a href="../stories/index.html">Stories</a>
+      <a href="https://recordweb.github.io/rwc/">Concept</a>
+      <a href="https://recordweb.github.io/rwp/">Protocol</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="stories-hero">
+      <div class="container">
+        <p class="eyebrow">A story from everyday public-sector work</p>
+        <h1>The chat stays.<br>The context becomes traceable.</h1>
+        <p class="hero-lead">
+          How an existing business application can be connected to RecordWeb
+          without requiring people to do their work twice or abandon the tools
+          they already know.
+        </p>
+
+        <div class="language-switch" aria-label="Language">
+          <a href="source_integration_de.html" lang="de">Deutsch</a>
+          <span class="current" aria-current="page">English</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 1 · The work is already happening</p>
+        <h2>Ms Roth works through a question with her team.</h2>
+        <p class="section-lead">
+          A parliamentary question needs an answer. Ms Roth needs current figures,
+          professional context, and wording that her team can stand behind.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>Ms Roth</h3>
+            <p>
+              She is responsible for the response and brings the appropriate
+              specialists together. Her immediate task is to deliver a correct
+              answer on time.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>The specialist team</h3>
+            <p>
+              Team members check figures, discuss uncertainty, and agree the
+              professional interpretation. They collaborate in their familiar
+              team chat.
+            </p>
+          </article>
+        </div>
+
+        <div class="library-note">
+          <p>
+            <strong>The reality:</strong> The response does not emerge only in
+            the final document. It emerges through questions, intermediate
+            results, professional knowledge, coordination, and a decision
+            jointly supported by the team.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Scene 2 · A familiar tool</p>
+        <h2>The chat is a place where real work happens.</h2>
+        <p class="section-lead">
+          Ms Roth should not have to work in a new system merely so that the
+          collaboration can later be understood and traced.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>In the team chat</h3>
+            <p>
+              Ms Roth asks for the current time series. One specialist checks
+              the figures. Another adds a methodological note. Together they
+              agree the wording for the response.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>In question management</h3>
+            <p>
+              The question-management system continues to show which question
+              is being handled, who is responsible, and when the answer is due.
+            </p>
+          </article>
+        </div>
+
+        <div class="status-note">
+          <p>
+            The chat and question management have different jobs. Both can retain
+            their familiar data models and their own user interfaces.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 3 · The bridge</p>
+        <h2>Nobody has to replace the chat.</h2>
+        <p class="section-lead">
+          Source Integration creates a connection between an existing application
+          and RecordWeb. It is not another work tool for Ms Roth, and it is not
+          a second repository that she has to maintain manually.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>The business application</h3>
+            <p>
+              The chat continues to manage the conversation. It knows which
+              messages belong to which discussion and who participates in it.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>The Source Adapter</h3>
+            <p>
+              It creates the connection. It can make selected content and
+              information about its origin available to a RecordWeb implementation.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>RecordWeb</h3>
+            <p>
+              A RecordWeb implementation can create a persistently identifiable,
+              verifiable, and later findable Record from that information.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>No big bang</h3>
+            <p>
+              The application can keep working. The connection can be introduced
+              incrementally: first for one process, then for additional information
+              and applications.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Scene 4 · Clear responsibility</p>
+        <h2>Who does what?</h2>
+        <p class="section-lead">
+          Source Integration does not blur the line between business responsibility
+          and responsibility for a Record. It makes that line visible.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>The business application remains responsible</h3>
+            <p>
+              It remains responsible for its business object: for example, a
+              conversation, a question, a case file, or a document in its own
+              domain context.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>The Source Adapter connects</h3>
+            <p>
+              It may provide content, provenance information, or both. It does
+              not need to create a RecordWeb identifier, manage snapshots, or
+              maintain a version history.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>The Producer creates the Record</h3>
+            <p>
+              Only the Producer gives information a persistent RecordWeb
+              identifier, checks it against the applicable rules, and creates a
+              finalised snapshot where appropriate.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>A Record is more than a copy</h3>
+            <p>
+              It preserves a specific, traceable representation: with identity,
+              versions, integrity evidence, and a clear indication of which state
+              is meant later.
+            </p>
+          </article>
+        </div>
+
+        <div class="library-note">
+          <p>
+            <strong>The simple boundary:</strong> A Source Adapter can supply
+            information. A Record exists only where a Producer creates it as a
+            RecordWeb Record and takes responsibility for it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 5 · Not everything may be exported</p>
+        <h2>Sometimes the content stays in the source system.</h2>
+        <p class="section-lead">
+          Not every piece of information may or should leave a protected
+          application. This may apply to confidential, highly sensitive, or
+          classified information.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>The protected content</h3>
+            <p>
+              The full content remains in the source system. Its access rights,
+              protection requirements, and business responsibilities continue to
+              apply there.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>The traceable reference</h3>
+            <p>
+              The Source Adapter can still identify the originating system, the
+              object identifier, the time of capture, and the business context to
+              which a reference relates.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>The basis for trust</h3>
+            <p>
+              In this situation, a reference does not replace a retained copy.
+              Trust rests on traceable responsibility and on verifiable statements
+              about how the participating application is governed and operated.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>A deliberate choice</h3>
+            <p>
+              This is not an incomplete integration. It is an appropriate approach
+              when protection and confidentiality matter more than transferring
+              the complete content.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Scene 6 · From notice to verified reference</p>
+        <h2>A notification is not yet evidence.</h2>
+        <p class="section-lead">
+          Once the Producer has created a Record, it can notify the answer-management
+          system that a new state is available. That is useful, but it does not
+          replace verification.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>SoX reports a new state</h3>
+            <p>
+              A message may say that the chat has been captured or that a Record
+              has been finalised. It can trigger an interface refresh or a new
+              attempt to continue the process.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>Answer management verifies for itself</h3>
+            <p>
+              Before a case is finally closed, the answer-management system
+              resolves the RecordWeb identifier and checks the identified,
+              finalised snapshot.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>The fixed reference</h3>
+            <p>
+              Only then does the CaseRecord refer to that specific state. This
+              makes it possible to determine later which version was actually
+              used in the case.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>The consequence</h3>
+            <p>
+              A callback or status message can make work easier. Verification of
+              the target Record remains the responsibility of the system that
+              finalises the reference.
+            </p>
+          </article>
+        </div>
+
+        <div class="status-note">
+          <p>
+            <strong>Important:</strong> Evidence is not a claim in a message.
+            Evidence comes from verifying the specific, finalised state of the
+            Record.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 7 · The story as a flow</p>
+        <h2>From collaboration to traceable context.</h2>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>1. Work</h3>
+            <p>
+              A business object is created or changed in a business application:
+              for example, a conversation, a document, or a question.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>2. Connection</h3>
+            <p>
+              A Source Adapter makes selected content, provenance information, or
+              both available to a RecordWeb implementation.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>3. Record</h3>
+            <p>
+              A Producer creates a Record where appropriate, verifies it, gives
+              it a persistent identity, and finalises a particular state.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>4. Use</h3>
+            <p>
+              Other applications can later find and verify the Record, and refer
+              to a specifically identified, finalised state.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Outlook</p>
+        <h2>Existing applications become connectable.</h2>
+        <p class="section-lead">
+          Source Integration does not mandate a particular technical mechanism.
+          It can be implemented through an API, an event, a file exchange, a
+          queue, or another agreed approach.
+        </p>
+
+        <div class="library-note">
+          <p>The business application remains strong in its own domain.</p>
+          <p>The Source Adapter creates the connection.</p>
+          <p>The Producer takes responsibility for the Record.</p>
+          <p>Step by step, this creates a network of traceable relationships.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <a class="wordmark footer-wordmark" href="../index.html">RecordWeb</a>
+        <p>
+          Open concepts and protocols for accountable, long-term referencable
+          Records.
+        </p>
+      </div>
+
+      <nav aria-label="Further links">
+        <a href="../index.html">RecordWeb overview</a>
+        <a href="../stories/index.html">All stories</a>
+        <a href="https://recordweb.github.io/rwc/">RecordWeb Concept</a>
+        <a href="https://recordweb.github.io/rwp/">RecordWeb Protocol</a>
+        <a href="https://github.com/recordweb">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
