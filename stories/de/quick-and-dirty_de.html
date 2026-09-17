@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecordWeb Protocol – Quick'n'Dirty</title>
+<style>
+  :root {
+    --blue:#005a9c;--blue-dark:#003d6b;--blue-soft:#e8f2f8;--ink:#1d2b36;--muted:#536471;
+    --line:#c9d7df;--paper:#fff;--surface:#f5f8fa;--warm:#fff5dc;--warm-line:#d89c23;
+    --green:#16784b;--green-soft:#eaf7ef;--purple:#68499b;--purple-soft:#f2edf9;
+    --grey-soft:#eef1f3;--grey-line:#c3ccd1;--red:#ae2626;
+    --shadow:0 10px 30px rgba(21,47,66,.13);
+
+    --module-width: 355px;
+    --module-gap: 50px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    color:var(--ink);background:var(--surface);
+    font:17px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:100vh;padding:3vh 3vw;
+  }
+  .wrap{width:min(1320px,100%)}
+  .head{margin-bottom:1.4rem;text-align:left}
+  .eyebrow{margin:0 0 .5rem;color:var(--blue);font-size:.86rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+  h1{margin:0;font-size:clamp(1.6rem,3vw,2.35rem);letter-spacing:-.03em;line-height:1.15}
+  .sub{margin:.55rem 0 0;max-width:900px;color:var(--muted);font-size:1rem}
+
+  .stage{
+    position:relative;padding:1.9rem clamp(1rem,2.4vw,2.4rem) 1.7rem;
+    border:1px solid var(--line);border-top:9px solid var(--blue);
+    background:var(--paper);box-shadow:var(--shadow);
+  }
+
+  .modules{
+    display:flex;flex-wrap:wrap;justify-content:center;
+    gap:var(--module-gap);
+  }
+  .module{
+    position:relative;padding:1rem .9rem;border:2px solid var(--line);background:#fff;
+    display:flex;flex-direction:column;gap:.55rem;min-height:340px;
+    width:var(--module-width);flex:0 0 var(--module-width);
+    opacity:.4;filter:grayscale(.5);
+    transition:opacity .45s ease, filter .45s ease, border-color .45s ease, box-shadow .45s ease, transform .45s ease;
+  }
+  .module.active{
+    opacity:1;filter:grayscale(0);border-color:var(--blue);
+    box-shadow:0 10px 22px rgba(0,90,156,.16);transform:translateY(-3px);
+  }
+  .module .num{
+    display:inline-grid;width:26px;height:26px;place-items:center;border-radius:50%;
+    color:#fff;background:var(--grey-line);font-size:.74rem;font-weight:850;
+    transition:background .45s ease;
+  }
+  .module.active .num{background:var(--blue)}
+  .module strong{color:var(--blue-dark);font-size:.98rem;line-height:1.25}
+  .module p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.45}
+  .module .tag{
+    align-self:flex-start;padding:.15rem .5rem;border-radius:10px;font-size:.66rem;font-weight:800;
+    letter-spacing:.03em;text-transform:uppercase;background:var(--grey-soft);color:#7d8a91;
+  }
+  .module.active .tag.role-identity{background:var(--purple-soft);color:var(--purple)}
+  .module.active .tag.role-content{background:var(--blue-soft);color:var(--blue-dark)}
+  .module.active .tag.role-integrity{background:var(--green-soft);color:var(--green)}
+  .module.active .tag.role-infra{background:var(--warm);color:#7a5a0c}
+
+  .mini-doc{
+    margin-top:auto;padding:.6rem .65rem;border:1px solid #2b3d47;border-radius:5px;
+    background:#0f2129;color:#d7e6ec;font:.63rem/1.4 "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    white-space:pre;overflow-x:auto;max-height:170px;
+  }
+  .mini-doc .punct{color:#7c93a0}
+  .mini-doc .key{color:#79c0ff}
+  .mini-doc .str{color:#a5d6a7}
+  .mini-doc .num-v{color:#f0c987}
+  .mini-doc .comment{color:#6b7f8a;font-style:italic}
+
+  .process-row{
+    margin-top:1.8rem;padding-top:1.4rem;border-top:1px dashed var(--line);
+  }
+  .process-label{
+    margin:0 0 .9rem;color:var(--muted);font-size:.74rem;font-weight:800;
+    letter-spacing:.08em;text-transform:uppercase;text-align:center;
+  }
+  .process-steps{
+    display:flex;justify-content:center;align-items:stretch;flex-wrap:wrap;
+  }
+  .p-step{
+    position:relative;display:flex;align-items:center;gap:.5rem;
+    padding:.6rem 1rem .6rem 1.5rem;margin-left:-14px;
+    background:#fff;border:1px solid var(--line);cursor:pointer;
+    font-size:.78rem;color:var(--muted);font-weight:650;
+    clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%);
+    transition:background .3s ease, color .3s ease, border-color .3s ease, z-index .1s;
+    z-index:1;
+  }
+  .p-step:first-child{margin-left:0;padding-left:1rem;clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);}
+  .p-step .p-num{
+    display:inline-grid;width:20px;height:20px;place-items:center;border-radius:50%;
+    background:var(--grey-line);color:#fff;font-size:.68rem;font-weight:850;flex-shrink:0;
+  }
+  .p-step.active{
+    background:var(--blue);color:#fff;border-color:var(--blue);z-index:2;
+  }
+  .p-step.active .p-num{background:#fff;color:var(--blue)}
+
+  .caption-bar{
+    margin-top:1.3rem;min-height:56px;padding:.85rem 1.05rem;
+    border-left:6px solid var(--blue);background:var(--blue-soft);
+    font-size:.94rem;color:var(--ink);
+  }
+  .caption-bar b{color:var(--blue-dark)}
+
+  .warn-box{
+    margin-top:1rem;padding:.85rem 1.05rem;
+    border-left:6px solid var(--warm-line);background:var(--warm);
+    font-size:.88rem;color:#5f3f00;display:none;
+  }
+  .warn-box.show{display:block}
+  .warn-box b{color:#5f3f00}
+
+  .controls{
+    display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.4rem;
+  }
+  .controls button{
+    min-width:120px;padding:.62rem 1.05rem;border:1px solid var(--blue);border-radius:3px;
+    color:var(--blue);background:#fff;font-weight:750;font-size:.98rem;cursor:pointer;font-family:inherit;
+  }
+  .controls button.primary{color:#fff;background:var(--blue)}
+  .controls button:disabled{border-color:#b5c1c8;color:#8a989f;background:#edf1f3;cursor:default}
+  .step-label{min-width:150px;text-align:center;color:var(--muted);font-size:.82rem;font-variant-numeric:tabular-nums}
+
+  @media (max-width:900px){
+    .process-steps{flex-wrap:wrap;justify-content:center;row-gap:.5rem}
+    .p-step{clip-path:none !important;margin-left:0 !important;border-radius:20px;padding:.5rem .9rem !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <p class="eyebrow">RecordWeb Protocol (RWP) · Quick'n'Dirty</p>
+    <h1>Was ein RWP-Record wirklich ist - und wie man ihn findet.</h1>
+    <p class="sub">Sieben Bausteine: von der Identität eines Datensatzes über seinen Inhalt und seine Integritätssicherung bis zur Auflösungs-Infrastruktur, die aus einer DID einen erreichbaren Datensatz macht.</p>
+  </div>
+
+  <div class="stage">
+    <div class="modules">
+      <div class="module" data-step="1">
+        <span class="num">1</span>
+        <span class="tag role-identity">Identität</span>
+        <strong>Die DID</strong>
+        <p>Jeder Record besitzt eine stabile, dezentrale Identität. Der <code>namespace</code> verweist auf eine Organisation/Infrastruktur, die <code>record-id</code> ist innerhalb dieses Namensraums eindeutig. Optionale Segmente adressieren gezielt einzelne Versionen oder Repräsentationen.</p>
+        <div class="mini-doc" id="doc1"><span class="comment">// Aufbau der DID</span>
+<span class="str">did:rwp:&lt;namespace&gt;:&lt;record-id&gt;
+  [:&lt;versionHash&gt;][:&lt;contentHash&gt;]</span>
+
+<span class="comment">// Beispiel</span>
+<span class="str">did:rwp:5264d2c3-…:f47ac10b-…</span></div>
+      </div>
+
+      <div class="module" data-step="2">
+        <span class="num">2</span>
+        <span class="tag role-content">Container</span>
+        <strong>Der Record</strong>
+        <p>Der Record selbst ist ein schlankes Hüllobjekt: eine DID, ein Payload mit dem Lebenszyklus der Inhalte, Metadaten zur Einordnung und ein Hash, der alles kryptographisch verklammert.</p>
+        <div class="mini-doc" id="doc2"><span class="punct">{</span>
+  <span class="key">"did"</span><span class="punct">:</span> <span class="str">"did:rwp:5264d2c3-…:f47ac10b-…"</span><span class="punct">,</span>
+  <span class="key">"payload"</span><span class="punct">: [</span><span class="punct">]</span><span class="punct">,</span>
+  <span class="key">"metadata"</span><span class="punct">: {</span><span class="punct">}</span><span class="punct">,</span>
+  <span class="key">"recordHash"</span><span class="punct">:</span> <span class="str">"sha256:9f8e7d…"</span>
+<span class="punct">}</span></div>
+      </div>
+
+      <div class="module" data-step="3">
+        <span class="num">3</span>
+        <span class="tag role-content">Inhalt</span>
+        <strong>Payload</strong>
+        <p>Der Payload ist eine Liste von Versions-Snapshots (Draft → finalized), jeweils mit Eltern-Verweisen, Signatur und einer oder mehreren <code>representations</code> - dem eigentlichen Inhalt in verschiedenen Formaten, inline oder per Referenz.</p>
+        <div class="mini-doc" id="doc3"><span class="punct">{</span> <span class="key">"payload"</span><span class="punct">: [{</span>
+  <span class="key">"versionHash"</span><span class="punct">:</span> <span class="str">"sha256:eef9dd…"</span><span class="punct">,</span>
+  <span class="key">"state"</span><span class="punct">:</span> <span class="str">"finalized"</span><span class="punct">,</span>
+  <span class="key">"parents"</span><span class="punct">: [</span><span class="str">"sha256:6ce834…"</span><span class="punct">]</span><span class="punct">,</span>
+  <span class="key">"signature"</span><span class="punct">:</span> <span class="str">"z3FttV7…"</span><span class="punct">,</span>
+  <span class="key">"representations"</span><span class="punct">: [</span>
+    <span class="punct">{</span> <span class="key">"format"</span><span class="punct">:</span> <span class="str">"text/markdown"</span><span class="punct">,</span>
+      <span class="key">"content"</span><span class="punct">:</span> <span class="str">"sample text"</span><span class="punct">,</span>
+      <span class="key">"contentHash"</span><span class="punct">:</span> <span class="str">"sha256:3a84b2…"</span><span class="punct">,</span>
+      <span class="key">"primary"</span><span class="punct">:</span> <span class="str">true</span><span class="punct">,</span> <span class="key">"role"</span><span class="punct">:</span> <span class="str">"source"</span> <span class="punct">},</span>
+    <span class="punct">{</span> <span class="key">"format"</span><span class="punct">:</span> <span class="str">"application/pdf;…"</span><span class="punct">,</span>
+      <span class="key">"ref"</span><span class="punct">:</span> <span class="str">"sample reference"</span><span class="punct">,</span>
+      <span class="key">"primary"</span><span class="punct">:</span> <span class="str">false</span><span class="punct">,</span> <span class="key">"role"</span><span class="punct">:</span> <span class="str">"publication"</span> <span class="punct">}</span>
+  <span class="punct">]}]}</span></div>
+      </div>
+
+      <div class="module" data-step="4">
+        <span class="num">4</span>
+        <span class="tag role-content">Einordnung</span>
+        <strong>Metadaten</strong>
+        <p>Drei Ebenen: <code>core</code> (Typ und Schema-Version als eigene RWP-Records), <code>governance</code> (Owner, Klassifizierung, Aufbewahrung, Tags) und optionale <code>extensions</code> für domänenspezifische Erweiterungen.</p>
+        <div class="mini-doc" id="doc4"><span class="punct">{</span> <span class="key">"metadata"</span><span class="punct">: {</span>
+  <span class="key">"core"</span><span class="punct">: {</span>
+    <span class="key">"recordType"</span><span class="punct">:</span> <span class="str">"did:rwp:2fe146…:5264d2…"</span><span class="punct">,</span>
+    <span class="key">"schemaVersion"</span><span class="punct">:</span> <span class="str">"sha256:a665a4…"</span>
+  <span class="punct">},</span>
+  <span class="key">"governance"</span><span class="punct">: {</span>
+    <span class="key">"owner"</span><span class="punct">:</span> <span class="str">"did:rwp:bern.ch:unit-baubewilligung"</span><span class="punct">,</span>
+    <span class="key">"classification"</span><span class="punct">:</span> <span class="str">"internal"</span><span class="punct">,</span>
+    <span class="key">"retentionPolicy"</span><span class="punct">:</span> <span class="str">"did:rwp:bern.ch:retention-bauakten-30y"</span><span class="punct">,</span>
+    <span class="key">"tags"</span><span class="punct">: [</span><span class="str">"building-permit"</span><span class="punct">,</span> <span class="str">"parcel-451"</span><span class="punct">]</span>
+  <span class="punct">},</span>
+  <span class="key">"extensions"</span><span class="punct">: [</span><span class="punct">]</span>
+<span class="punct">}}</span></div>
+      </div>
+
+      <div class="module" data-step="5">
+        <span class="num">5</span>
+        <span class="tag role-integrity">Integrität</span>
+        <strong>recordHash</strong>
+        <p>Der Hash verklammert <code>did</code>, <code>payload</code> und <code>metadata</code> kryptographisch - jede Änderung an einem der drei Felder verändert den Hash. <code>versionHash</code> und <code>contentHash</code> werden sinngemäss über die jeweiligen Versions- bzw. Representation-Felder berechnet.</p>
+        <div class="mini-doc" id="doc5"><span class="comment">// Canonical JSON (RFC 8785) + SHA-256</span>
+<span class="str">recordHash = SHA-256(
+  canonicalize({did, payload, metadata})
+)</span>
+
+<span class="comment">// analog für einzelne Snapshots
+// und Representations</span></div>
+      </div>
+
+      <div class="module" data-step="6">
+        <span class="num">6</span>
+        <span class="tag role-infra">Auflösung</span>
+        <strong>DID-Dokument</strong>
+        <p>Pro DID existiert ein DID-Dokument mit <code>recordEndpoint</code> (der festen URL, unter der der eigentliche Record ausgeliefert wird) sowie Verwaltungsangaben wie Controller und Verification Methods.</p>
+        <div class="mini-doc" id="doc6"><span class="punct">{</span>
+  <span class="key">"id"</span><span class="punct">:</span> <span class="str">"did:rwp:bern.ch:f47ac10b-…"</span><span class="punct">,</span>
+  <span class="key">"recordEndpoint"</span><span class="punct">:</span>
+    <span class="str">"https://records.bern.ch/api/v1/…"</span><span class="punct">,</span>
+  <span class="key">"currentVersion"</span><span class="punct">:</span> <span class="str">"sha256:e3b0c4…"</span><span class="punct">,</span>
+  <span class="key">"controller"</span><span class="punct">:</span> <span class="str">"did:rwp:bern.ch:controller-001"</span>
+<span class="punct">}</span></div>
+      </div>
+
+      <div class="module" data-step="7">
+        <span class="num">7</span>
+        <span class="tag role-infra">Auflösung</span>
+        <strong>Global Namespace Registry</strong>
+        <p>Der Namensraum selbst wird zentral (DLT-gestützt) im GNR registriert und zeigt auf den <code>resolverEndpoint</code>, die Organisation, die für alle Records dieses Namensraums DID-Dokumente ausliefert.</p>
+        <div class="mini-doc" id="doc7"><span class="punct">{</span>
+  <span class="key">"docType"</span><span class="punct">:</span> <span class="str">"namespaceRecord"</span><span class="punct">,</span>
+  <span class="key">"namespace"</span><span class="punct">:</span> <span class="str">"a3f9e21c-…"</span><span class="punct">,</span>
+  <span class="key">"resolverEndpoint"</span><span class="punct">:</span>
+    <span class="str">"https://vps.recordweb.dev/resolver/…"</span><span class="punct">,</span>
+  <span class="key">"registeredBy"</span><span class="punct">:</span> <span class="str">"SwissGovOrgMSP"</span><span class="punct">,</span>
+  <span class="key">"endorsedBy"</span><span class="punct">: [</span><span class="str">"SwissGovOrgMSP"</span><span class="punct">]</span>
+<span class="punct">}</span></div>
+      </div>
+    </div>
+
+    <div class="process-row">
+      <p class="process-label">Reihenfolge</p>
+      <div class="process-steps" id="processSteps">
+        <div class="p-step" data-step="1"><span class="p-num">1</span>DID</div>
+        <div class="p-step" data-step="2"><span class="p-num">2</span>Record</div>
+        <div class="p-step" data-step="3"><span class="p-num">3</span>Payload</div>
+        <div class="p-step" data-step="4"><span class="p-num">4</span>Metadaten</div>
+        <div class="p-step" data-step="5"><span class="p-num">5</span>recordHash</div>
+        <div class="p-step" data-step="6"><span class="p-num">6</span>DID-Dokument</div>
+        <div class="p-step" data-step="7"><span class="p-num">7</span>GNR</div>
+      </div>
+    </div>
+
+    <div class="caption-bar" id="captionBar"></div>
+    <div class="warn-box" id="warnBox">
+      <b>Hinweis zu Datenschutz &amp; Sicherheit.</b> RWP macht bewusst keine Vorgaben zu Zugriffskontrolle, Verschlüsselung, Datenschutz oder anderen Sicherheitsmassnahmen. Resolver, GNR-Betreiber und Anwendungen müssen dies selbst, gemäss ihren rechtlichen und organisatorischen Anforderungen, umsetzen.
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="backBtn" type="button">← Back</button>
+    <span class="step-label" id="stepLabel">Step 1 / 8</span>
+    <button class="primary" id="nextBtn" type="button">Next →</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const captions = [
+    "<b>1 · Die DID.</b> Jeder RWP-Record startet mit einer dezentralen Identität. Der Namespace verweist auf eine registrierte Infrastruktur, die Record-ID ist darin eindeutig. Optionale Segmente für Version- und Content-Hash sind eine Erweiterung, um gezielt einzelne Versionen oder Repräsentationen zu adressieren.",
+    "<b>2 · Der Record.</b> Bewusst schlank gehalten: DID zur Identifikation, ein Payload für die eigentlichen Inhalte über die Zeit, Metadaten zur Einordnung und ein Hash, der alle drei Teile verklammert.",
+    "<b>3 · Payload.</b> Eine Liste von Versions-Snapshots mit Status (z. B. draft, finalized), Eltern-Verweisen für die Historie und Signatur. Jede Version trägt eine oder mehrere Representations. Denselben Inhalt in verschiedenen Formaten, entweder inline (<code>content</code>) oder per Referenz (<code>ref</code>).",
+    "<b>4 · Metadaten.</b> Core beschreibt Typ und Schema-Version des Records. Beide selbst wieder als eigene, referenzierbare RWP-Records. Governance trägt Owner, Klassifizierung, Aufbewahrungsfrist und Tags. Extensions erlauben domänenspezifische Zusatzfelder.",
+    "<b>5 · recordHash.</b> Ein SHA-256-Hash über die kanonisierte JSON-Form (RFC 8785) von DID, Payload und Metadaten sichert die Integrität des gesamten Records. VersionHash und ContentHash funktionieren nach demselben Prinzip, nur bezogen auf die jeweilige Version bzw. die jeweilige Representation.",
+    "<b>6 · DID-Dokument.</b> Löst eine DID auf einen konkreten <code>recordEndpoint</code> auf, die URL, unter der die Anwendung den Record tatsächlich ausliefert. Enthält zudem Controller- und Verification-Angaben für spätere Signaturprüfungen.",
+    "<b>7 · Global Namespace Registry.</b> Bevor ein DID-Dokument gefunden werden kann, muss der Namespace selbst aufgelöst werden. Der GNR-Eintrag bildet Namespace auf einen Resolver-Endpoint ab und dokumentiert, wer die Registrierung vorgenommen und bestätigt hat.",
+    "<b>8 · Verwaltung: vom Namespace zum Record.</b> Ein RootResolver extrahiert aus der DID den Namespace und liefert den zuständigen Resolver-Endpoint. Dieser liefert anhand der Record-ID das DID-Dokument und damit den Record-Endpoint. Der Record-Endpoint liefert schliesslich den Record selbst aus."
+  ];
+
+  const modules = [...document.querySelectorAll('.module')];
+  const pSteps = [...document.querySelectorAll('.p-step')];
+  const captionBar = document.getElementById('captionBar');
+  const warnBox = document.getElementById('warnBox');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const stepLabel = document.getElementById('stepLabel');
+  const total = 8;
+  let i = 1;
+
+  function render() {
+    const moduleStep = Math.min(i, 7);
+    modules.forEach(m => m.classList.toggle('active', Number(m.dataset.step) === moduleStep));
+    pSteps.forEach(p => p.classList.toggle('active', Number(p.dataset.step) === moduleStep));
+    captionBar.innerHTML = captions[i - 1];
+    warnBox.classList.toggle('show', i === 8);
+    stepLabel.textContent = `Step ${i} / ${total}`;
+    backBtn.disabled = i === 1;
+    nextBtn.disabled = i === total;
+    nextBtn.textContent = i === total ? 'End' : 'Next →';
+  }
+
+  function move(delta) {
+    const t = Math.max(1, Math.min(total, i + delta));
+    if (t !== i) { i = t; render(); }
+  }
+
+  backBtn.addEventListener('click', () => move(-1));
+  nextBtn.addEventListener('click', () => move(1));
+  pSteps.forEach(p => p.addEventListener('click', () => { i = Number(p.dataset.step); render(); }));
+  window.addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); move(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); move(-1); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
