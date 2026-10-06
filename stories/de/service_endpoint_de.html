@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Eine RecordWeb Story über Service Endpoints: Wie ein Record neben seinem Pflichtzugang weitere, freiwillige Wege und Funktionen deklarieren kann, ohne Zugriffsrechte zu vergeben.">
+  <title>RecordWeb – Ein Weg ist noch keine Erlaubnis</title>
+  <link rel="stylesheet" href="../../assets/css/recordweb.css">
+</head>
+
+<body class="stories-page">
+  <header class="site-header">
+    <a class="wordmark" href="../../">RecordWeb</a>
+    <nav class="header-nav" aria-label="Hauptnavigation">
+      <a href="../de/">Stories</a>
+      <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">Konzept</a>
+      <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">Protokoll</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="stories-hero">
+      <div class="container">
+        <p class="eyebrow">Eine Geschichte aus dem Verwaltungsalltag</p>
+        <h1>Ein Weg ist noch keine Erlaubnis.<br>Aber er zeigt, was möglich ist.</h1>
+        <p class="hero-lead">
+          Wie ein Record neben seinem Pflichtzugang weitere Wege und Funktionen
+          deklarieren kann, damit Menschen und Systeme wissen, was mit dem Record möglich ist,
+          ohne dass dadurch Zugriffsrechte vergeben werden.
+        </p>
+
+        <div class="language-switch" aria-label="Sprache">
+          <span class="current" aria-current="page">Deutsch</span>
+          <a href="../en/service_endpoint_en.html" lang="en">English</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Szene 1 · Ein Anruf</p>
+        <h2>Herr Berger will nur wissen, wie weit es ist.</h2>
+        <p class="section-lead">
+          Familie Berger baut das Haus seiner verstorbenen Eltern um. Seit Wochen wartet sie auf die Baubewilligung. Heute ruft Herr Berger bei Frau Roth an, und man hört ihm die Anspannung an.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>Herr Berger</h3>
+            <p>
+              Er will keine Akte und keine Details. Er möchte wissen, ob sein Gesuch bearbeitet wird und ob er den Handwerkern etwas zusagen kann.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>Frau Roth</h3>
+            <p>
+              Sie sieht im Fachsystem den vollständigen Stand. Sie darf ihm aber nicht einfach alles zeigen: Im Gesuch stehen Namen, Pläne und Stellungnahmen Dritter.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="library-note">
+          <p>
+            <strong>Das Dilemma:</strong> Der Record ist vollständig und geschützt. Und doch gibt es eine berechtigte Frage, die eine einfachere Antwort verdient als «Ich darf Ihnen nichts sagen».
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Szene 2 · Der eine sichere Weg</p>
+        <h2>Jeder Record hat einen Pflichtzugang.</h2>
+        <p class="section-lead">
+          In RWP hat jedes DID-Dokument genau einen verbindlichen Zugangsweg: den <code>recordEndpoint</code>. Über ihn wird der vollständige Record abgerufen.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>Die Adresse im DID-Dokument</h3>
+            <p>
+              Die DID des Records bleibt stabil. Wo der Record gerade liegt, steht im DID-Dokument und kann sich ändern, ohne dass sich die Identität ändert.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>Der volle Zugang</h3>
+            <p>
+              Der <code>recordEndpoint</code> liefert den ganzen Record. Wer ihn nutzen darf, entscheiden die Zugriffsregeln des Systems, nicht die Adresse selbst.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="status-note">
+          <p>
+            Das bleibt unverändert. Der <code>recordEndpoint</code> ist weiterhin der einzige Pflichtweg.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Szene 3 · Weitere Wege, freiwillig</p>
+        <h2>Das DID-Dokument kann mehr anbieten.</h2>
+        <p class="section-lead">
+          Neu kann ein DID-Dokument optional einen <code>service</code>-Block enthalten. Er folgt der Struktur aus DID-Core und beschreibt weitere Zugangswege, die ein Resolver anbieten möchte.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>Eine eingeschränkte Sicht</h3>
+            <p>
+              Ein Eintrag vom Typ <code>RWP-PublicRecordAccess</code> verweist auf eine reduzierte Darstellung des Records, etwa für Personen ohne vollen Zugriff. Welche Angaben sie zeigt, bestimmt das System.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>Eine Liste der Funktionen</h3>
+            <p>
+              Ein Eintrag vom Typ <code>RWP-FunctionRegistry</code> zeigt maschinenlesbar, welche Operationen für diesen Record vorgesehen sind, zum Beispiel abrufen, vergleichen, prüfen oder veröffentlichen.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>Freiwillig</h3>
+            <p>
+              Kein System muss weitere Wege anbieten. Wer es nicht tut, bleibt konform. Der Block ist ein MAY, keine Pflicht.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>Andere Kanäle</h3>
+            <p>
+              Auch andere <code>type</code>-Werte sind möglich, zum Beispiel ein DIDComm-Kanal. RWP schreibt kein Protokoll vor.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Szene 4 · Für Herrn Berger</p>
+        <h2>Eine Antwort, die nicht zu viel verrät.</h2>
+        <p class="section-lead">
+          Das Fachsystem von Frau Roth hat für Baugesuche eine eingeschränkte Sicht eingerichtet. Sie zeigt nur, was für Gesuchsteller bestimmt ist: etwa den Bearbeitungsstand.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>Was Herr Berger sieht</h3>
+            <p>
+              Der Stand seines Gesuchs, ohne Pläne, Stellungnahmen Dritter oder interne Notizen. Das beruhigt ihn mehr als jede ausweichende Antwort.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>Was Frau Roth gewinnt</h3>
+            <p>
+              Sie muss nicht zwischen «alles zeigen» und «nichts sagen» wählen. Die Sicht ist als Weg im DID-Dokument deklariert.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>Was die Sicht nicht ist</h3>
+            <p>
+              Sie ist nicht der vollständige Record. Ihr Inhalt kann nicht gegen den <code>recordHash</code> geprüft werden und darf deshalb nicht als validierter Record dargestellt werden.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>Die Verantwortung bleibt</h3>
+            <p>
+              Das System entscheidet weiterhin, wer welche Sicht erhält. Ein Eintrag im DID-Dokument vergibt kein Recht.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="library-note">
+          <p>
+            <strong>Die einfache Grenze:</strong> Ein <code>service</code>-Eintrag sagt, dass ein Weg existiert. Er sagt nicht, dass jemand ihn gehen darf.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Szene 5 · Die Funktionen gehören zum Typ</p>
+        <h2>Nicht jeder Record muss alles selbst erklären.</h2>
+        <p class="section-lead">
+          Welche Funktionen für einen Record sinnvoll sind, hängt von seinem Typ ab. Ein Baugesuch kann verglichen und geprüft werden. Ein anderer Typ braucht vielleicht eine Rechtschreibprüfung oder eine Wortzählung.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>Das SchemaRecord als Quelle</h3>
+            <p>
+              Ein SchemaRecord kann optional im Feld <code>capabilities</code> auflisten, welche Funktionen für Records dieses Typs vorgesehen sind. Er ist ohnehin der Ort, an dem der Typ definiert wird.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>Der Resolver übernimmt</h3>
+            <p>
+              Aus dieser Liste kann ein Resolver den Eintrag <code>RWP-FunctionRegistry</code> für jeden Record dieses Typs befüllen.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>Einmal gepflegt, überall gültig</h3>
+            <p>
+              Die Deklaration liegt auf Typebene und ist damit versioniert und nachvollziehbar. Sie muss nicht in jedem einzelnen Record wiederholt werden.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>Beschreibend, nicht verpflichtend</h3>
+            <p>
+              Die Liste sagt, was ein Typ unterstützt. Ein Resolver muss die genannten Funktionen nicht zwingend umsetzen.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Szene 6 · Der digitale Assistent</p>
+        <h2>Erst nachsehen, dann handeln.</h2>
+        <p class="section-lead">
+          Frau Roth nutzt zusätzlich einen digitalen Assistenten, der Aufgaben vorbereitet. Bevor er etwas tut, kann er im DID-Dokument nachsehen, welche Funktionen für einen Record überhaupt vorgesehen sind.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card architecture">
+            <h3>Die Entdeckung</h3>
+            <p>
+              Der Assistent löst die DID auf und liest die Funktionsliste. Er erkennt, ob etwa «vergleichen» oder «prüfen» zur Verfügung steht, ohne vorher eine Verbindung aufzubauen.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>Die Vorsicht</h3>
+            <p>
+              Die Angaben im DID-Dokument sind für ihn zunächst ungeprüfte Eingaben. Eine Funktion mit Wirkung wie «veröffentlichen» löst er nicht einfach selbst aus.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>Die Berechtigung</h3>
+            <p>
+              Ob er sie nutzen darf, entscheiden die Zugriffsregeln und die verantwortliche Person, nicht die Liste.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>Der Gewinn</h3>
+            <p>
+              Der Assistent muss nicht raten oder blind probieren. Er weiss, was vorgesehen ist, und fragt für alles andere nach.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="status-note">
+          <p>
+            <strong>Wichtig:</strong> Die Deklaration einer Funktion ist ein Hinweis auf Verfügbarkeit. Sie ersetzt weder eine Berechtigung noch eine Prüfung der Antwort.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Szene 7 · Was sich ändern darf</p>
+        <h2>Wege kommen und gehen. Der Record bleibt.</h2>
+        <p class="section-lead">
+          Das System von Frau Roth wird im Herbst erweitert. Es kommt ein neuer Weg dazu, ein alter fällt weg. Der Record selbst bleibt, wie er ist.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>Ohne neue Version</h3>
+            <p>
+              <code>service</code>-Einträge dürfen jederzeit hinzugefügt, geändert oder entfernt werden. Sie betreffen weder Identität noch Inhalt des Records und erzeugen keine neue Record-Version.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>Mit Zeitstempel</h3>
+            <p>
+              Bei jeder Änderung wird <code>updated</code> im DID-Dokument angepasst. So bleibt sichtbar, dass sich etwas verändert hat.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>In der <code>versionId</code></h3>
+            <p>
+              Das <code>service</code>-Feld fliesst in die <code>versionId</code> des DID-Dokuments ein, sofern es vorhanden ist. Änderungen lassen sich damit nachweisen.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>Nicht Teil der Record-Hashes</h3>
+            <p>
+              Die Einträge sind nicht Teil von <code>recordHash</code>, <code>versionHash</code> oder <code>contentHash</code>. Die Integrität des Records bleibt davon unberührt.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Szene 8 · Die Geschichte als Ablauf</p>
+        <h2>Vom Anruf zum klaren Weg.</h2>
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>1. Frage</h3>
+            <p>
+              Jemand will wissen, was mit einem Record möglich ist oder wie weit er ist.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>2. Auflösen</h3>
+            <p>
+              Die DID wird aufgelöst. Das DID-Dokument nennt den <code>recordEndpoint</code> und, wenn vorhanden, weitere <code>service</code>-Einträge.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>3. Auswählen</h3>
+            <p>
+              Je nach Rolle und Zugriffsregeln wird der passende Weg gewählt: der volle Record, die eingeschränkte Sicht oder die Funktionsliste.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>4. Prüfen</h3>
+            <p>
+              Wer den vollen Record erhält, validiert ihn nach den bekannten Regeln. Eine eingeschränkte Sicht wird nicht als validierter Record ausgegeben.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Stand der Diskussion</p>
+        <h2>Ein Vorschlag, noch im Prozess.</h2>
+        <p class="section-lead">
+          Der optionale <code>service</code>-Block und die Deklaration von Funktionen im
+          SchemaRecord sind als Änderungsvorschlag in Diskussion (Call for Consensus 8,
+          <a href="https://github.com/recordweb/rwp/issues/28" target="_blank" rel="noopener">Issue #28</a>).
+          Diese Seite beschreibt den vorgeschlagenen Stand und kann sich bis zur Annahme ändern.
+        </p>
+
+        <div class="library-note">
+          <p>Der <code>recordEndpoint</code> bleibt der Pflichtweg.</p>
+          <p>Weitere Wege sind freiwillig und deklarieren nur ihre Verfügbarkeit.</p>
+          <p>Die Funktionen werden einmal pro Record-Typ beschrieben.</p>
+          <p>Zugriff regeln weiterhin die Zugriffsregeln des Systems.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <a class="wordmark footer-wordmark" href="../../">RecordWeb</a>
+        <p>
+          Offene Konzepte und Protokolle für nachvollziehbare, langfristig
+          referenzierbare Records.
+        </p>
+      </div>
+
+      <nav aria-label="Weiterführende Links">
+        <a href="../../">RecordWeb Übersicht</a>
+        <a href="../de/">Alle Stories</a>
+        <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">RecordWeb Concept</a>
+        <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">RecordWeb Protocol</a>
+        <a href="https://github.com/recordweb" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
