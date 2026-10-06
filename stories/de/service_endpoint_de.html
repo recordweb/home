@@ -41,7 +41,7 @@
         <p class="section-label">Szene 1 · Ein Anruf</p>
         <h2>Herr Berger will nur wissen, wie weit es ist.</h2>
         <p class="section-lead">
-          Familie Berger baut das Haus seiner verstorbenen Eltern um. Seit Wochen wartet sie auf die Baubewilligung. Heute ruft Herr Berger bei Frau Roth an, und man hört ihm die Anspannung an.
+          Herr Berger baut das Haus seiner verstorbenen Eltern um. Seit Wochen wartet er auf die Baubewilligung. Heute ruft Herr Berger bei Frau Roth an, und man hört ihm die Anspannung an.
         </p>
 
         <div class="stakeholder-grid">
@@ -107,21 +107,21 @@
         <p class="section-label">Szene 3 · Weitere Wege, freiwillig</p>
         <h2>Das DID-Dokument kann mehr anbieten.</h2>
         <p class="section-lead">
-          Neu kann ein DID-Dokument optional einen <code>service</code>-Block enthalten. Er folgt der Struktur aus DID-Core und beschreibt weitere Zugangswege, die ein Resolver anbieten möchte.
+          Neu kann ein DID-Dokument optional einen <code>service</code>-Block enthalten. Er folgt der Struktur aus DID-Core und beschreibt weitere Zugangswege, die ein Resolver anbieten könnte.
         </p>
 
         <div class="stakeholder-grid">
           <article class="stakeholder-card">
             <h3>Eine eingeschränkte Sicht</h3>
             <p>
-              Ein Eintrag vom Typ <code>RWP-PublicRecordAccess</code> verweist auf eine reduzierte Darstellung des Records, etwa für Personen ohne vollen Zugriff. Welche Angaben sie zeigt, bestimmt das System.
+              Ein Eintrag vom Typ <code>RWPPublicRecordAccess</code> verweist auf eine reduzierte Darstellung des Records, etwa für Personen ohne vollen Zugriff. Welche Angaben sie zeigt, bestimmt das System.
             </p>
           </article>
 
           <article class="stakeholder-card architecture">
             <h3>Eine Liste der Funktionen</h3>
             <p>
-              Ein Eintrag vom Typ <code>RWP-FunctionRegistry</code> zeigt maschinenlesbar, welche Operationen für diesen Record vorgesehen sind, zum Beispiel abrufen, vergleichen, prüfen oder veröffentlichen.
+              Ein Eintrag vom Typ <code>RWPFunctionRegistry</code> zeigt maschinenlesbar, welche Operationen für diesen Record vorgesehen sind, zum Beispiel abrufen, vergleichen, prüfen oder veröffentlichen.
             </p>
           </article>
 
@@ -209,7 +209,7 @@
           <article class="stakeholder-card architecture">
             <h3>Der Resolver übernimmt</h3>
             <p>
-              Aus dieser Liste kann ein Resolver den Eintrag <code>RWP-FunctionRegistry</code> für jeden Record dieses Typs befüllen.
+              Aus dieser Liste kann ein Resolver den Eintrag <code>RWPFunctionRegistry</code> für jeden Record dieses Typs befüllen.
             </p>
           </article>
 
@@ -223,7 +223,7 @@
           <article class="stakeholder-card">
             <h3>Beschreibend, nicht verpflichtend</h3>
             <p>
-              Die Liste sagt, was ein Typ unterstützt. Ein Resolver muss die genannten Funktionen nicht zwingend umsetzen.
+              Die Liste sagt, was ein Typ unterstützt. Ein Resolver muss die genannten Funktionen nicht zwingend selbst umsetzen.
             </p>
           </article>
 
@@ -352,26 +352,6 @@
             </p>
           </article>
 
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <p class="section-label">Stand der Diskussion</p>
-        <h2>Ein Vorschlag, noch im Prozess.</h2>
-        <p class="section-lead">
-          Der optionale <code>service</code>-Block und die Deklaration von Funktionen im
-          SchemaRecord sind als Änderungsvorschlag in Diskussion (Call for Consensus 8,
-          <a href="https://github.com/recordweb/rwp/issues/28" target="_blank" rel="noopener">Issue #28</a>).
-          Diese Seite beschreibt den vorgeschlagenen Stand und kann sich bis zur Annahme ändern.
-        </p>
-
-        <div class="library-note">
-          <p>Der <code>recordEndpoint</code> bleibt der Pflichtweg.</p>
-          <p>Weitere Wege sind freiwillig und deklarieren nur ihre Verfügbarkeit.</p>
-          <p>Die Funktionen werden einmal pro Record-Typ beschrieben.</p>
-          <p>Zugriff regeln weiterhin die Zugriffsregeln des Systems.</p>
         </div>
       </div>
     </section>

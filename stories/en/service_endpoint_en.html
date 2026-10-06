@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A RecordWeb story about service endpoints: how a Record can declare further, voluntary channels and functions alongside its mandatory access channel, without granting any access rights.">
+  <title>RecordWeb – A channel is not a permission</title>
+  <link rel="stylesheet" href="../../assets/css/recordweb.css">
+</head>
+
+<body class="stories-page">
+  <header class="site-header">
+    <a class="wordmark" href="../../">RecordWeb</a>
+    <nav class="header-nav" aria-label="Main navigation">
+      <a href="../en/">Stories</a>
+      <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">Concept</a>
+      <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">Protocol</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="stories-hero">
+      <div class="container">
+        <p class="eyebrow">A story from everyday administration</p>
+        <h1>A channel is not a permission.<br>But it shows what is possible.</h1>
+        <p class="hero-lead">
+          How a Record can declare further channels and functions alongside its
+          mandatory access channel, so that people and systems know what is possible,
+          without granting any access rights.
+        </p>
+
+        <div class="language-switch" aria-label="Language">
+          <a href="../de/service_endpoint_de.html" lang="de">Deutsch</a>
+          <span class="current" aria-current="page">English</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 1 · A phone call</p>
+        <h2>Mr Berger just wants to know how far things are.</h2>
+        <p class="section-lead">
+          Mr Berger is converting the house of his late parents. He has been waiting for the building permit for weeks. Today Mr Berger calls Ms Roth, and the tension in his voice is easy to hear.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>Mr Berger</h3>
+            <p>
+              He does not want a file or details. He wants to know whether his application is being processed and whether he can make commitments to the tradespeople.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>Ms Roth</h3>
+            <p>
+              She sees the complete status in the specialist system. But she cannot simply show him everything: the application contains names, plans and opinions from third parties.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="library-note">
+          <p>
+            <strong>The dilemma:</strong> The Record is complete and protected. And yet there is a legitimate question that deserves a better answer than “I am not allowed to tell you anything”.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Scene 2 · The one safe route</p>
+        <h2>Every Record has a mandatory access channel.</h2>
+        <p class="section-lead">
+          In RWP, every DID document has exactly one binding access channel: the <code>recordEndpoint</code>. It is used to retrieve the complete Record.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>The address in the DID document</h3>
+            <p>
+              The Record’s DID stays stable. Where the Record currently resides is stated in the DID document and can change without changing the identity.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>Full access</h3>
+            <p>
+              The <code>recordEndpoint</code> returns the entire Record. Who may use it is decided by the system’s access rules, not by the address itself.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="status-note">
+          <p>
+            This remains unchanged. The <code>recordEndpoint</code> is still the only mandatory channel.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 3 · Further channels, voluntary</p>
+        <h2>The DID document can offer more.</h2>
+        <p class="section-lead">
+          A DID document can now optionally contain a <code>service</code> block. It follows the structure defined in DID Core and describes further access channels that a resolver might offer.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>A restricted view</h3>
+            <p>
+              An entry of type <code>RWPPublicRecordAccess</code> points to a reduced representation of the Record, for example for people without full access. What it shows is determined by the system.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>A list of functions</h3>
+            <p>
+              An entry of type <code>RWPFunctionRegistry</code> shows in machine-readable form which operations are intended for this Record, for example retrieve, compare, validate or publish.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>Voluntary</h3>
+            <p>
+              No system has to offer further channels. A system that does not remains conformant. The block is a MAY, not a requirement.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>Other channels</h3>
+            <p>
+              Other <code>type</code> values are possible as well, for example a DIDComm channel. RWP does not prescribe a protocol.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Scene 4 · For Mr Berger</p>
+        <h2>An answer that does not reveal too much.</h2>
+        <p class="section-lead">
+          Ms Roth’s specialist system has set up a restricted view for building applications. It shows only what is intended for applicants: for example, the processing status.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>What Mr Berger sees</h3>
+            <p>
+              The status of his application, without plans, third-party opinions or internal notes. That reassures him more than any evasive answer.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>What Ms Roth gains</h3>
+            <p>
+              She does not have to choose between “show everything” and “say nothing”. The view is declared as a channel in the DID document.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>What the view is not</h3>
+            <p>
+              It is not the complete Record. Its content cannot be checked against the <code>recordHash</code> and therefore must not be presented as a validated Record.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>Responsibility remains</h3>
+            <p>
+              The system still decides who receives which view. An entry in the DID document grants no right.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="library-note">
+          <p>
+            <strong>The simple boundary:</strong> A <code>service</code> entry says that a channel exists. It does not say that anyone may use it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 5 · Functions belong to the type</p>
+        <h2>Not every Record has to explain everything itself.</h2>
+        <p class="section-lead">
+          Which functions make sense for a Record depends on its type. A building application can be compared and validated. Another type might need a spell check or a word count.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>The SchemaRecord as source</h3>
+            <p>
+              A SchemaRecord can optionally list in the field <code>capabilities</code> which functions are intended for Records of this type. It is the place where the type is defined anyway.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>The resolver takes over</h3>
+            <p>
+              From this list, a resolver can populate the <code>RWPFunctionRegistry</code> entry for every Record of this type.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>Maintained once, valid everywhere</h3>
+            <p>
+              The declaration lives at type level and is therefore versioned and traceable. It does not have to be repeated in every single Record.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>Descriptive, not binding</h3>
+            <p>
+              The list states what a type supports. A resolver is not necessarily obliged to implement the named functions itself.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Scene 6 · The digital assistant</p>
+        <h2>Look first, then act.</h2>
+        <p class="section-lead">
+          Ms Roth also uses a digital assistant that prepares tasks. Before it does anything, it can check in the DID document which functions are intended for a Record at all.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card architecture">
+            <h3>Discovery</h3>
+            <p>
+              The assistant resolves the DID and reads the function list. It sees whether, for example, “compare” or “validate” is available, without having to establish a connection first.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>Caution</h3>
+            <p>
+              To the assistant, the information in the DID document is initially unverified input. A function with consequences, such as “publish”, is not simply triggered on its own.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>Authorisation</h3>
+            <p>
+              Whether it may use such a function is decided by the access rules and the responsible person, not by the list.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>The benefit</h3>
+            <p>
+              The assistant does not have to guess or try blindly. It knows what is intended and asks for everything else.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="status-note">
+          <p>
+            <strong>Important:</strong> Declaring a function is a pointer to availability. It replaces neither an authorisation nor a check of the response.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="section-label">Scene 7 · What may change</p>
+        <h2>Channels come and go. The Record stays.</h2>
+        <p class="section-lead">
+          In autumn, Ms Roth’s system is extended. A new channel is added, an old one is removed. The Record itself stays exactly as it is.
+        </p>
+
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card context">
+            <h3>Without a new version</h3>
+            <p>
+              <code>service</code> entries may be added, changed or removed at any time. They affect neither the identity nor the content of the Record and do not create a new Record version.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>With a timestamp</h3>
+            <p>
+              Whenever something changes, <code>updated</code> in the DID document is adjusted. That keeps it visible that something has changed.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>In the <code>versionId</code></h3>
+            <p>
+              Where present, the <code>service</code> field is included in the <code>versionId</code> of the DID document. Changes can therefore be evidenced.
+            </p>
+          </article>
+
+          <article class="stakeholder-card">
+            <h3>Not part of the Record hashes</h3>
+            <p>
+              The entries are not part of <code>recordHash</code>, <code>versionHash</code> or <code>contentHash</code>. The integrity of the Record is unaffected.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <p class="section-label">Scene 8 · The story as a sequence</p>
+        <h2>From a phone call to a clear path.</h2>
+        <div class="stakeholder-grid">
+          <article class="stakeholder-card">
+            <h3>1. Question</h3>
+            <p>
+              Someone wants to know what is possible with a Record or how far it has progressed.
+            </p>
+          </article>
+
+          <article class="stakeholder-card context">
+            <h3>2. Resolve</h3>
+            <p>
+              The DID is resolved. The DID document names the <code>recordEndpoint</code> and, where present, further <code>service</code> entries.
+            </p>
+          </article>
+
+          <article class="stakeholder-card architecture">
+            <h3>3. Choose</h3>
+            <p>
+              Depending on role and access rules, the appropriate channel is chosen: the full Record, the restricted view or the function list.
+            </p>
+          </article>
+
+          <article class="stakeholder-card archive">
+            <h3>4. Validate</h3>
+            <p>
+              Whoever receives the full Record validates it according to the familiar rules. A restricted view is not presented as a validated Record.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <a class="wordmark footer-wordmark" href="../../">RecordWeb</a>
+        <p>
+          Open concepts and protocols for traceable, long-term referenceable Records.
+        </p>
+      </div>
+
+      <nav aria-label="Further links">
+        <a href="../../">RecordWeb overview</a>
+        <a href="../en/">All stories</a>
+        <a href="https://recordweb.github.io/rwc/" target="_blank" rel="noopener">RecordWeb Concept</a>
+        <a href="https://recordweb.github.io/rwp/" target="_blank" rel="noopener">RecordWeb Protocol</a>
+        <a href="https://github.com/recordweb" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
